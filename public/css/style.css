@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles */
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+h1.text-3xl {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+
+.facility-item {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  border-bottom-width: 1px;
+  border-color: #e5e7eb;
+}
+
+/* Style for facility items to match screenshot */
+.facility-item span.font-bold {
+  font-weight: 700;
+}
+
+.facility-item h3 {
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.facility-item p {
+  color: #4b5563;
+}
+
+.d-none {
+  display: none;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.param-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: #fff;
+  border: 1px solid #eee;
+  margin-bottom: 4px;
+  border-radius: 6px;
+  cursor: grab;
+}
+.param-row.dragging {
+  opacity: 0.5;
+}

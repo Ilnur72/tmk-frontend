@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles */
+.sidebar-item {
+  @apply flex items-center px-4 py-3 text-white hover:bg-white/10 rounded-lg;
+}
+
+.sidebar-item-active {
+  @apply bg-white/10;
+}
+
+.sidebar-icon {
+  @apply mr-3 w-6 h-6;
+}
+
+.map-marker {
+  @apply w-8 h-8 rounded-full bg-tmk-blue text-white flex items-center justify-center;
+}
+
+.project-item {
+  @apply flex items-center p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer;
+}
