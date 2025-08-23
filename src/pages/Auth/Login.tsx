@@ -23,7 +23,6 @@ const Login: React.FC = () => {
 
     try {
       const success = await login(email, password);
-      console.log(success, "success");
 
       if (success) {
         navigate("/factory");

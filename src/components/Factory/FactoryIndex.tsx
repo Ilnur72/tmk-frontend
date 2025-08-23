@@ -93,12 +93,10 @@ const FactoryIndex: React.FC = () => {
 
   const showDeleteConfirmModal = (factoryId: number, factoryName: string) => {
     // Modal show functionality will be implemented
-    console.log("Delete factory:", factoryId, factoryName);
   };
 
   const showFactoryEditModal = (factoryId: number) => {
     // Edit modal functionality will be implemented
-    console.log("Edit factory:", factoryId);
   };
 
   const showParameterModal = (
@@ -110,24 +108,14 @@ const FactoryIndex: React.FC = () => {
     status: number
   ) => {
     // Parameter modal functionality will be implemented
-    console.log("Show parameter modal:", {
-      factoryId,
-      paramId,
-      paramName,
-      paramType,
-      factoryParamId,
-      status,
-    });
   };
 
   const showCommentHistory = (paramId: number) => {
     // Comment history functionality will be implemented
-    console.log("Show comment history:", paramId);
   };
 
   const showParametrControlModal = (factoryId: number) => {
     // Parameter control modal functionality will be implemented
-    console.log("Show parameter control modal:", factoryId);
   };
 
   return (

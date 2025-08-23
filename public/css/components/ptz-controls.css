@@ -239,7 +239,7 @@ ptz:before {
   -webkit-justify-content: space-between;
   -ms-flex-pack: justify;
   justify-content: center;
-  margin-top: 15px;
+  margin-top: 10px;
 }
 
 .ptz-root .ptz-other [class^='ptz-wrap'][data-v-29fcc1ea] {

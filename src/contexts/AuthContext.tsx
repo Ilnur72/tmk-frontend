@@ -70,7 +70,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  console.log(token);
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
@@ -110,7 +109,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       const data = await response.json();
-      console.log("Login response:", data);
 
       if (data.data && data.data.token) {
         const token = data.data.token;
