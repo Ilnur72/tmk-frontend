@@ -44,13 +44,11 @@ export default function VideoModal({
 
   const sendPTZCommand = async (command: PTZCommand) => {
     try {
-      const response = await axios.post("/cameras/ptz-control", command, {
+      await axios.post("/cameras/ptz-control", command, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-
-      const data = await response.data;
     } catch (error) {
       console.error("PTZ command error:", error);
     }

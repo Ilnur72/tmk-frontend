@@ -18,7 +18,7 @@ import Production from "./pages/Production/Production";
 import Sales from "./pages/Sales/Sales";
 import Finance from "./pages/Finance/Finance";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import "./App.css";
+// import "./App.css";
 
 const LoginRoute: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();

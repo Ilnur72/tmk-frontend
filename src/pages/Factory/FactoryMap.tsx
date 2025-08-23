@@ -366,7 +366,7 @@ const FactoryMap: React.FC = () => {
       <style>{`
         #map {
           width: 100%;
-          height: 95vh;
+          height: 97vh;
           margin: 0;
           padding: 0;
           left: 0;
@@ -438,33 +438,36 @@ const FactoryMap: React.FC = () => {
         }
       `}</style>
 
-      <div className="md:max-w-auto xl:min-h-screen min-w-0 max-w-full flex-1 rounded-[30px] bg-slate-100 px-4 before:block before:h-px before:w-full before:content-[''] dark:bg-darkmode-700 md:px-[22px]">
-        <div className="grid grid-cols-12 gap-6">
-          <div className="col-span-12 rounded xl:mt-3">
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-12 rounded ">
+          <div
+            id="map"
+            ref={mapContainer}
+            className="maplibregl-map max-md:my-2 rounded max-md:w-full max-md:fixed rounded-[30px]"
+          >
             <div
-              id="map"
-              ref={mapContainer}
-              className="maplibregl-map max-md:my-2 rounded max-md:w-full max-md:fixed"
+              id="left"
+              className={`sidebar flex-center left ${
+                sidebarCollapsed ? "collapsed" : ""
+              }`}
             >
-              <div
-                id="left"
-                className={`sidebar flex-center left ${
-                  sidebarCollapsed ? "collapsed" : ""
-                }`}
-              >
-                <div className="sidebar-content rounded-rect flex-center max-md:h-[87%]">
-                  <div
-                    id="markerList"
-                    style={{ margin: "5px", padding: "5px", overflowY: "auto" }}
-                  ></div>
+              <div className="absolute max-md:top-10 sidebar-content rounded-rect flex-center max-md:h-[87%]">
+                <div
+                  id="markerList"
+                  style={{
+                    margin: "5px",
+                    padding: "5px",
+                    overflowY: "auto",
+                    top: sidebarCollapsed ? "30px" : "0",
+                  }}
+                ></div>
 
-                  <div
-                    className="sidebar-toggle rounded-rect left"
-                    style={{ fontSize: "2em" }}
-                    onClick={() => toggleSidebar("left")}
-                  >
-                    →
-                  </div>
+                <div
+                  className="sidebar-toggle rounded-rect left"
+                  style={{ fontSize: "2em" }}
+                  onClick={() => toggleSidebar("left")}
+                >
+                  →
                 </div>
               </div>
             </div>

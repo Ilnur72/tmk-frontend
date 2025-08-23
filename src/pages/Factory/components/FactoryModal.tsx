@@ -5,7 +5,11 @@ import {
   MapPin,
   Camera,
   Settings,
-  Image as ImageIcon,
+  Image,
+  User,
+  BarChart3,
+  FileText,
+  Video,
 } from "lucide-react";
 import { CameraType, Factory } from "../types/factory";
 import ImageModal from "./ImageModal";
@@ -149,7 +153,7 @@ export default function FactoryDetailsModal({
           }`}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Modal Header - Cyan/Turquoise like in image */}
+          {/* Modal Header */}
           <div className="flex items-center justify-between p-6 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
@@ -174,16 +178,22 @@ export default function FactoryDetailsModal({
 
           {/* Modal Content */}
           <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
-            <div className="grid grid-cols-1 grid-cols-3 gap-6">
-              {/* Left Column - Images */}
-              <div className="col-span-1 space-y-4">
+            <div className="grid grid-cols-1 max-md:grid-cols-3 gap-6">
+              {/* Left Column - Images and Basic Info */}
+              <div className=" space-y-4">
                 {/* Images Card */}
                 <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
                   <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                    <ImageIcon className="w-5 h-5 mr-2 text-cyan-600" />
+                    <Image className="w-5 h-5 mr-2 text-cyan-600" />
                     Лойиҳа расмлари
                   </h4>
-                  <div className="flex space-x-3 overflow-x-auto pb-2">
+                  <div
+                    className="flex space-x-3 overflow-x-auto pb-2"
+                    style={{
+                      scrollbarWidth: "thin",
+                      scrollbarColor: "#cbd5e0 #f7fafc",
+                    }}
+                  >
                     {images.length > 0 ? (
                       images.map((img, index) => (
                         <div
@@ -220,7 +230,7 @@ export default function FactoryDetailsModal({
                     ) : (
                       <div className="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center">
                         <div className="text-center">
-                          <ImageIcon className="w-16 h-16 mx-auto text-gray-400 mb-3" />
+                          <Image className="w-16 h-16 mx-auto text-gray-400 mb-3" />
                           <p className="text-gray-500 text-sm">
                             Расм мавжуд эмас
                           </p>
@@ -233,49 +243,92 @@ export default function FactoryDetailsModal({
                 {/* Basic Info Card - Асосий маълумотлар */}
                 <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
                   <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                    <Building2 className="w-5 h-5 mr-2 text-cyan-600" />
+                    <User className="w-5 h-5 mr-2 text-cyan-600" />
                     Асосий маълумотлар
                   </h4>
                   <div className="space-y-3">
-                    <div>
-                      <div className="text-center mb-4">
-                        <h5 className="text-xl font-bold text-gray-900 mb-2">
-                          {factory.name || "-"}
-                        </h5>
-                      </div>
-                      <div className="space-y-2">
-                        <div>
-                          <span className="text-gray-600 font-medium">
-                            Корхона номи:
-                          </span>
-                          <div className="font-semibold text-gray-900">
-                            {factory.enterprise_name || "-"}
-                          </div>
-                        </div>
-                        <div>
-                          <span className="text-gray-600 font-medium">
-                            Чиқиндилардан йўлдош
-                          </span>
-                          <div className="font-medium text-gray-900">
-                            {factory.project_goal || "-"}
-                          </div>
-                        </div>
-                      </div>
+                    <div className="flex items-center justify-between py-2 border-b border-gray-100">
+                      <span className="text-gray-600 font-medium">
+                        Лойиҳа номи:
+                      </span>
+                      <span className="font-semibold text-gray-900">
+                        {factory.name || "-"}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between py-2 border-b border-gray-100">
+                      <span className="text-gray-600 font-medium">
+                        Корхона номи:
+                      </span>
+                      <span className="font-semibold text-gray-900">
+                        {factory.enterprise_name || "-"}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between py-2 border-b border-gray-100">
+                      <span className="text-gray-600 font-medium">
+                        Лойиҳа мақсади:
+                      </span>
+                      <span className="font-medium text-gray-900">
+                        {factory.project_goal || "-"}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between py-2 border-b border-gray-100">
+                      <span className="text-gray-600 font-medium">Регион:</span>
+                      <span className="font-medium text-gray-900">
+                        {factory.region || "-"}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between py-2 border-b border-gray-100">
+                      <span className="text-gray-600 font-medium">
+                        Лойиҳа жараёни:
+                      </span>
+                      <span className="font-medium text-gray-900">
+                        {factory.work_percent || "-"} %
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between py-2 border-b border-gray-100">
+                      <span className="text-gray-600 font-medium">Статус:</span>
+                      <span
+                        className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusBadgeColor(
+                          factory.status
+                        )}`}
+                      >
+                        {getStatusText(factory.status)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between py-2 border-b border-gray-100">
+                      <span className="text-gray-600 font-medium">
+                        Ахамияти:
+                      </span>
+                      <span
+                        className={`px-3 py-1 rounded-full text-sm font-medium ${getImportanceBadgeColor(
+                          factory.importance
+                        )}`}
+                      >
+                        {getImportanceText(factory.importance)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between py-2">
+                      <span className="text-gray-600 font-medium">
+                        Координаталари:
+                      </span>
+                      <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded">
+                        {parseCoordinates(factory.coordinates)}
+                      </span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Middle Column - Custom Fields */}
-              <div className="col-span-1 space-y-4">
-                {/* Custom Fields Card - Қўшимча майдонлар */}
+              {/* Middle Column - Custom Fields, Project Values */}
+              <div className="space-y-4">
+                {/* Custom Fields Card */}
                 {hasCustomFields && (
                   <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
                     <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                      <Settings className="w-5 h-5 mr-2 text-cyan-600" />
+                      <BarChart3 className="w-5 h-5 mr-2 text-cyan-600" />
                       Қўшимча майдонлар
                     </h4>
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       {Object.entries(factory.custom_fields!).map(
                         ([key, value]: [string, any]) => (
                           <div key={key} className="space-y-1">
@@ -290,64 +343,68 @@ export default function FactoryDetailsModal({
                   </div>
                 )}
 
-                {/* Project Values Card - Лойиҳа қийматлари */}
+                {/* Project Values Card */}
                 {hasProjectValues && (
                   <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
                     <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                      <MapPin className="w-5 h-5 mr-2 text-cyan-600" />
+                      <FileText className="w-5 h-5 mr-2 text-cyan-600" />
                       Лойиҳа қийматлари
                     </h4>
                     <div className="space-y-2">
                       {Object.entries(factory.project_values!).map(
                         ([key, value]: [string, any]) => {
-                          if (typeof value === "object" && value.child) {
+                          // Agar child obyekt bo'lsa, uni skip qilish
+                          if (key === "child") return null;
+
+                          // Oddiy qiymatlarni ko'rsatish
+                          if (typeof value !== "object" || value === null) {
                             return (
-                              <div key={key}>
-                                {Object.entries(value.child).map(
-                                  ([childKey, childValue]: [string, any]) => (
-                                    <div
-                                      key={childKey}
-                                      className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4 hover:from-blue-100 hover:to-indigo-100 transition-all duration-200 mb-2"
-                                    >
-                                      <div className="text-center">
-                                        <div className="text-sm font-medium text-gray-700 mb-2">
-                                          {childKey}
-                                        </div>
-                                        <div className="text-2xl font-bold text-blue-600">
-                                          {childValue}
-                                        </div>
-                                      </div>
-                                    </div>
-                                  )
-                                )}
+                              <div
+                                key={key}
+                                className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-4 hover:from-green-100 hover:to-emerald-100 transition-all duration-200"
+                              >
+                                <div className="text-center">
+                                  <div className="text-sm font-medium text-gray-700 mb-2">
+                                    {key}
+                                  </div>
+                                  <div className="text-2xl font-bold text-green-600">
+                                    {value}
+                                  </div>
+                                </div>
                               </div>
                             );
                           }
-                          if (key === "child") return null;
-                          return (
+
+                          return null;
+                        }
+                      )}
+
+                      {/* Child obyektlarini alohida ko'rsatish */}
+                      {factory.project_values?.child &&
+                        Object.entries(factory.project_values.child).map(
+                          ([childKey, childValue]: [string, any]) => (
                             <div
-                              key={key}
-                              className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-4 hover:from-green-100 hover:to-emerald-100 transition-all duration-200"
+                              key={childKey}
+                              className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4 hover:from-blue-100 hover:to-indigo-100 transition-all duration-200"
                             >
                               <div className="text-center">
                                 <div className="text-sm font-medium text-gray-700 mb-2">
-                                  {key}
+                                  {childKey}
                                 </div>
-                                <div className="text-2xl font-bold text-green-600">
-                                  {value}
+                                <div className="text-2xl font-bold text-blue-600">
+                                  {childValue}
                                 </div>
                               </div>
                             </div>
-                          );
-                        }
-                      )}
+                          )
+                        )}
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* Right Column - Parameters and Cameras */}
-              <div className="col-span-1 space-y-4">
+              {/* Right Column - Parameters and Video Surveillance */}
+              <div className="space-y-4">
                 {/* Parameters Card */}
                 <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
                   <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
@@ -426,7 +483,7 @@ export default function FactoryDetailsModal({
                 {/* Video Surveillance Card */}
                 <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
                   <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                    <Camera className="w-5 h-5 mr-2 text-cyan-600" />
+                    <Video className="w-5 h-5 mr-2 text-cyan-600" />
                     Видео кузатув
                   </h4>
                   <div className="space-y-3">

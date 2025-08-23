@@ -25,7 +25,7 @@ const Login: React.FC = () => {
       const success = await login(email, password);
 
       if (success) {
-        navigate("/factory");
+        navigate("/map");
       } else {
         showToast("Нотўғри электрон почта ёки пароль");
       }

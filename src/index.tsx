@@ -4,8 +4,9 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import axios from 'axios';
+import { API_URL } from './config/const ';
 
-axios.defaults.baseURL = "http://localhost:8085"
+axios.defaults.baseURL = API_URL
 // if (token) axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
