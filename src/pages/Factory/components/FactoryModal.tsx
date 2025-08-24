@@ -178,7 +178,7 @@ export default function FactoryDetailsModal({
 
           {/* Modal Content */}
           <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
-            <div className="grid grid-cols-1 max-md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
               {/* Left Column - Images and Basic Info */}
               <div className=" space-y-4">
                 {/* Images Card */}
@@ -312,7 +312,7 @@ export default function FactoryDetailsModal({
                         Координаталари:
                       </span>
                       <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded">
-                        {parseCoordinates(factory.coordinates)}
+                        {parseCoordinates(factory.coords)}
                       </span>
                     </div>
                   </div>

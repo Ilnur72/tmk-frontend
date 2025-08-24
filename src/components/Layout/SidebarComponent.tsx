@@ -36,8 +36,8 @@ const menuItems = [
 const Sidebar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const { logout } = useAuth(); // logout ni ham qo‘shdik
-  const location = useLocation(); // ✅ React Router hook
+  const { logout } = useAuth();
+  const location = useLocation();
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -49,7 +49,6 @@ const Sidebar = () => {
 
   const handleLogout = () => {
     logout();
-
     navigate("/login");
   };
 
