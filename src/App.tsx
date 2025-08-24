@@ -22,7 +22,6 @@ import "./App.css";
 
 const LoginRoute: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
-  console.log(isAuthenticated, isLoading);
   
   if (isLoading) {
     return (
@@ -75,7 +74,7 @@ const App: React.FC = () => {
                   <Layout>
                     <Routes>
                       <Route path="/" element={<FactoryMap />} />
-                      <Route path="/factory/" element={<Factory />} />
+                      <Route path="/factory" element={<Factory />} />
                       {/* } />
                       <Route path="/employers" element={<Employee />} />
                       <Route path="/techniques" element={<Techniques />} />

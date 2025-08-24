@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   Home,
   Briefcase,
@@ -18,12 +18,12 @@ import { useAuth } from "../../contexts/AuthContext";
 
 const menuItems = [
   { href: "/", icon: Home, title: "Лойиҳалар ҳаритаси" },
-  { href: "/factory/", icon: Briefcase, title: "Инвестиция лойиҳалари" },
-  { href: "/production/", icon: GitPullRequest, title: "Ишлаб чиқариш" },
-  { href: "/sales/", icon: BarChart, title: "Сотув кўрсаткичлари" },
-  { href: "/finance/", icon: BarChart2, title: "Молиявий кўрсаткичлар" },
-  { href: "/employers/", icon: Users, title: "Ходимлар" },
-  { href: "/techniques/", icon: Codepen, title: "Техникалар" },
+  { href: "/factory", icon: Briefcase, title: "Инвестиция лойиҳалари" },
+  { href: "/production", icon: GitPullRequest, title: "Ишлаб чиқариш" },
+  { href: "/sales", icon: BarChart, title: "Сотув кўрсаткичлари" },
+  { href: "/finance", icon: BarChart2, title: "Молиявий кўрсаткичлар" },
+  { href: "/employers", icon: Users, title: "Ходимлар" },
+  { href: "/techniques", icon: Codepen, title: "Техникалар" },
   {
     href: "/setting",
     icon: Settings,
@@ -34,10 +34,10 @@ const menuItems = [
 ];
 
 const Sidebar = () => {
-  console.log(menuItems[2].href.split("/"));
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { logout } = useAuth(); // logout ni ham qo‘shdik
+  const location = useLocation(); // ✅ React Router hook
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -100,17 +100,19 @@ const Sidebar = () => {
                 >
                   <NavLink
                     to={item.href}
+                    onClick={() => closeMobileMenu()}
                     className={({ isActive }) =>
                       `menu flex items-center px-6 py-4 hover:bg-opacity-50 transition-colors ${
-                        isActive ? "bg-white border-r-4 border-primary" : ""
+                        location.pathname.replace(/\/$/, "") ===
+                    item.href.replace(/\/$/, "") ? "bg-white border-r-4 border-primary" : ""
                       }`
                     }
                     end={item.href === "/"}
                   >
                     <div
                       className={`menu__icon mr-4 ${
-                        item.href === window.location.pathname
-                          ? "text-black"
+                        item.href.replace(/\/$/, "") === location.pathname.replace(/\/$/, "")
+                          ? "text-primary"
                           : "text-white"
                       }`}
                     >
@@ -118,7 +120,7 @@ const Sidebar = () => {
                     </div>
                     <div
                       className={`menu__title text-sm font-medium ${
-                        item.href === window.location.pathname
+                        item.href.replace(/\/$/, "") === location.pathname.replace(/\/$/, "")
                           ? "text-black"
                           : "text-white"
                       }`}
@@ -168,7 +170,10 @@ const Sidebar = () => {
                 <NavLink
                   to={item.href}
                   className={({ isActive }) =>
-                    `side-menu${isActive ? " side-menu--active" : ""}`
+                    location.pathname.replace(/\/$/, "") ===
+                    item.href.replace(/\/$/, "")
+                      ? "side-menu side-menu--active"
+                      : "side-menu"
                   }
                   end={item.href === "/"}
                   onClick={() => closeMobileMenu()}

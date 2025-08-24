@@ -325,7 +325,6 @@ const FactoryIndex: React.FC = () => {
             <button
               id="create-factory-btn"
               className="bg-primary hover:opacity-70 text-white font-bold py-2 px-4 rounded"
-              onClick={() => console.log("Create factory")}
             >
               Лойиҳа қўшиш
             </button>

@@ -17,7 +17,6 @@ const Login: React.FC = () => {
 
     try {
       const success = await login(email, password);
-      console.log(success)
       if (success) {
         navigate("/");
         toast.success("Тизимга муваффақиятли кирдингиз 🚀");

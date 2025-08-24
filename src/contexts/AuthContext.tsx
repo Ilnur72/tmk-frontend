@@ -136,7 +136,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = () => {
-    console.log('logout')
     setUser(null);
     setToken(null);
     setIsAuthenticated(false);
