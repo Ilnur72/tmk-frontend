@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   Home,
   Briefcase,
@@ -14,9 +14,10 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
 
 const menuItems = [
-  { href: "/map", icon: Home, title: "Лойиҳалар ҳаритаси" },
+  { href: "/", icon: Home, title: "Лойиҳалар ҳаритаси" },
   { href: "/factory/", icon: Briefcase, title: "Инвестиция лойиҳалари" },
   { href: "/production/", icon: GitPullRequest, title: "Ишлаб чиқариш" },
   { href: "/sales/", icon: BarChart, title: "Сотув кўрсаткичлари" },
@@ -30,11 +31,13 @@ const menuItems = [
     id: "setting-menu-item",
   },
   { href: "/cameras", icon: Camera, title: "Камералар" },
-  { href: "/login", icon: LogOut, title: "Тизимдан чиқиш", rotate: true },
 ];
 
 const Sidebar = () => {
+  console.log(menuItems[2].href.split("/"));
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const { logout } = useAuth(); // logout ni ham qo‘shdik
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -44,12 +47,18 @@ const Sidebar = () => {
     setIsMobileMenuOpen(false);
   };
 
+  const handleLogout = () => {
+    logout();
+
+    navigate("/login");
+  };
+
   return (
     <>
       {/* Mobile Menu Header */}
       <div className="mobile-menu group top-0 inset-x-0 fixed bg-primary backdrop-blur-sm z-[60] border-b border-white/[0.08] md:hidden">
         <div className="flex h-[45px] items-center px-3 sm:px-8">
-          <a className="mr-auto flex" href="/map">
+          <a className="mr-auto flex" href="/">
             <img className="w-16" src="/image/logo-full-w.png" alt="TMK" />
           </a>
           <button
@@ -71,7 +80,7 @@ const Sidebar = () => {
             <img className="h-8" src="/image/logo-full-w.png" alt="TMK" />
 
             <button
-              onClick={closeMobileMenu}
+              onClick={() => closeMobileMenu()}
               className={` p-1 transition-opacity duration-200 ease-in-out ${
                 isMobileMenuOpen ? "visible opacity-100" : "invisible opacity-0"
               }`}
@@ -96,23 +105,43 @@ const Sidebar = () => {
                         isActive ? "bg-white border-r-4 border-primary" : ""
                       }`
                     }
-                    onClick={closeMobileMenu}
                     end={item.href === "/"}
                   >
-                    <div className={`menu__icon mr-4 ${item.href === window.location.pathname ? "text-black" : "text-white"}`}>
-                      <Icon
-                        className={`w-5 h-5 ${item.rotate ? "rotate-180" : ""}`}
-                      />
+                    <div
+                      className={`menu__icon mr-4 ${
+                        item.href === window.location.pathname
+                          ? "text-black"
+                          : "text-white"
+                      }`}
+                    >
+                      <Icon className={`w-5 h-5`} />
                     </div>
-                    <div  className={`menu__title text-sm font-medium ${
-      item.href === window.location.pathname ? "text-black" : "text-white"
-    }`}>
+                    <div
+                      className={`menu__title text-sm font-medium ${
+                        item.href === window.location.pathname
+                          ? "text-black"
+                          : "text-white"
+                      }`}
+                    >
                       {item.title}
                     </div>
                   </NavLink>
                 </li>
               );
             })}
+            <li>
+              <div
+                className={`menu flex items-center  py-4 hover:bg-opacity-50 transition-colors `}
+                onClick={() => handleLogout()}
+              >
+                <div className={`menu__icon mr-4 `}>
+                  <LogOut className={`w-5 h-5`} />
+                </div>
+                <div className={`menu__title text-sm font-medium `}>
+                  Тизимдан чиқиш
+                </div>
+              </div>
+            </li>
           </ul>
         </div>
 
@@ -120,14 +149,14 @@ const Sidebar = () => {
         {isMobileMenuOpen && (
           <div
             className="fixed inset-0 bg-black/50 z-10"
-            onClick={closeMobileMenu}
+            onClick={() => closeMobileMenu()}
           />
         )}
       </div>
 
-      {/* Desktop Sidebar - O'zgartirilmagan */}
+      {/* Desktop Sidebar */}
       <nav className="side-nav hidden w-[80px] overflow-x-hidden pb-16 pr-5 md:block xl:w-[230px]">
-        <a className="flex items-center pt-4 pl-5 intro-x" href="/map">
+        <a className="flex items-center pt-4 pl-5 intro-x" href="/">
           <img className="w-42" src="/image/logo-full-w.png" alt="TMK" />
         </a>
         <div className="my-6 side-nav__divider"></div>
@@ -142,19 +171,24 @@ const Sidebar = () => {
                     `side-menu${isActive ? " side-menu--active" : ""}`
                   }
                   end={item.href === "/"}
+                  onClick={() => closeMobileMenu()}
                 >
                   <div className="side-menu__icon">
-                    <Icon
-                      className={`stroke-1.5 w-5 h-5${
-                        item.rotate ? " rotate-180" : ""
-                      }`}
-                    />
+                    <Icon className={`stroke-1.5 w-5 h-5`} />
                   </div>
                   <div className="side-menu__title">{item.title}</div>
                 </NavLink>
               </li>
             );
           })}
+          <li>
+            <div className={`side-menu`} onClick={() => handleLogout()}>
+              <div className={`side-menu__icon `}>
+                <LogOut className={`stroke-1.5 w-5 h-5 rotate-180`} />
+              </div>
+              <div className={`side-menu__title`}>Тизимдан чиқиш</div>
+            </div>
+          </li>
         </ul>
       </nav>
     </>

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { CameraType, PTZCommand } from "../types/factory";
-import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from "lucide-react";
+
 
 interface PTZControlsProps {
   camera: CameraType;
@@ -63,8 +63,8 @@ export default function PTZControls({
       factoryDown: { pan: 0, tilt: -60 },
       factoryDownRight: { pan: 60, tilt: -60 },
     };
-type Direction = keyof typeof directionMap;
-const dir = direction as Direction;
+    type Direction = keyof typeof directionMap;
+    const dir = direction as Direction;
 
     const coords = directionMap[dir];
     if (coords) {

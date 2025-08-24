@@ -18,11 +18,12 @@ import Production from "./pages/Production/Production";
 import Sales from "./pages/Sales/Sales";
 import Finance from "./pages/Finance/Finance";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
-// import "./App.css";
+import "./App.css";
 
 const LoginRoute: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
-
+  console.log(isAuthenticated, isLoading);
+  
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -73,9 +74,8 @@ const App: React.FC = () => {
                 <ProtectedRoute>
                   <Layout>
                     <Routes>
-                      <Route path="/map" element={<FactoryMap />} />
-                      {/* <Route path="/" element={<Factory />} /> */}
-                      {/* <Route path="/factory" element={<Factory />} /> */}
+                      <Route path="/" element={<FactoryMap />} />
+                      <Route path="/factory/" element={<Factory />} />
                       {/* } />
                       <Route path="/employers" element={<Employee />} />
                       <Route path="/techniques" element={<Techniques />} />

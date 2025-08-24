@@ -1,19 +1,25 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import axios from 'axios';
-import { API_URL } from './config/const ';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import axios from "axios";
+import { API_URL } from "./config/const ";
+import { CookiesProvider } from "react-cookie";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-axios.defaults.baseURL = API_URL
+axios.defaults.baseURL = API_URL;
 // if (token) axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+  document.getElementById("root") as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <App />
+    <CookiesProvider>
+      <App />
+      <ToastContainer />
+    </CookiesProvider>
   </React.StrictMode>
 );
 
