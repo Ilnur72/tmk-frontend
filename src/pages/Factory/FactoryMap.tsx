@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import FactoryModal from "./components/FactoryModal";
+import FactoryModal from "./modal/FactoryModal";
 import maplibregl from "maplibre-gl";
 import axios from "axios";
 import "maplibre-gl/dist/maplibre-gl.css";

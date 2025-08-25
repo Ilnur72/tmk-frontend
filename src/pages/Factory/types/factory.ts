@@ -1,4 +1,4 @@
-export interface Factory {
+export interface FactoryInterface {
   id: number;
   name: string;
   enterprise_name?: string;
@@ -49,4 +49,35 @@ export interface PTZCommand {
   tilt?: string;
   xml: string;
   ip: string;
+}
+
+export interface FactoryCounts {
+  registrationCount: number;
+  constructionCount: number;
+  startedCount: number;
+}
+
+export interface Toast {
+  id: string;
+  message: string;
+  type: 'success' | 'error' | 'warning' | 'info';
+}
+
+export interface ParameterData {
+  factoryId: number;
+  paramId: number;
+  paramName: string;
+  paramType: string;
+  factoryParamId: number;
+  status: number | string;
+}
+
+export interface CustomField {
+  key: string;
+  value: string;
+}
+
+export interface ProjectValue {
+  key: string;
+  amount: string;
 }

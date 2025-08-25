@@ -11,7 +11,7 @@ import {
   FileText,
   Video,
 } from "lucide-react";
-import { CameraType, Factory } from "../types/factory";
+import { CameraType } from "../types/factory";
 import ImageModal from "./ImageModal";
 import VideoModal from "./VideoModal";
 
@@ -561,7 +561,7 @@ export default function FactoryDetailsModal({
         onClose={() => setImageModalOpen(false)}
         images={currentImages}
         currentIndex={currentImageIndex}
-        onNavigate={setCurrentImageIndex}
+        onIndexChange={setCurrentImageIndex}
       />
 
       {/* Video Modal */}

@@ -1,205 +1,285 @@
 import React, { useState, useEffect } from "react";
+import { ShoppingCart, Monitor, CreditCard } from "lucide-react";
+import { FactoryInterface, FactoryCounts } from "./types/factory";
+import { showToast } from "../../utils/toast";
+import StatisticsCards from "./components/StatisticsCards";
+import ProjectGrid from "./components/ProjectGrid";
+import CreateProjectModal from "./modal/FactoryCreateModal";
+import EditProjectModal from "./modal/EditProjectModal";
+import ParameterModal from "./modal/ParameterModal";
+import HistoryModal from "./modal/HistoryModal";
+import ParameterControlModal from "./components/ParameterControlModal";
+import DeleteConfirmModal from "./modal/DeleteConfirmModal";
+import ImageModal from "./modal/ImageModal";
 import axios from "axios";
-import FactoryStats from "./components/FactoryStats";
-import FactoryList from "./components/FactoryList";
-import Toast from "../../components/UI/Toast";
-import FactoryCreateModal from "./components/FactoryCreateModal";
-
-interface FactoryData {
-  id: number;
-  name: string;
-  enterprise_name: string;
-  project_goal: string;
-  region: string;
-  work_persent: number;
-  importance: "HIGH" | "AVERAGE" | "LOW";
-  status: "REGISTRATION" | "CONSTRUCTION" | "STARTED";
-  latitude: number;
-  longitude: number;
-  marker_icon: string;
-  images?: string[];
-  created_at: string;
-  updated_at: string;
-}
-
-interface FactoryStatsData {
-  total: number;
-  registrationCount: number;
-  constructionCount: number;
-  startedCount: number;
-}
 
 const Factory: React.FC = () => {
-  const [factories, setFactories] = useState<FactoryData[]>([]);
-  const [stats, setStats] = useState<FactoryStatsData>({
-    total: 0,
+  const [factories, setFactories] = useState<FactoryInterface[]>([]);
+  const [counts, setCounts] = useState<FactoryCounts>({
     registrationCount: 0,
     constructionCount: 0,
     startedCount: 0,
   });
-  const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  const [editingFactory, setEditingFactory] = useState<FactoryData | null>(
+  const [total, setTotal] = useState<number>(0);
+  const [currentFilter, setCurrentFilter] = useState<string>("");
+
+  // Modal states
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [parameterModalOpen, setParameterModalOpen] = useState(false);
+  const [historyModalOpen, setHistoryModalOpen] = useState(false);
+  const [controlModalOpen, setControlModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [imageModalOpen, setImageModalOpen] = useState(false);
+
+  // Modal data states
+  const [selectedFactoryId, setSelectedFactoryId] = useState<number | null>(
     null
   );
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [toast, setToast] = useState<{
-    show: boolean;
-    message: string;
-    type: "success" | "error";
-  }>({
-    show: false,
-    message: "",
-    type: "success",
-  });
+  const [selectedParameter, setSelectedParameter] = useState<any>(null);
+  const [factoryToDelete, setFactoryToDelete] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
+  const [modalImages, setModalImages] = useState<string[]>([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
-    fetchFactories();
+    generateFactoryHtml();
+    checkUserPermissions();
   }, []);
 
-  const fetchFactories = async () => {
+  const checkUserPermissions = () => {
     try {
-      setLoading(true);
-      const response = await axios.get("/factory/all");
-      if (response.data && response.data.factories) {
-        setFactories(response.data.factories);
-        calculateStats(response.data.factories);
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        window.location.href = "/login";
+        return;
+      }
+
+      const decodedToken = parseJwt(token);
+
+      if (!decodedToken || !decodedToken.user) {
+        return;
+      }
+
+      // Handle viewer role permissions
+      if (decodedToken.user.role === "viewer") {
+        // Hide edit buttons and create buttons
+        const style = document.createElement("style");
+        style.textContent = `
+          #parameter-edit-btn,
+          #factory-edit-btn-visible,
+          #factory-delete-btn-visible,
+          #create-factory-btn,
+          #parameter-control-btn {
+            display: none !important;
+          }
+        `;
+        document.head.appendChild(style);
       }
     } catch (error) {
-      console.error("Error fetching factories:", error);
-      showToast("Маълумотларни юклашда хатолик", "error");
-    } finally {
-      setLoading(false);
+      console.error("Permission setup error:", error);
     }
   };
 
-  const calculateStats = (factoriesData: FactoryData[]) => {
-    const total = factoriesData.length;
-    const registrationCount = factoriesData.filter(
-      (f) => f.status === "REGISTRATION"
-    ).length;
-    const constructionCount = factoriesData.filter(
-      (f) => f.status === "CONSTRUCTION"
-    ).length;
-    const startedCount = factoriesData.filter(
-      (f) => f.status === "STARTED"
-    ).length;
+  const parseJwt = (token: string) => {
+    if (!token) return null;
 
-    setStats({
-      total,
-      registrationCount,
-      constructionCount,
-      startedCount,
-    });
-  };
-
-  const showToast = (message: string, type: "success" | "error") => {
-    setToast({ show: true, message, type });
-    setTimeout(() => {
-      setToast({ show: false, message: "", type: "success" });
-    }, 3000);
-  };
-
-  const handleCreateFactory = () => {
-    setEditingFactory(null);
-    setShowModal(true);
-  };
-
-  const handleEditFactory = (factory: FactoryData) => {
-    setEditingFactory(factory);
-    setShowModal(true);
-  };
-
-  const handleDeleteFactory = async (factoryId: number) => {
-    if (window.confirm("Ҳақиқатан ҳам бу лойиҳани ўчирмоқчимисиз?")) {
-      try {
-        await axios.delete(`/factory/${factoryId}`);
-        showToast("Лойиҳа муваффақиятли ўчирилди", "success");
-        fetchFactories();
-      } catch (error) {
-        console.error("Error deleting factory:", error);
-        showToast("Лойиҳани ўчиришда хатолик", "error");
-      }
-    }
-  };
-
-  const handleSaveFactory = async (factoryData: any) => {
     try {
-      if (editingFactory) {
-        // Update existing factory
-        await axios.put(`/factory/update/${editingFactory.id}`, factoryData);
-        showToast("Лойиҳа муваффақиятли янгиланди", "success");
-      } else {
-        // Create new factory
-        await axios.post("/factory/create", factoryData);
-        showToast("Лойиҳа муваффақиятли яратилди", "success");
-      }
-      setShowModal(false);
-      fetchFactories();
-    } catch (error) {
-      console.error("Error saving factory:", error);
-      showToast("Лойиҳани сақлашда хатолик", "error");
+      const base64Url = token.split(".")[1];
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split("")
+          .map((c) => "%" + c.charCodeAt(0).toString(16).padStart(2, "0"))
+          .join("")
+      );
+      return JSON.parse(jsonPayload);
+    } catch (e) {
+      console.error("Token decode error:", e);
+      return null;
     }
   };
 
-  const getFilteredFactories = () => {
-    if (statusFilter === "all") {
-      return factories;
+  const generateFactoryHtml = async (status: string = "") => {
+    try {
+      const response = await axios.get(`/factory/all?status=${status}`);
+      const data = response.data;
+
+      setFactories(data.factories || []);
+      if (data.counts) {
+        setCounts(data.counts);
+      }
+      setTotal(data.total || 0);
+      setCurrentFilter(status);
+    } catch (error) {
+      console.error("Error loading factories:", error);
     }
-    return factories.filter((factory) => factory.status === statusFilter);
+  };
+
+  const incrementStatistics = (status: string) => {
+    setTotal((prev) => prev + 1);
+
+    switch (status) {
+      case "REGISTRATION":
+        setCounts((prev: any) => ({
+          ...prev,
+          registrationCount: prev.registrationCount + 1,
+        }));
+        break;
+      case "CONSTRUCTION":
+        setCounts((prev: any) => ({
+          ...prev,
+          constructionCount: prev.constructionCount + 1,
+        }));
+        break;
+      case "STARTED":
+        setCounts((prev: any) => ({
+          ...prev,
+          startedCount: prev.startedCount + 1,
+        }));
+        break;
+    }
+  };
+
+  const handleCreateProject = () => {
+    setCreateModalOpen(true);
+  };
+
+  const handleEditProject = (factoryId: number) => {
+    setSelectedFactoryId(factoryId);
+    setEditModalOpen(true);
+  };
+
+  const handleParameterUpdate = (parameterData: any) => {
+    setSelectedParameter(parameterData);
+    setParameterModalOpen(true);
+  };
+
+  const handleShowHistory = (factoryParamId: number) => {
+    setSelectedFactoryId(factoryParamId);
+    setHistoryModalOpen(true);
+  };
+
+  const handleParameterControl = (factoryId: number) => {
+    setSelectedFactoryId(factoryId);
+    setControlModalOpen(true);
+  };
+
+  const handleDeleteConfirm = (factoryId: number, factoryName: string) => {
+    setFactoryToDelete({ id: factoryId, name: factoryName });
+    setDeleteModalOpen(true);
+  };
+
+  const handleImageModal = (images: string[], index: number = 0) => {
+    setModalImages(images);
+    setCurrentImageIndex(index);
+    setImageModalOpen(true);
+  };
+
+  const handleProjectCreated = (status: string) => {
+    generateFactoryHtml();
+    incrementStatistics(status);
+    showToast("Лойиҳа муваффақиятли қўшилди!", "success");
+  };
+
+  const handleProjectUpdated = () => {
+    generateFactoryHtml();
+    showToast("Лойиҳа муваффақиятли янгиланди!", "success");
+  };
+
+  const handleProjectDeleted = () => {
+    generateFactoryHtml();
+    showToast("Лойиҳа муваффақиятли ўчирилди!", "success");
   };
 
   return (
-    <div className="space-y-6">
-      {/* Toast */}
-      <Toast
-        show={toast.show}
-        message={toast.message}
-        type={toast.type}
-        onClose={() => setToast({ show: false, message: "", type: "success" })}
-      />
+    <div className="min-h-screen min-w-0 max-w-full flex-1 rounded-[30px] bg-slate-100 px-4 pb-10 dark:bg-darkmode-700 md:px-[22px]">
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-12 mt-8">
+          <div className="intro-y lg:flex items-center justify-between">
+            <h2 className="mr-5 text-lg font-medium">
+              Инвестиция лойиҳалари ҳолати мониторинги
+            </h2>
+            <button
+              id="create-factory-btn"
+              onClick={handleCreateProject}
+              className="bg-primary hover:opacity-70 text-white font-bold py-2 px-4 rounded"
+              style={{ backgroundColor: "#00a0c6" }}
+            >
+              Лойиҳа қўшиш
+            </button>
+          </div>
 
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">
-          Инвестиция лойиҳалари ҳолати мониторинги
-        </h1>
-        <button
-          onClick={handleCreateFactory}
-          className="bg-primary hover:opacity-80 text-white font-medium py-2 px-4 rounded-md transition-colors"
-        >
-          Лойиҳа қўшиш
-        </button>
+          <StatisticsCards
+            total={total}
+            counts={counts}
+            onFilterChange={generateFactoryHtml}
+          />
+
+          <ProjectGrid
+            factories={factories}
+            onEditProject={handleEditProject}
+            onDeleteProject={handleDeleteConfirm}
+            onParameterUpdate={handleParameterUpdate}
+            onShowHistory={handleShowHistory}
+            onParameterControl={handleParameterControl}
+            onImageModal={handleImageModal}
+          />
+        </div>
       </div>
 
-      {/* Stats Cards */}
-      <FactoryStats
-        stats={stats}
-        onFilterChange={setStatusFilter}
-        currentFilter={statusFilter}
+      {/* Modals */}
+      <CreateProjectModal
+        isOpen={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        onSuccess={handleProjectCreated}
       />
 
-      {/* Factory List */}
-      {loading ? (
-        <div className="flex justify-center items-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        </div>
-      ) : (
-        <FactoryList
-          factories={getFilteredFactories()}
-          onEdit={handleEditFactory}
-          onDelete={handleDeleteFactory}
-        />
-      )}
+      <EditProjectModal
+        isOpen={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        factoryId={selectedFactoryId}
+        onSuccess={handleProjectUpdated}
+      />
 
-      {/* Factory Modal */}
-      {showModal && (
-        <FactoryCreateModal
-          factory={editingFactory}
-          onSave={handleSaveFactory}
-          onClose={() => setShowModal(false)}
-        />
-      )}
+      <ParameterModal
+        isOpen={parameterModalOpen}
+        onClose={() => setParameterModalOpen(false)}
+        parameter={selectedParameter}
+        onSuccess={() => generateFactoryHtml()}
+      />
+
+      <HistoryModal
+        isOpen={historyModalOpen}
+        onClose={() => setHistoryModalOpen(false)}
+        factoryParamId={selectedFactoryId}
+      />
+
+      <ParameterControlModal
+        isOpen={controlModalOpen}
+        onClose={() => setControlModalOpen(false)}
+        factoryId={selectedFactoryId}
+        onSuccess={() => generateFactoryHtml()}
+      />
+
+      <DeleteConfirmModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        factory={factoryToDelete}
+        onSuccess={handleProjectDeleted}
+      />
+
+      <ImageModal
+        isOpen={imageModalOpen}
+        onClose={() => setImageModalOpen(false)}
+        images={modalImages}
+        currentIndex={currentImageIndex}
+        onIndexChange={setCurrentImageIndex}
+      />
     </div>
   );
 };

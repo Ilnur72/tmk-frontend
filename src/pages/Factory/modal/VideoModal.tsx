@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { CameraType, PTZCommand } from "../types/factory";
-import PTZControls from "../camera/PTZControls";
+import PTZControls from "../components/PTZControls";
 import axios from "axios";
 
 interface VideoModalProps {
