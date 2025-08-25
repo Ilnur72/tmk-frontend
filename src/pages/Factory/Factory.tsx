@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import FactoryStats from "../../components/Factory/FactoryStats";
-import FactoryList from "../../components/Factory/FactoryList";
+import FactoryStats from "./components/FactoryStats";
+import FactoryList from "./components/FactoryList";
 import Toast from "../../components/UI/Toast";
-import FactoryCreateModal from "../../components/Factory/FactoryCreateModal";
+import FactoryCreateModal from "./components/FactoryCreateModal";
 
 interface FactoryData {
-  id: string;
+  id: number;
   name: string;
   enterprise_name: string;
   project_goal: string;
@@ -110,7 +110,7 @@ const Factory: React.FC = () => {
     setShowModal(true);
   };
 
-  const handleDeleteFactory = async (factoryId: string) => {
+  const handleDeleteFactory = async (factoryId: number) => {
     if (window.confirm("Ҳақиқатан ҳам бу лойиҳани ўчирмоқчимисиз?")) {
       try {
         await axios.delete(`/factory/${factoryId}`);
