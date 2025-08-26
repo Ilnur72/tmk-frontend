@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { X, Plus, Minus } from "lucide-react";
 import { showToast } from "../../../utils/toast";
 import axios from "axios";
 import MapComponent from "../components/MapComponent";
+import ImageViewer from "react-simple-image-viewer";
 
 interface CreateProjectModalProps {
   isOpen: boolean;
@@ -38,79 +39,50 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
     lat: 41.2995,
     lng: 69.2401,
   });
+  const [previewImages, setPreviewImages] = useState<string[]>([]);
+  const [currentImage, setCurrentImage] = useState(0);
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
+
   const [markerIcon, setMarkerIcon] = useState("factory");
   const mapRef = useRef<any>(null);
-  const mapContainerRef = useRef<HTMLDivElement>(null);
   const markerRef = useRef<any>(null);
-
-  useEffect(() => {
-    if (isOpen && mapContainerRef.current && !mapRef.current) {
-      initializeMap();
-    }
-  }, [isOpen]);
-
-  const initializeMap = () => {
-    if (
-      typeof window !== "undefined" &&
-      (window as any).maplibregl &&
-      mapContainerRef.current
-    ) {
-      const maplibregl = (window as any).maplibregl;
-
-      mapRef.current = new maplibregl.Map({
-        container: mapContainerRef.current,
-        style:
-          "https://api.maptiler.com/maps/019644f4-f546-7d75-81ed-49e8e52c20c7/style.json?key=Ql4Zhf4TMUJJKxx8Xht6",
-        center: [coordinates.lng, coordinates.lat],
-        attributionControl: false,
-        zoom: 10,
-      });
-
-      markerRef.current = new maplibregl.Marker({ draggable: true })
-        .setLngLat([coordinates.lng, coordinates.lat])
-        .addTo(mapRef.current);
-
-      markerRef.current.on("drag", () => {
-        const lngLat = markerRef.current.getLngLat();
-        setCoordinates({ lat: lngLat.lat, lng: lngLat.lng });
-      });
-
-      markerRef.current.on("dragend", () => {
-        const lngLat = markerRef.current.getLngLat();
-        setCoordinates({ lat: lngLat.lat, lng: lngLat.lng });
-      });
-
-      mapRef.current.on("click", (e: any) => {
-        const lng = e.lngLat.lng;
-        const lat = e.lngLat.lat;
-
-        markerRef.current.remove();
-        markerRef.current = new maplibregl.Marker({ draggable: true })
-          .setLngLat([lng, lat])
-          .addTo(mapRef.current);
-
-        setCoordinates({ lat, lng });
-
-        markerRef.current.on("drag", () => {
-          const lngLat = markerRef.current.getLngLat();
-          setCoordinates({ lat: lngLat.lat, lng: lngLat.lng });
-        });
-
-        markerRef.current.on("dragend", () => {
-          const lngLat = markerRef.current.getLngLat();
-          setCoordinates({ lat: lngLat.lat, lng: lngLat.lng });
-        });
-      });
-    }
-  };
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    setSelectedImages((prev) => [...prev, ...files]);
+    if (files.length === 0) return;
+
+    // yangi fayllar qo‘shiladi
+    const newSelected = [...selectedImages, ...files];
+    setSelectedImages(newSelected);
+
+    // preview URL larni ham yangilaymiz
+    const newPreviews = newSelected.map((file) => URL.createObjectURL(file));
+    setPreviewImages(newPreviews);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+  const openImageViewer = (index: number) => {
+    setCurrentImage(index);
+    setIsViewerOpen(true);
+  };
+
+  const closeImageViewer = () => {
+    setCurrentImage(0);
+    setIsViewerOpen(false);
   };
 
   const removeImage = (index: number) => {
-    setSelectedImages((prev) => prev.filter((_, i) => i !== index));
+    const newSelected = selectedImages.filter((_, i) => i !== index);
+    setSelectedImages(newSelected);
+
+    const newPreviews = newSelected.map((file) => URL.createObjectURL(file));
+    setPreviewImages(newPreviews);
+
+    if (currentImage >= newPreviews.length) {
+      setCurrentImage(newPreviews.length - 1);
+    }
   };
 
   const addCustomField = () => {
@@ -236,13 +208,6 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
 
   return (
     <>
-      {/* MapLibre GL JS Script */}
-      <script src="https://unpkg.com/maplibre-gl@4.0.0/dist/maplibre-gl.js"></script>
-      <link
-        href="https://unpkg.com/maplibre-gl@4.0.0/dist/maplibre-gl.css"
-        rel="stylesheet"
-      />
-
       <div className="modal show bg-black/60 transition-[visibility,opacity] w-screen h-screen fixed left-0 top-0 visible opacity-100 z-50">
         <div className="w-[60%] mx-auto bg-white relative rounded-md shadow-md transition-[margin-top,transform] duration-[0.4s,0.3s] mt-2 sm:w-[950px] max-h-[90vh] overflow-y-auto">
           <div className="p-2 text-center">
@@ -405,6 +370,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                       </div>
                       <input
                         type="file"
+                        ref={fileInputRef}
                         id="imageInput"
                         multiple
                         accept="image/*"
@@ -417,12 +383,39 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                     {selectedImages.length > 0 && (
                       <div className="mt-3 flex flex-wrap gap-2">
                         {selectedImages.map((image, index) => (
-                          <div key={index} className="relative">
-                            <img
-                              src={URL.createObjectURL(image)}
-                              alt={`Preview ${index}`}
-                              className="w-20 h-20 object-cover rounded border"
-                            />
+                          <div key={`new-${index}`} className="relative">
+                            <div
+                              className="relative group cursor-pointer"
+                              onClick={() => openImageViewer(index)}
+                            >
+                              <img
+                                src={URL.createObjectURL(image)}
+                                alt={`New ${index}`}
+                                className="w-20 h-20 object-cover rounded border"
+                              />
+                              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition">
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  className="h-6 w-6 text-white"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                                  />
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                                  />
+                                </svg>
+                              </div>
+                            </div>
                             <button
                               type="button"
                               onClick={() => removeImage(index)}
@@ -435,6 +428,17 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                       </div>
                     )}
                   </div>
+
+                  {/* Image Viewer */}
+                  {isViewerOpen && (
+                    <ImageViewer
+                      src={previewImages}
+                      currentIndex={currentImage}
+                      onClose={closeImageViewer}
+                      backgroundStyle={{ backgroundColor: "rgba(0,0,0,0.9)" }}
+                      closeOnClickOutside={true}
+                    />
+                  )}
 
                   {/* Custom Fields */}
                   <div className="mt-4">
@@ -493,7 +497,6 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                       <strong>Кўрсатма:</strong> Харитада керакли жойни босинг
                       ёки маркерни судраб кўчиринг
                     </div>
-                    {/* <div ref={mapContainerRef} className="h-64 md:h-[400px] w-full rounded border"></div> */}
                     <MapComponent
                       containerId="create-project-map"
                       type="create"

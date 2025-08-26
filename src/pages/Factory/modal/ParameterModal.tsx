@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { ParameterData } from '../types/factory';
 import { showToast } from '../../../utils/toast';
+import { API_URL } from '../../../config/const ';
+import axios from 'axios';
 
 
 interface ParameterModalProps {
@@ -27,13 +29,13 @@ const ParameterModal: React.FC<ParameterModalProps> = ({ isOpen, onClose, parame
     if (!parameter) return;
 
     try {
-      const response = await fetch(`/factory/param/${parameter.factoryParamId}`);
-      const data = await response.json();
+      const response = await axios.get(`/factory/param/${parameter.factoryParamId}`);
+      const data = response.data;
 
       if (parameter.paramType === 'date') {
         try {
-          const logResponse = await fetch(`/factory/log?query[factoryParamId]=${parameter.factoryParamId}`);
-          const logData = await logResponse.json();
+          const logResponse = await axios.get(`/factory/log?query[factoryParamId]=${parameter.factoryParamId}`);
+          const logData = logResponse.data;
           if (logData[0]?.value) {
             const dateValue = new Date(logData[0].value);
             if (!isNaN(dateValue.getTime())) {
@@ -76,26 +78,22 @@ const ParameterModal: React.FC<ParameterModalProps> = ({ isOpen, onClose, parame
     try {
       // Update parameter status if not date
       if (status.length < 2) {
-        const response = await fetch(`/factory/param/update/${parameter.factoryParamId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ status: status })
+        const response = await axios.put(`/factory/param/update/${parameter.factoryParamId}`, {
+          status: status
         });
 
-        if (response.ok) {
-          const data = await response.json();
+        if (response.status === 200) {
+          const data = response.data;
           // Update UI status image
           const img = document.getElementById(parameter.factoryParamId.toString());
           if (img) {
             const imgElement = img as HTMLImageElement;
             if (+data.data.status === 0) {
-              imgElement.src = '../../../public/image/error.png';
+              imgElement.src = '/image/error.png';
             } else if (+data.data.status === 1) {
-              imgElement.src = '../../../public/image/ok.png';
+              imgElement.src = '/image/ok.png';
             } else {
-              imgElement.src = `../../../public/image/${data.data.status}.png`;
+              imgElement.src = `/image/${data.data.status}.png`;
             }
           }
         }
@@ -115,14 +113,11 @@ const ParameterModal: React.FC<ParameterModalProps> = ({ isOpen, onClose, parame
         logFormData.append('files', file);
       });
 
-      const logResponse = await fetch('/factory/log', {
-        method: 'POST',
-        body: logFormData
-      });
+      const logResponse = await axios.post(`${API_URL}/factory/log`, logFormData);
 
-      if (logResponse.ok) {
-        const logData = await logResponse.json();
-        
+      if (logResponse.status === 200) {
+        const logData = logResponse.data;
+
         // Update UI
         const paramComment = document.querySelector(`[data-param-id="${parameter.factoryParamId}"]`);
         const paramDate = document.querySelector(`#factory-param-date-${parameter.factoryParamId}`);

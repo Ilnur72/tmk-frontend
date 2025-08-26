@@ -1,7 +1,7 @@
 import React from 'react';
 import { AlertTriangle } from 'lucide-react';
-import { showToast } from '../../../utils/toast';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 interface DeleteConfirmModalProps {
   isOpen: boolean;
@@ -31,9 +31,10 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({ isOpen, onClose
 
       onClose();
       onSuccess();
+      toast("Лойиҳани ўчириш муваффақиятли амалга оширилди!", { type: "success" });
     } catch (error) {
       console.error('Error deleting factory:', error);
-      showToast('Лойиҳани ўчиришда хато юз берди!', 'error');
+      toast("Лойиҳани ўчиришда хато юз берди!", { type: "error" });
     } finally {
       setLoading(false);
     }

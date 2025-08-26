@@ -8,7 +8,7 @@ import CreateProjectModal from "./modal/FactoryCreateModal";
 import EditProjectModal from "./modal/EditProjectModal";
 import ParameterModal from "./modal/ParameterModal";
 import HistoryModal from "./modal/HistoryModal";
-import ParameterControlModal from "./components/ParameterControlModal";
+import ParameterControlModal from "./modal/ParameterControlModal";
 import DeleteConfirmModal from "./modal/DeleteConfirmModal";
 import ImageModal from "./modal/ImageModal";
 import axios from "axios";
