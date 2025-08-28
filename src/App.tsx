@@ -23,7 +23,7 @@ import Factory from "./pages/Factory/Factory";
 
 const LoginRoute: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
-  
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -77,13 +77,12 @@ const App: React.FC = () => {
                       <Route path="/" element={<FactoryMap />} />
                       <Route path="/factory" element={<Factory />} />
                       <Route path="/setting" element={<Setting />} />
-                      {/* } />
                       <Route path="/employers" element={<Employee />} />
                       <Route path="/techniques" element={<Techniques />} />
                       <Route path="/cameras" element={<Camera />} />
                       <Route path="/production" element={<Production />} />
                       <Route path="/sales" element={<Sales />} />
-                      <Route path="/finance" element={<Finance />} /> */}
+                      <Route path="/finance" element={<Finance />} />
                     </Routes>
                   </Layout>
                 </ProtectedRoute>

@@ -5,7 +5,7 @@ const Techniques: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-900">Техника</h1>
-        <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors">
+        <button className="bg-primary hover:opacity-80 text-white font-medium py-2 px-4 rounded-md transition-colors">
           Техника қўшиш
         </button>
       </div>
