@@ -115,7 +115,7 @@ const ParameterModal: React.FC<ParameterModalProps> = ({ isOpen, onClose, parame
 
       const logResponse = await axios.post(`${API_URL}/factory/log`, logFormData);
 
-      if (logResponse.status === 200) {
+      if (logResponse.status === 201) {
         const logData = logResponse.data;
 
         // Update UI
