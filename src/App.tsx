@@ -18,8 +18,9 @@ import Production from "./pages/Production/Production";
 import Sales from "./pages/Sales/Sales";
 import Finance from "./pages/Finance/Finance";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import "./App.css";
+// import "./App.css";
 import Factory from "./pages/Factory/Factory";
+import BranchesPage from "./pages/Employee/components/BranchData";
 
 const LoginRoute: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -78,6 +79,7 @@ const App: React.FC = () => {
                       <Route path="/factory" element={<Factory />} />
                       <Route path="/setting" element={<Setting />} />
                       <Route path="/employers" element={<Employee />} />
+                      <Route path="/employers/branches" element={<BranchesPage />} />
                       <Route path="/techniques" element={<Techniques />} />
                       <Route path="/cameras" element={<Camera />} />
                       <Route path="/production" element={<Production />} />

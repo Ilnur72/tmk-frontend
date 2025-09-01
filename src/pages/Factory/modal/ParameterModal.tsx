@@ -161,7 +161,7 @@ const ParameterModal: React.FC<ParameterModalProps> = ({ isOpen, onClose, parame
 
   return (
     <div className="modal show bg-black/60 transition-all duration-300 ease-in-out opacity-100 overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full flex">
-      <div className="relative p-4 w-1/2 max-w-2xl max-h-full transform transition-all duration-300 ease-out scale-100 translate-y-0">
+      <div className="relative p-4 w-1/2 max-sm:w-full max-w-2xl max-h-full transform transition-all duration-300 ease-out scale-100 translate-y-0">
         <div className="relative rounded-lg bg-white shadow-xl">
           {/* Header */}
           <div className="flex items-center justify-between p-4 pb-3">

@@ -1,20 +1,215 @@
-import React from 'react';
+import React, { useState, useEffect } from "react";
+import { List } from "lucide-react";
+import axios from "axios";
+import StatCard from "./components/StatCard";
+import GrowthsChart from "./components/GrowthChart";
+import GenderStatistics from "./components/GenderStatistics";
+import AgeStatistics from "./components/AgeStatistics";
+import AdditionalStatsCard from "./components/AdditionalStatsCard";
 
-const Employee: React.FC = () => {
+// Types
+interface EmployeeData {
+  employees_full: number;
+  employees_office: number;
+  employees_office_man: number;
+  employees_office_woman: number;
+}
+
+interface OrganizationData {
+  count: number;
+  tashkilot: string;
+}
+
+interface BirthData {
+  date: string;
+}
+
+interface DashboardApiResponse {
+  employees_full: number;
+  employees_office: number;
+  employees_office_man: number;
+  employees_office_woman: number;
+}
+
+interface BirthDataResponse {
+  month: BirthData[];
+}
+
+// API Service
+const EMPLOYEE_API_URL = "http://84.54.118.39:8444/1c";
+
+const apiService = {
+  async getDashboardData(): Promise<DashboardApiResponse> {
+    const response = await axios.get(`${EMPLOYEE_API_URL}/dashboard/`);
+    return response.data;
+  },
+
+  async getOrganizationStats(): Promise<OrganizationData[]> {
+    const response = await axios.get(
+      `${EMPLOYEE_API_URL}/tashkilot-statistika/`
+    );
+    return response.data;
+  },
+
+  async getBirthData(): Promise<BirthDataResponse> {
+    const response = await axios.get(`${EMPLOYEE_API_URL}/tugilgan-kunlar/`);
+    return response.data;
+  },
+};
+
+// Main Dashboard Component
+const Dashboard: React.FC = () => {
+  const [employeeData, setEmployeeData] = useState<EmployeeData>({
+    employees_full: 0,
+    employees_office: 0,
+    employees_office_man: 0,
+    employees_office_woman: 0,
+  });
+
+  const [organizationData, setOrganizationData] = useState<OrganizationData[]>(
+    []
+  );
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchAllData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        // Fetch dashboard data
+        const dashboardData = await apiService.getDashboardData();
+        console.log(dashboardData);
+        
+        setEmployeeData(dashboardData);
+
+        // Fetch organization data
+        const orgData = await apiService.getOrganizationStats();
+        setOrganizationData(orgData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setError("Ma'lumotlarni yuklashda xatolik yuz berdi");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAllData();
+  }, []);
+
+  // Calculate total employees including all branches
+  const totalEmployees =
+    employeeData.employees_office +
+    (organizationData.length > 0
+      ? organizationData.reduce((sum, org) => sum + org.count, 0)
+      : 0);
+
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Ходимлар</h1>
-        <button className="bg-primary hover:opacity-80 text-white font-medium py-2 px-4 rounded-md transition-colors">
-          Ходим қўшиш
-        </button>
-      </div>
-      
-      <div className="bg-white shadow rounded-lg p-6">
-        <p className="text-gray-500">Ходимлар бўлими ишлаб чиқилмоқда...</p>
+    <div className="min-h-screen bg-gray-100 p-2 max-sm:pt-12">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-8">
+          <button className="transition duration-200 border shadow-sm items-center justify-center py-2 px-3 rounded-md font-medium cursor-pointer focus:ring-4 focus:ring-blue-500 focus:ring-opacity-20 bg-primary border-primary hover:bg-opacity-80 text-white m-2 mb-2 mr-1 inline-block">
+            Комбинат ҳақида умумий маълумот
+          </button>
+          <button className="transition duration-200 border shadow-sm items-center justify-center py-2 px-3 rounded-md font-medium cursor-pointer focus:ring-4 focus:ring-blue-500 focus:ring-opacity-20 bg-primary border-primary hover:bg-opacity-80 text-white m-2 mb-2 mr-1 inline-block">
+            Ходимлар онлайн маълумоти
+          </button>
+        </div>
+
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            {error}
+          </div>
+        )}
+
+        {/* Header Section */}
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-lg font-medium text-gray-900">
+            Комбинат ҳақида умумий маълумот
+          </h2>
+          <a
+            href="employers/branches"
+            className="flex items-center text-blue-600 hover:text-blue-700 gap-2"
+          >
+            Барча филиаллар ҳақида маълумот
+            <List className="h-5 w-5" />
+          </a>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+          <StatCard
+            title="Жами ходимлар"
+            value={totalEmployees}
+            description="Комбинатда жами ходимлар сони"
+            isLoading={isLoading}
+          />
+          <StatCard
+            title="Марказий корхона"
+            value={employeeData.employees_office}
+            description="Марказий корхона"
+            isLoading={isLoading}
+          />
+          <StatCard
+            title="Филиал 1"
+            value={organizationData[2]?.count || 0}
+            description={
+              organizationData[2]?.tashkilot || "Филиал 1 Ангрен кони"
+            }
+            isLoading={isLoading}
+          />
+          <StatCard
+            title="Филиал 2"
+            value={organizationData[3]?.count || 0}
+            description={
+              organizationData[3]?.tashkilot || "Филиал 2 Олмалиқ кони"
+            }
+            isLoading={isLoading}
+          />
+        </div>
+
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <div className="lg:col-span-1">
+            <GrowthsChart />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <AgeStatistics />
+            <GenderStatistics />
+          </div>
+        </div>
+
+        {/* Additional Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+          <AdditionalStatsCard
+            title="Фаол/нофаол<br />ходимлар"
+            value="13500"
+            description="Ишда 13 300 Таътилда, касалликда, декретда 200"
+            percentage="98%/2%"
+            hasChart={true}
+          />
+          <AdditionalStatsCard
+            title="Бошқа турдаги<br />статистика"
+            value="320"
+            hasChart={false}
+          />
+          <AdditionalStatsCard
+            title="Бошқа турдаги<br />статистика"
+            value="1450"
+            percentage="45%"
+            hasChart={true}
+          />
+          <AdditionalStatsCard
+            title="Бошқа турдаги<br />статистика"
+            value="180"
+            hasChart={false}
+          />
+        </div>
       </div>
     </div>
   );
 };
 
-export default Employee;
+export default Dashboard;

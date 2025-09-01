@@ -197,7 +197,7 @@ const Factory: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen min-w-0 max-w-full flex-1 rounded-[30px] bg-slate-100 px-4 pb-10 dark:bg-darkmode-700 md:px-[22px]">
+    <div className="min-h-screen min-w-0 max-w-full flex-1 rounded-[30px] bg-slate-100 px-4 max-sm:py-8 dark:bg-darkmode-700 md:px-[22px]">
       <div className="grid grid-cols-12 gap-6">
         <div className="col-span-12 mt-8">
           <div className="intro-y lg:flex items-center justify-between">

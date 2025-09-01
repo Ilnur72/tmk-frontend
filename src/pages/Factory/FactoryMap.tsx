@@ -249,7 +249,7 @@ const FactoryMap: React.FC = () => {
               <img src="/image/marker2.png" alt="marker">
             </div>
             <div class="ml-4 mr-auto">
-              <div class="font-small">${factory.sort_num || index + 1}. ${
+              <div class="font-small">${index + 1}. ${
           factory.name
         }</div>
             </div>

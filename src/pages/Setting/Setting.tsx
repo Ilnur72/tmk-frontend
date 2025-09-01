@@ -288,9 +288,9 @@ const Setting: React.FC = () => {
   }
 
   return (
-    <div className="md:max-w-auto min-h-screen min-w-0 max-w-full flex-1 rounded-[30px] bg-slate-100">
+    <div className="md:max-w-auto min-h-screen min-w-0 max-w-full flex-1 rounded-[30px] bg-slate-100 max-sm:pt-6">
       {/* Parameters Section */}
-      <div className="bg-white rounded-lg shadow p-3 sm:p-6 overflow-x-auto">
+      <div className="bg-white rounded-lg shadow p-3 overflow-x-auto">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-4 gap-3">
           <h2 className="text-lg sm:text-xl md:text-3xl font-bold flex items-center gap-2">
             <Settings className="w-8 h-8" />

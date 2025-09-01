@@ -208,9 +208,9 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
 
   return (
     <>
-      <div className="modal show bg-black/60 transition-[visibility,opacity] w-screen h-screen fixed left-0 top-0 visible opacity-100 z-50">
-        <div className="w-[60%] mx-auto bg-white relative rounded-md shadow-md transition-[margin-top,transform] duration-[0.4s,0.3s] mt-2 sm:w-[950px] max-h-[90vh] overflow-y-auto">
-          <div className="p-2 text-center">
+      <div className="modal show bg-black/60 transition-[visibility,opacity] w-screen h-screen fixed left-0 top-0 visible opacity-100 z-50 pt-7">
+        <div className="w-[70%] max-sm:w-[100%] mx-auto bg-white relative rounded-md shadow-md transition-[margin-top,transform] duration-[0.4s,0.3s] mt-2 max-h-[90vh] overflow-y-auto">
+          <div className="text-center">
             <div className="flex justify-between items-center p-4">
               <h3 className="text-3xl font-medium">Янги лойиҳа қўшиш</h3>
               <button
@@ -446,7 +446,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                       Қўшимча майдонлар
                     </label>
                     {customFields.map((field, index) => (
-                      <div key={index} className="flex gap-2 mb-2">
+                      <div key={index} className="flex flex-wrap gap-2 mb-2">
                         <input
                           type="text"
                           placeholder="Майдон номи (масалан: Иш ўрни)"
@@ -486,7 +486,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                 </div>
 
                 {/* Right Column */}
-                <div className="w-full md:w-1/2">
+                <div className="form-group">
                   {/* Map */}
                   <div className="mb-4">
                     <label className="block mb-2 font-medium">
@@ -507,7 +507,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                       }
                     />
                     {/* Coordinates */}
-                    <div className="pt-3 flex gap-2">
+                    <div className="pt-3 flex flex-wrap gap-2">
                       <input
                         type="number"
                         step="any"
@@ -562,7 +562,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                       Лойиҳа қийматларининг бўлимлари
                     </label>
                     {projectValues.map((value, index) => (
-                      <div key={index} className="flex gap-2 mb-2">
+                      <div key={index} className="flex flex-wrap gap-2 mb-2">
                         <input
                           type="text"
                           placeholder="Бўлим номи (масалан: ФРРУ)"

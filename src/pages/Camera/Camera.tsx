@@ -75,7 +75,7 @@ const App: React.FC = () => {
 
   return (
     <>
-      <div className="md:max-w-auto min-h-screen min-w-0 max-w-full flex-1 rounded-[30px] bg-slate-100 px-4 pb-10 before:block before:h-px before:w-full before:content-[''] dark:bg-darkmode-700 md:px-[22px]">
+      <div className="md:max-w-auto min-h-screen min-w-0 max-w-full flex-1 rounded-[30px] bg-slate-100 px-4 pb-10 before:block before:h-px before:w-full before:content-[''] dark:bg-darkmode-700 md:px-[22px] max-sm:pt-5">
         <div className="grid grid-cols-12 gap-6">
           <div className="col-span-12 mt-8">
             <div className="intro-y lg:flex items-center justify-between mb-5">

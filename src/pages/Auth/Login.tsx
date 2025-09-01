@@ -45,9 +45,9 @@ const Login: React.FC = () => {
                   alt="Logo"
                 />
                 <div className="-intro-x mt-10 text-4xl font-medium leading-tight text-white">
-                  Har bir maʼдан
-                  <br />
-                  бўлагини қадrlаймиз!
+                Har bir maʼdan
+                <br />
+                boʻlagini qadrlaymiz!
                 </div>
                 <div className="-intro-x mt-5 text-lg text-white text-opacity-70 dark:text-slate-400">
                   Tahliliy monitoring tizimi

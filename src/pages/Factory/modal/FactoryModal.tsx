@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   X,
   Building2,
-  MapPin,
   Camera,
   Settings,
   Image,

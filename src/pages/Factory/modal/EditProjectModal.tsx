@@ -342,8 +342,8 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
   if (fetchingData) {
     return (
-      <div className="modal show bg-black/60 transition-[visibility,opacity] w-screen h-screen fixed left-0 top-0 visible opacity-100 z-50">
-        <div className="w-[60%] mx-auto bg-white relative rounded-md shadow-md transition-[margin-top,transform] duration-[0.4s,0.3s] mt-2 sm:w-[950px] max-h-[90vh] overflow-y-auto">
+      <div className="modal show bg-black/60 transition-[visibility,opacity] w-screen h-screen fixed left-0 top-0 visible opacity-100 z-50 pt-7">
+        <div className="w-[70%] max-sm:w-[100%] mx-auto bg-white relative rounded-md shadow-md transition-[margin-top,transform] duration-[0.4s,0.3s] mt-2 max-h-[90vh] overflow-y-auto">
           <div className="p-8 text-center">
             <div className="text-xl">⏳ Маълумотлар юкланмоқда...</div>
           </div>
@@ -355,7 +355,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
   if (!projectData) {
     return (
       <div className="modal show bg-black/60 transition-[visibility,opacity] w-screen h-screen fixed left-0 top-0 visible opacity-100 z-50">
-        <div className="w-[60%] mx-auto bg-white relative rounded-md shadow-md transition-[margin-top,transform] duration-[0.4s,0.3s] mt-2 sm:w-[950px] max-h-[90vh] overflow-y-auto">
+        <div className="w-[70%] max-sm:w-[100%] mx-auto bg-white relative rounded-md shadow-md transition-[margin-top,transform] duration-[0.4s,0.3s] mt-2 max-h-[90vh] overflow-y-auto">
           <div className="p-8 text-center">
             <div className="text-xl text-red-500">
               Маълумотларни юклашда хато юз берди
@@ -381,8 +381,8 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
         rel="stylesheet"
       />
 
-      <div className="modal show bg-black/60 transition-[visibility,opacity] w-screen h-screen fixed left-0 top-0 visible opacity-100 z-50">
-        <div className="w-[60%] mx-auto bg-white relative rounded-md shadow-md transition-[margin-top,transform] duration-[0.4s,0.3s] mt-2 sm:w-[950px] max-h-[90vh] overflow-y-auto">
+      <div className="modal show bg-black/60 transition-[visibility,opacity] w-screen h-screen fixed left-0 top-0 visible opacity-100 z-50 pt-7">
+        <div className="w-[70%] max-sm:w-[100%] mx-auto bg-white relative rounded-md shadow-md transition-[margin-top,transform] duration-[0.4s,0.3s] mt-2 max-h-[90vh] overflow-y-auto">
           <div className="p-2 text-center">
             <div className="flex justify-between items-center p-4">
               <h3 className="text-3xl font-medium">
@@ -675,7 +675,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                       Қўшимча майдонлар
                     </label>
                     {customFields.map((field, index) => (
-                      <div key={index} className="flex gap-2 mb-2">
+                      <div key={index} className="flex flex-wrap gap-2 mb-2">
                         <input
                           type="text"
                           placeholder="Майдон номи (масалан: Иш ўрни)"
@@ -736,7 +736,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                       }
                     />
                     {/* Coordinates */}
-                    <div className="pt-3 flex gap-2">
+                    <div className="pt-3 flex flex-wrap gap-2">
                       <input
                         type="number"
                         step="any"
@@ -791,7 +791,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                       Лойиҳа қийматларининг бўлимлари
                     </label>
                     {projectValues.map((value, index) => (
-                      <div key={index} className="flex gap-2 mb-2">
+                      <div key={index} className="flex flex-wrap gap-2 mb-2">
                         <input
                           type="text"
                           placeholder="Бўлим номи (масалан: ФРРУ)"
