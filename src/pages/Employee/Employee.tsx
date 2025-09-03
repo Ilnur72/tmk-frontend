@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { List } from "lucide-react";
 import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 import StatCard from "./components/StatCard";
 import GrowthsChart from "./components/GrowthChart";
 import GenderStatistics from "./components/GenderStatistics";
@@ -41,7 +42,6 @@ const EMPLOYEE_API_URL = "http://84.54.118.39:8444/1c";
 const apiService = {
   async getDashboardData(): Promise<DashboardApiResponse> {
     const response = await axios.get(`${EMPLOYEE_API_URL}/dashboard/`);
-
     return response.data;
   },
 
@@ -49,7 +49,6 @@ const apiService = {
     const response = await axios.get(
       `${EMPLOYEE_API_URL}/tashkilot-statistika/`
     );
-
     return response.data;
   },
 
@@ -59,55 +58,68 @@ const apiService = {
   },
 };
 
+// Custom hooks using React Query
+const useDashboardData = () => {
+  return useQuery<DashboardApiResponse>({
+    queryKey: ["dashboard"],
+    queryFn: apiService.getDashboardData,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // gcTime o'rniga cacheTime
+  });
+};
+
+const useOrganizationStats = () => {
+  return useQuery<OrganizationData[]>({
+    queryKey: ["organizationStats"],
+    queryFn: apiService.getOrganizationStats,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+};
+
+const useBirthData = () => {
+  return useQuery<BirthDataResponse>({
+    queryKey: ["birthData"],
+    queryFn: apiService.getBirthData,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+};
+
 // Main Dashboard Component
 const Dashboard: React.FC = () => {
-  const [employeeData, setEmployeeData] = useState<EmployeeData>({
-    employees_full: 0,
-    employees_office: 0,
-    employees_office_man: 0,
-    employees_office_woman: 0,
-  });
+  // Using React Query hooks
+  const {
+    data: employeeData,
+    isLoading: isDashboardLoading,
+    error: dashboardError,
+  } = useDashboardData();
 
-  const [organizationData, setOrganizationData] = useState<OrganizationData[]>(
-    []
-  );
-  const [birthData, setBirthData] = useState<BirthDataResponse | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: organizationData = [],
+    isLoading: isOrgLoading,
+    error: orgError,
+  } = useOrganizationStats();
 
-  useEffect(() => {
-    const fetchAllData = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
+  const {
+    data: birthData,
+    isLoading: isBirthLoading,
+    error: birthError,
+  } = useBirthData();
 
-        // Fetch dashboard data
-        const dashboardData = await apiService.getDashboardData();
+  // Combined loading state
+  const isLoading = isDashboardLoading || isOrgLoading || isBirthLoading;
 
-        setEmployeeData(dashboardData);
-
-        // Fetch organization data
-        const orgData = await apiService.getOrganizationStats();
-        setOrganizationData(orgData);
-        const birthData = await apiService.getBirthData();
-        setBirthData(birthData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setError("Ma'lumotlarni yuklashda xatolik yuz berdi");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchAllData();
-  }, []);
+  // Combined error state
+  const error = dashboardError || orgError || birthError;
 
   // Calculate total employees including all branches
-  const totalEmployees =
-    employeeData.employees_office +
-    (organizationData.length > 0
-      ? organizationData.reduce((sum, org) => sum + org.count, 0)
-      : 0);
+  const totalEmployees = employeeData
+    ? employeeData.employees_office +
+      (organizationData.length > 0
+        ? organizationData.reduce((sum: number, org: OrganizationData) => sum + org.count, 0)
+        : 0)
+    : 0;
 
   return (
     <div className="min-h-screen bg-gray-100 p-2 max-sm:pt-12">
@@ -124,7 +136,7 @@ const Dashboard: React.FC = () => {
         {/* Error Message */}
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            {error}
+            Ma'lumotlarni yuklashda xatolik yuz berdi: {(error as Error).message}
           </div>
         )}
 
@@ -152,7 +164,7 @@ const Dashboard: React.FC = () => {
           />
           <StatCard
             title="Марказий корхона"
-            value={employeeData.employees_office}
+            value={employeeData?.employees_office || 0}
             description="Марказий корхона"
             isLoading={isLoading}
           />

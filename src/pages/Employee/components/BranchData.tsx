@@ -66,7 +66,7 @@ const SearchBar: React.FC<{ searchTerm: string; onSearch: (term: string) => void
       <input
         type="text"
         placeholder="Филиал номи бўйича қидириш..."
-        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
         value={searchTerm}
         onChange={(e) => onSearch(e.target.value)}
       />
@@ -320,18 +320,7 @@ const BranchesPage: React.FC = () => {
         setError('Маълумотларни юклашда хatolik юз берди');
         
         // Fallback data
-        const fallbackData: BranchData[] = [
-          { id: 0, filial_nomi: 'Завод', hodimlar_soni: 1015 },
-          { id: 1, filial_nomi: 'Офис Ташкент', hodimlar_soni: 163 },
-          { id: 2, filial_nomi: 'Ведомственно-военизированная охрана', hodimlar_soni: 87 },
-          { id: 3, filial_nomi: 'Цех по производству огнеупорных изделий', hodimlar_soni: 53 },
-          { id: 4, filial_nomi: 'ЦАЛ', hodimlar_soni: 45 },
-          { id: 5, filial_nomi: 'Служба технического контроля', hodimlar_soni: 41 },
-          { id: 6, filial_nomi: 'GPX', hodimlar_soni: 38 },
-          { id: 7, filial_nomi: 'Контрактники', hodimlar_soni: 33 },
-          { id: 8, filial_nomi: 'Офис Чирчик', hodimlar_soni: 32 },
-          { id: 9, filial_nomi: 'Ингичка (Алмазный)', hodimlar_soni: 20 },
-        ];
+        const fallbackData: BranchData[] = [];
         setBranches(fallbackData);
         setFilteredBranches(fallbackData);
       } finally {

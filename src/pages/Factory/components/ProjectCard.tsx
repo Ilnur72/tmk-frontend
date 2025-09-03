@@ -234,7 +234,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                     id="parameter-edit-btn"
                     onClick={() => handleParameterEdit(param)}
                   >
-                    <Edit className="w-6 h-6 text-primary dark:text-primary" />
+                    <Edit className="w-5 h-5 text-primary dark:text-primary" />
                   </button>
                 </div>
               ))}

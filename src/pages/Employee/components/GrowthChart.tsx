@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Calendar } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import {
   LineChart,
   Line,
@@ -7,33 +9,79 @@ import {
   YAxis,
   CartesianGrid,
   ResponsiveContainer,
-  Legend,
 } from "recharts";
-import axios from "axios";
 
 // Types
+interface EARSData {
+  employes: number;
+  month: string;
+}
+
 interface ChartData {
   month: string;
   monthShort: string;
-  hired: number;
-  resigned: number;
+  employees: number;
+  growth: number;
 }
 
-// Mock data based on the chart image
-const mockChartData: ChartData[] = [
-  { month: "Январь", monthShort: "Jan", hired: 180, resigned: 320 },
-  { month: "Февраль", monthShort: "Feb", hired: 240, resigned: 380 },
-  { month: "Март", monthShort: "Mar", hired: 250, resigned: 420 },
-  { month: "Апрель", monthShort: "Apr", hired: 200, resigned: 550 },
-  { month: "Май", monthShort: "May", hired: 480, resigned: 320 },
-  { month: "Июнь", monthShort: "Jun", hired: 450, resigned: 350 },
-  { month: "Июль", monthShort: "Jul", hired: 1040, resigned: 450 },
-  { month: "Август", monthShort: "Aug", hired: 1020, resigned: 800 },
-  { month: "Сентябрь", monthShort: "Sep", hired: 980, resigned: 720 },
-  { month: "Октябрь", monthShort: "Oct", hired: 1100, resigned: 650 },
-  { month: "Ноябрь", monthShort: "Nov", hired: 950, resigned: 1200 },
-  { month: "Декабрь", monthShort: "Dec", hired: 1050, resigned: 1100 },
-];
+// API Service
+const apiService = {
+  async getEARSDashboard(): Promise<EARSData[]> {
+    const response = await axios.get(
+      "/employers/EARSDashboard"
+    );
+    return response.data;
+  },
+};
+
+// Custom hook for EARS data
+const useEARSData = () => {
+  return useQuery<EARSData[]>({
+    queryKey: ["earsDashboard"],
+    queryFn: apiService.getEARSDashboard,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+};
+
+// Month names mapping
+const monthNames: { [key: number]: { full: string; short: string } } = {
+  0: { full: "Январь", short: "Jan" },
+  1: { full: "Февраль", short: "Feb" },
+  2: { full: "Март", short: "Mar" },
+  3: { full: "Апрель", short: "Apr" },
+  4: { full: "Май", short: "May" },
+  5: { full: "Июнь", short: "Jun" },
+  6: { full: "Июль", short: "Jul" },
+  7: { full: "Август", short: "Aug" },
+  8: { full: "Сентябрь", short: "Sep" },
+  9: { full: "Октябрь", short: "Oct" },
+  10: { full: "Ноябрь", short: "Nov" },
+  11: { full: "Декабрь", short: "Dec" },
+};
+
+// Data transformation function
+const transformData = (data: EARSData[]): ChartData[] => {
+  // Sort by date (oldest first for proper growth calculation)
+  const sortedData = [...data].sort(
+    (a, b) => new Date(a.month).getTime() - new Date(b.month).getTime()
+  );
+
+  return sortedData.map((item, index) => {
+    const date = new Date(item.month);
+    const monthIndex = date.getMonth();
+    const previousEmployees =
+      index > 0 ? sortedData[index - 1].employes : item.employes;
+    const growth = item.employes - previousEmployees;
+
+    return {
+      month: monthNames[monthIndex].full,
+      monthShort: monthNames[monthIndex].short,
+      employees: item.employes,
+      growth: growth,
+    };
+  });
+};
 
 // Custom Legend Component
 const CustomLegend: React.FC = () => {
@@ -41,17 +89,17 @@ const CustomLegend: React.FC = () => {
     <div className="flex items-center justify-center space-x-6 mb-4">
       <div className="flex items-center">
         <div className="w-4 h-0.5 bg-cyan-500 mr-2"></div>
-        <span className="text-sm text-gray-600">Қабул қилинган</span>
+        <span className="text-sm text-gray-600">Ходимлар сони</span>
       </div>
       <div className="flex items-center">
-        <div className="w-4 h-0.5 border-t-2 border-dashed border-gray-400 mr-2"></div>
-        <span className="text-sm text-gray-600">Бўшаган</span>
+        <div className="w-4 h-0.5 border-t-2 border-dashed border-green-500 mr-2"></div>
+        <span className="text-sm text-gray-600">Ўсиш (+/-)</span>
       </div>
     </div>
   );
 };
 
-// Custom Dot Component for the line chart
+// Custom Dot Component
 const CustomDot: React.FC<any> = (props) => {
   const { cx, cy, fill } = props;
   if (cx === undefined || cy === undefined) return null;
@@ -70,53 +118,40 @@ const CustomDot: React.FC<any> = (props) => {
 };
 
 const EmployeeGrowthChart: React.FC = () => {
-  const [chartData, setChartData] = useState<ChartData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [currentData, setCurrentData] = useState({
-    hired: 56,
-    resigned: 12,
-    currentMonth: "Жорий ой",
-  });
-  const [previousData, setPreviousData] = useState({
-    hired: 30,
-    resigned: 3,
-    previousMonth: "Аввалги ой",
-  });
+  const { data: earsData, isLoading, error } = useEARSData();
 
-  useEffect(() => {
-    // Simulate API call
-    const fetchData = async () => {
-      setLoading(true);
+  // Transform data for chart
+  const chartData = earsData ? transformData(earsData) : [];
 
-      // Simulate delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setChartData(mockChartData);
+  // Get current and previous month data
+  const getCurrentData = () => {
+    if (!chartData.length)
+      return { employees: 0, growth: 0, month: "Жорий ой" };
 
-      // Calculate current and previous month data
-      const currentMonth = new Date().getMonth();
-      const currentMonthData = mockChartData[currentMonth];
-      const previousMonthData =
-        mockChartData[currentMonth > 0 ? currentMonth - 1 : 11];
-
-      setCurrentData({
-        hired: currentMonthData?.hired || 56,
-        resigned: currentMonthData?.resigned || 12,
-        currentMonth: "Жорий ой",
-      });
-
-      setPreviousData({
-        hired: previousMonthData?.hired || 30,
-        resigned: previousMonthData?.resigned || 3,
-        previousMonth: "Аввалги ой",
-      });
-
-      setLoading(false);
+    const latest = chartData[chartData.length - 1];
+    return {
+      employees: latest.employees,
+      growth: latest.growth,
+      month: "Жорий ой",
     };
+  };
 
-    fetchData();
-  }, []);
+  const getPreviousData = () => {
+    if (chartData.length < 2)
+      return { employees: 0, growth: 0, month: "Аввалги ой" };
 
-  if (loading) {
+    const previous = chartData[chartData.length - 2];
+    return {
+      employees: previous.employees,
+      growth: previous.growth,
+      month: "Аввалги ой",
+    };
+  };
+
+  const currentData = getCurrentData();
+  const previousData = getPreviousData();
+
+  if (isLoading) {
     return (
       <div className="bg-white rounded-lg shadow-sm p-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6">
@@ -127,7 +162,7 @@ const EmployeeGrowthChart: React.FC = () => {
             <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <input
               type="text"
-              className="pl-10 pr-3 py-2 border border-gray-200 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full sm:w-56"
+              className="pl-10 pr-3 py-2 border border-gray-200 rounded-md shadow-sm focus:ring-2 focus:ring-primary focus:border-primary w-full sm:w-56"
               placeholder="Сана танланг"
             />
           </div>
@@ -140,6 +175,20 @@ const EmployeeGrowthChart: React.FC = () => {
     );
   }
 
+  if (error) {
+    return (
+      <div className="bg-white rounded-lg shadow-sm p-5">
+        <div className="h-96 bg-red-50 rounded-lg flex items-center justify-center">
+          <p className="text-red-500">Маълумотларни юклашда хатолик юз берди</p>
+        </div>
+      </div>
+    );
+  }
+
+  const minEmployees = Math.min(...chartData.map((d) => d.employees));
+  const maxEmployees = Math.max(...chartData.map((d) => d.employees));
+  const padding = (maxEmployees - minEmployees) * 0.1;
+
   return (
     <div className="bg-white rounded-lg shadow-sm p-5">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6">
@@ -150,7 +199,7 @@ const EmployeeGrowthChart: React.FC = () => {
           <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <input
             type="text"
-            className="pl-10 pr-3 py-2 border border-gray-200 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full sm:w-56"
+            className="pl-10 pr-3 py-2 border border-gray-200 rounded-md shadow-sm focus:ring-2 focus:ring-primary focus:border-primary w-full sm:w-56"
             placeholder="Сана танланг"
           />
         </div>
@@ -160,24 +209,22 @@ const EmployeeGrowthChart: React.FC = () => {
         <div className="flex">
           <div>
             <div className="text-lg font-medium text-blue-600 xl:text-xl">
-              Қабул қилинган {currentData.hired}
+              Ходимлар: {currentData.employees.toLocaleString()}
               <br />
-              Бўшаган {currentData.resigned}
+              Ўсиш: {currentData.growth > 0 ? "+" : ""}
+              {currentData.growth}
             </div>
-            <div className="mt-0.5 text-gray-500">
-              {currentData.currentMonth}
-            </div>
+            <div className="mt-0.5 text-gray-500">{currentData.month}</div>
           </div>
           <div className="mx-4 h-12 w-px border border-dashed border-gray-200 xl:mx-5"></div>
           <div>
             <div className="text-lg font-medium text-gray-500 xl:text-xl">
-              Қабул қилинган {previousData.hired}
+              Ходимлар: {previousData.employees.toLocaleString()}
               <br />
-              Бўшаган {previousData.resigned}
+              Ўсиш: {previousData.growth > 0 ? "+" : ""}
+              {previousData.growth}
             </div>
-            <div className="mt-0.5 text-gray-500">
-              {previousData.previousMonth}
-            </div>
+            <div className="mt-0.5 text-gray-500">{previousData.month}</div>
           </div>
         </div>
       </div>
@@ -218,13 +265,12 @@ const EmployeeGrowthChart: React.FC = () => {
                 axisLine={false}
                 tickLine={false}
                 tick={{ fontSize: 12, fill: "#9ca3af" }}
-                tickFormatter={(value) => `$${value}`}
-                domain={[0, 1200]}
-                ticks={[0, 200, 400, 600, 800, 1000, 1200]}
+                tickFormatter={(value) => value.toLocaleString()}
+                domain={[minEmployees - padding, maxEmployees + padding]}
               />
               <Line
                 type="monotone"
-                dataKey="hired"
+                dataKey="employees"
                 stroke="#06b6d4"
                 strokeWidth={3}
                 dot={<CustomDot />}
@@ -238,14 +284,14 @@ const EmployeeGrowthChart: React.FC = () => {
               />
               <Line
                 type="monotone"
-                dataKey="resigned"
-                stroke="#9ca3af"
+                dataKey="growth"
+                stroke="#10b981"
                 strokeWidth={2}
                 strokeDasharray="6 6"
                 dot={<CustomDot />}
                 activeDot={{
                   r: 5,
-                  fill: "#9ca3af",
+                  fill: "#10b981",
                   stroke: "#fff",
                   strokeWidth: 2,
                 }}
