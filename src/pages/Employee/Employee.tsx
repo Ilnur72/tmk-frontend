@@ -41,6 +41,7 @@ const EMPLOYEE_API_URL = "http://84.54.118.39:8444/1c";
 const apiService = {
   async getDashboardData(): Promise<DashboardApiResponse> {
     const response = await axios.get(`${EMPLOYEE_API_URL}/dashboard/`);
+
     return response.data;
   },
 
@@ -48,6 +49,7 @@ const apiService = {
     const response = await axios.get(
       `${EMPLOYEE_API_URL}/tashkilot-statistika/`
     );
+
     return response.data;
   },
 
@@ -69,6 +71,7 @@ const Dashboard: React.FC = () => {
   const [organizationData, setOrganizationData] = useState<OrganizationData[]>(
     []
   );
+  const [birthData, setBirthData] = useState<BirthDataResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -80,13 +83,14 @@ const Dashboard: React.FC = () => {
 
         // Fetch dashboard data
         const dashboardData = await apiService.getDashboardData();
-        console.log(dashboardData);
-        
+
         setEmployeeData(dashboardData);
 
         // Fetch organization data
         const orgData = await apiService.getOrganizationStats();
         setOrganizationData(orgData);
+        const birthData = await apiService.getBirthData();
+        setBirthData(birthData);
       } catch (error) {
         console.error("Error fetching data:", error);
         setError("Ma'lumotlarni yuklashda xatolik yuz berdi");

@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { BirthData } from "../../../types/dashboard";
 import { EMPLOYEE_API_URL } from "../../../config/const ";
-import PieChart from "./PieChart";
+import { Cell, Pie, ResponsiveContainer, PieChart } from "recharts"; // recharts dan import
 
 const calculateAge = (birthDate: string): number => {
   const today = new Date();
@@ -29,24 +29,34 @@ const AgeStatistics: React.FC = () => {
       try {
         setLoading(true);
 
-        const response = await axios.get(`${EMPLOYEE_API_URL}/tugilgan-kunlar/`);
+        const response = await axios.get(
+          `${EMPLOYEE_API_URL}/tugilgan-kunlar/`
+        );
         const data = response.data;
-        const today = new Date();
+
+        // Debug uchun
+
         const counts = [0, 0, 0]; // [17-30, 31-50, 50+]
 
-        data.month.forEach((person: BirthData) => {
-          const age = calculateAge(person.date);
+        // API dan kelgan ma'lumotlarni tekshiring
+        const birthDataArray = data.month || data || [];
 
-          if (age >= 17 && age <= 30) {
-            counts[0]++;
-          } else if (age >= 31 && age <= 50) {
-            counts[1]++;
-          } else if (age >= 51) {
-            counts[2]++;
-          }
-        });
+        if (Array.isArray(birthDataArray)) {
+          birthDataArray.forEach((person: BirthData) => {
+            const age = calculateAge(person.date);
+
+            if (age >= 17 && age <= 30) {
+              counts[0]++;
+            } else if (age >= 31 && age <= 50) {
+              counts[1]++;
+            } else if (age >= 51) {
+              counts[2]++;
+            }
+          });
+        }
 
         const total = counts.reduce((a, b) => a + b, 0);
+
         const percentages = counts.map((count) =>
           total > 0 ? Math.round((count / total) * 100) : 0
         );
@@ -58,11 +68,11 @@ const AgeStatistics: React.FC = () => {
         ]);
       } catch (error) {
         console.error("Error fetching age data:", error);
-        // Set default values on error
+        // Test ma'lumotlari
         setAgeData([
-          { label: "17 - 30 ёш", value: 45, color: "#22b8cf" },
-          { label: "31 - 50 ёш", value: 35, color: "#fd7e14" },
-          { label: ">= 50 ёш", value: 20, color: "#ffd600" },
+          { label: "17 - 30 ёш", value: 21, color: "#22b8cf" },
+          { label: "31 - 50 ёш", value: 71, color: "#fd7e14" },
+          { label: ">= 50 ёш", value: 8, color: "#ffd600" },
         ]);
       } finally {
         setLoading(false);
@@ -71,6 +81,36 @@ const AgeStatistics: React.FC = () => {
 
     fetchAgeData();
   }, []);
+
+  const renderCustomLabel = ({
+    cx,
+    cy,
+    midAngle,
+    innerRadius,
+    outerRadius,
+    percent,
+  }: any) => {
+    if (percent < 0.05) return null; // 5% dan kichik bo'laklar uchun label yashirish
+
+    const RADIAN = Math.PI / 180;
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    return (
+      <text
+        x={x}
+        y={y}
+        fill="white"
+        textAnchor={x > cx ? "start" : "end"}
+        dominantBaseline="central"
+        fontSize="14"
+        fontWeight="600"
+      >
+        {`${Math.round(percent * 100)}%`}
+      </text>
+    );
+  };
 
   if (loading) {
     return (
@@ -86,7 +126,48 @@ const AgeStatistics: React.FC = () => {
   }
 
   return (
-    <PieChart title="Ходимларни ёшлар бўйича статистикаси" data={ageData} />
+    <div className="bg-white rounded-lg shadow-sm p-5">
+      <h2 className="text-lg font-medium text-gray-900 mb-5">
+        Ходимларни ёшлар бўйича статистикаси
+      </h2>
+
+      <div className="h-80">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={ageData}
+              cx="50%"
+              cy="50%"
+              labelLine={false}
+              label={renderCustomLabel}
+              outerRadius={100}
+              fill="#8884d8"
+              dataKey="value"
+              paddingAngle={2}
+            >
+              {ageData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
+            </Pie>
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="space-y-3 mt-4">
+        {ageData.map((item, index) => (
+          <div key={index} className="flex items-center justify-between">
+            <div className="flex items-center">
+              <div
+                className="w-3 h-3 rounded-full mr-3"
+                style={{ backgroundColor: item.color }}
+              ></div>
+              <span className="text-gray-700 text-sm">{item.label}</span>
+            </div>
+            <span className="font-medium text-gray-900">{item.value}%</span>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 
