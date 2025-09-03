@@ -21,6 +21,7 @@ import { AuthProvider, useAuth } from "./contexts/AuthContext";
 // import "./App.css";
 import Factory from "./pages/Factory/Factory";
 import BranchesPage from "./pages/Employee/components/BranchData";
+import InternshipPage from "./pages/Employee/components/InternshipPage";
 
 const LoginRoute: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -82,6 +83,10 @@ const App: React.FC = () => {
                       <Route
                         path="/employers/branches"
                         element={<BranchesPage />}
+                      />
+                      <Route
+                        path="/employers/internships"
+                        element={<InternshipPage />}
                       />
                       <Route path="/techniques" element={<Techniques />} />
                       <Route path="/cameras" element={<Camera />} />

@@ -4,6 +4,8 @@ interface AdditionalStatsCardProps {
   description?: string;
   percentage?: string;
   hasChart?: boolean;
+  onClick?: () => void;
+  isLoading?: boolean;
 }
 
 const AdditionalStatsCard: React.FC<AdditionalStatsCardProps> = ({
@@ -12,9 +14,15 @@ const AdditionalStatsCard: React.FC<AdditionalStatsCardProps> = ({
   description,
   percentage,
   hasChart = false,
+  onClick,
 }) => {
   return (
-    <div className="bg-white rounded-lg shadow-sm p-5">
+    <div
+      className={`bg-white rounded-lg shadow-sm p-5 ${
+        onClick ? "cursor-pointer hover:shadow-md transition-shadow" : ""
+      }`}
+      onClick={onClick}
+    >
       <div className="flex items-center justify-between">
         <div className={hasChart ? "w-1/2" : "flex-1"}>
           <div
@@ -52,4 +60,4 @@ const AdditionalStatsCard: React.FC<AdditionalStatsCardProps> = ({
   );
 };
 
-export default AdditionalStatsCard; 
+export default AdditionalStatsCard;

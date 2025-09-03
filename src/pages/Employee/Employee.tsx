@@ -2,6 +2,7 @@ import React from "react";
 import { List } from "lucide-react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import StatCard from "./components/StatCard";
 import GrowthsChart from "./components/GrowthChart";
 import GenderStatistics from "./components/GenderStatistics";
@@ -23,6 +24,11 @@ interface OrganizationData {
 
 interface BirthData {
   date: string;
+}
+
+interface InternshipData {
+  еxpiration: string;
+  еxpiration_days: string;
 }
 
 interface DashboardApiResponse {
@@ -56,6 +62,11 @@ const apiService = {
     const response = await axios.get(`${EMPLOYEE_API_URL}/tugilgan-kunlar/`);
     return response.data;
   },
+
+  async getInternshipData(): Promise<InternshipData[]> {
+    const response = await axios.get(`/employers/internship`);
+    return response.data;
+  },
 };
 
 // Custom hooks using React Query
@@ -86,8 +97,19 @@ const useBirthData = () => {
   });
 };
 
+const useInternshipData = () => {
+  return useQuery<InternshipData[]>({
+    queryKey: ["internshipData"],
+    queryFn: apiService.getInternshipData,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+};
+
 // Main Dashboard Component
 const Dashboard: React.FC = () => {
+  const navigate = useNavigate();
+
   // Using React Query hooks
   const {
     data: employeeData,
@@ -107,19 +129,34 @@ const Dashboard: React.FC = () => {
     error: birthError,
   } = useBirthData();
 
+  const {
+    data: internshipData = [],
+    isLoading: isInternshipLoading,
+    error: internshipError,
+  } = useInternshipData();
+
   // Combined loading state
-  const isLoading = isDashboardLoading || isOrgLoading || isBirthLoading;
+  const isLoading =
+    isDashboardLoading || isOrgLoading || isBirthLoading || isInternshipLoading;
 
   // Combined error state
-  const error = dashboardError || orgError || birthError;
+  const error = dashboardError || orgError || birthError || internshipError;
 
   // Calculate total employees including all branches
   const totalEmployees = employeeData
     ? employeeData.employees_office +
       (organizationData.length > 0
-        ? organizationData.reduce((sum: number, org: OrganizationData) => sum + org.count, 0)
+        ? organizationData.reduce(
+            (sum: number, org: OrganizationData) => sum + org.count,
+            0
+          )
         : 0)
     : 0;
+
+  // Handler for internship card click
+  const handleInternshipClick = () => {
+    navigate("/employers/internships");
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-2 max-sm:pt-12">
@@ -136,7 +173,8 @@ const Dashboard: React.FC = () => {
         {/* Error Message */}
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            Ma'lumotlarni yuklashda xatolik yuz berdi: {(error as Error).message}
+            Ma'lumotlarni yuklashda xatolik yuz berdi:{" "}
+            {(error as Error).message}
           </div>
         )}
 
@@ -207,9 +245,12 @@ const Dashboard: React.FC = () => {
             hasChart={true}
           />
           <AdditionalStatsCard
-            title="Бошқа турдаги<br />статистика"
-            value="320"
+            title="Амалиёт муддати<br />тугайдиганлар"
+            value={internshipData.length.toString()}
+            description="Амалиёт муддати якин тугайдиган ходимлар"
             hasChart={false}
+            isLoading={isInternshipLoading}
+            onClick={handleInternshipClick}
           />
           <AdditionalStatsCard
             title="Бошқа турдаги<br />статистика"
