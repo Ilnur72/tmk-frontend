@@ -47,7 +47,7 @@ const EMPLOYEE_API_URL = "http://84.54.118.39:8444/1c";
 
 const apiService = {
   async getDashboardData(): Promise<DashboardApiResponse> {
-    const response = await axios.get(`${EMPLOYEE_API_URL}/dashboard/`);
+    const response = await axios.get(`/employers/dashboard/`);
     return response.data;
   },
 
@@ -59,7 +59,7 @@ const apiService = {
   },
 
   async getBirthData(): Promise<BirthDataResponse> {
-    const response = await axios.get(`${EMPLOYEE_API_URL}/tugilgan-kunlar/`);
+    const response = await axios.get(`/employers/datehb`);
     return response.data;
   },
 
