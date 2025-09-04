@@ -1,8 +1,16 @@
 import React, { useState } from "react";
-import { ArrowLeft, Calendar, Search, Filter } from "lucide-react";
+import {
+  ArrowLeft,
+  Search,
+  Calendar,
+  Clock,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { useScrollToTop, scrollToTop } from "../../../hooks/useScrollToTop";
 
 // Types
 interface InternshipData {
@@ -13,7 +21,7 @@ interface InternshipData {
 // API Service
 const apiService = {
   async getInternshipData(): Promise<InternshipData[]> {
-    const response = await axios.get("/employers/internship");
+    const response = await axios.get("http://84.54.118.39:8444/1c/intership");
     return response.data;
   },
 };
@@ -28,84 +36,87 @@ const useInternshipData = () => {
   });
 };
 
-// Helper function to format date
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("uz-UZ", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
-};
-
-// Helper function to calculate days until expiration
-const getDaysUntilExpiration = (dateString: string): number => {
-  const today = new Date();
-  const expirationDate = new Date(dateString);
-  const diffTime = expirationDate.getTime() - today.getTime();
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return diffDays;
-};
-
-// Helper function to get status color
-const getStatusColor = (days: number): string => {
-  if (days < 0) return "bg-red-100 text-red-800";
-  if (days <= 7) return "bg-orange-100 text-orange-800";
-  if (days <= 30) return "bg-yellow-100 text-yellow-800";
-  return "bg-green-100 text-green-800";
-};
-
-// Helper function to get status text
-const getStatusText = (days: number): string => {
-  if (days < 0) return "Муддати ўтган";
-  if (days === 0) return "Бугун тугайди";
-  if (days === 1) return "Эртага тугайди";
-  if (days <= 7) return `${days} кун қолди`;
-  if (days <= 30) return `${days} кун қолди`;
-  return `${days} кун қолди`;
-};
-
 const InternshipPage: React.FC = () => {
   const navigate = useNavigate();
   const { data: internshipData = [], isLoading, error } = useInternshipData();
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  // Filter data based on search and status
-  const filteredData = internshipData.filter((item) => {
-    const matchesSearch = item.еxpiration
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+  // Global scroll to top hook
+  useScrollToTop([currentPage, searchTerm]);
 
-    if (!matchesSearch) return false;
+  // Filter data based on search
+  const filteredData = internshipData.filter((item) =>
+    item.еxpiration.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-    if (filterStatus === "all") return true;
+  // Pagination calculations
+  const totalItems = filteredData.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentData = filteredData.slice(startIndex, endIndex);
 
-    const days = getDaysUntilExpiration(item.еxpiration_days);
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
-    switch (filterStatus) {
-      case "expired":
-        return days < 0;
-      case "urgent":
-        return days >= 0 && days <= 7;
-      case "soon":
-        return days > 7 && days <= 30;
-      case "normal":
-        return days > 30;
-      default:
-        return true;
-    }
-  });
+  const handleItemsPerPageChange = (items: number) => {
+    setItemsPerPage(items);
+    setCurrentPage(1);
+    scrollToTop();
+  };
 
   const handleBack = () => {
     navigate("/employers");
   };
 
+  const handleClearFilters = () => {
+    setSearchTerm("");
+    setCurrentPage(1);
+  };
+
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        for (let i = 1; i <= 4; i++) {
+          pages.push(i);
+        }
+        pages.push("...");
+        pages.push(totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pages.push(1);
+        pages.push("...");
+        for (let i = totalPages - 3; i <= totalPages; i++) {
+          pages.push(i);
+        }
+      } else {
+        pages.push(1);
+        pages.push("...");
+        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+          pages.push(i);
+        }
+        pages.push("...");
+        pages.push(totalPages);
+      }
+    }
+
+    return pages;
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-100 p-4">
-        <div className="max-w-7xl mx-auto">
+        <div className="w-full px-2 sm:px-2 lg:px-2">
           <div className="bg-white rounded-lg shadow-sm p-6 animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
             <div className="space-y-4">
@@ -122,7 +133,7 @@ const InternshipPage: React.FC = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-gray-100 p-4">
-        <div className="max-w-7xl mx-auto">
+        <div className="w-full px-2 sm:px-2 lg:px-2">
           <div className="bg-white rounded-lg shadow-sm p-6">
             <div className="text-center py-12">
               <p className="text-red-500 text-lg">
@@ -143,7 +154,7 @@ const InternshipPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 max-sm:pt-10">
-      <div className="w-full  sm:px-2 lg:px-2">
+      <div className="w-full px-2 sm:px-2 lg:px-2">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
@@ -154,84 +165,59 @@ const InternshipPage: React.FC = () => {
               <ArrowLeft className="h-5 w-5" />
               Орқага қайтиш
             </button>
-            <h1 className="text-2xl font-bold text-gray-900">
-              Амалиёт муддати тугайдиган ходимлар
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 text-center">
+              Амалиёт муддати тугайдиганлар
             </h1>
-            <div className="w-24"></div> {/* Spacer for centering */}
+            <div className="w-24 hidden sm:block"></div>
           </div>
 
-          {/* Search and Filter */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="relative flex-1">
+          {/* Search */}
+          <div className="flex flex-col gap-4 mb-6">
+            <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Ходим исмини қидириш..."
+                placeholder="Қидириш..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 pr-4 py-2 w-full border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
               />
             </div>
-            <div className="relative">
-              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-                className="pl-10 pr-8 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary appearance-none bg-white min-w-[200px]"
-              >
-                <option value="all">Барча ходимлар</option>
-                <option value="expired">Муддати ўтган</option>
-                <option value="urgent">Жуда тез (7 кун)</option>
-                <option value="soon">Тез (30 кун)</option>
-                <option value="normal">Норм (30+ кун)</option>
-              </select>
-            </div>
+
+            {searchTerm && (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleClearFilters}
+                  className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                >
+                  Тозалаш
+                </button>
+              </div>
+            )}
           </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
-            <div className="bg-red-50 p-3 rounded-lg">
-              <div className="text-red-600 text-sm font-medium">
-                Муддати ўтган
-              </div>
-              <div className="text-red-900 text-xl font-bold">
-                {
-                  internshipData.filter(
-                    (item) => getDaysUntilExpiration(item.еxpiration_days) < 0
-                  ).length
-                }
-              </div>
-            </div>
-            <div className="bg-orange-50 p-3 rounded-lg">
-              <div className="text-orange-600 text-sm font-medium">
-                7 кун ичида
-              </div>
-              <div className="text-orange-900 text-xl font-bold">
-                {
-                  internshipData.filter((item) => {
-                    const days = getDaysUntilExpiration(item.еxpiration_days);
-                    return days >= 0 && days <= 7;
-                  }).length
-                }
+          {/* Statistics */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <div className="bg-blue-50 p-3 rounded-lg">
+              <div className="text-blue-600 text-sm font-medium">Жами</div>
+              <div className="text-blue-900 text-xl font-bold">
+                {internshipData.length}
               </div>
             </div>
             <div className="bg-yellow-50 p-3 rounded-lg">
               <div className="text-yellow-600 text-sm font-medium">
-                30 кун ичида
+                Филтрланган
               </div>
               <div className="text-yellow-900 text-xl font-bold">
-                {
-                  internshipData.filter((item) => {
-                    const days = getDaysUntilExpiration(item.еxpiration_days);
-                    return days > 7 && days <= 30;
-                  }).length
-                }
+                {filteredData.length}
               </div>
             </div>
-            <div className="bg-green-50 p-3 rounded-lg">
-              <div className="text-green-600 text-sm font-medium">Жами</div>
-              <div className="text-green-900 text-xl font-bold">
-                {internshipData.length}
+            <div className="bg-purple-50 p-3 rounded-lg">
+              <div className="text-purple-600 text-sm font-medium">
+                Саҳифадаги
+              </div>
+              <div className="text-purple-900 text-xl font-bold">
+                {currentData.length}
               </div>
             </div>
           </div>
@@ -239,77 +225,145 @@ const InternshipPage: React.FC = () => {
 
         {/* Table */}
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+          {/* Items per page selector */}
+          <div className="px-4 sm:px-6 py-3 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+            <div className="text-sm text-gray-700">
+              Жами {totalItems} дан {startIndex + 1}-
+              {Math.min(endIndex, totalItems)} кўрсатилмоқда
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-700">Саҳифада:</span>
+              <select
+                value={itemsPerPage}
+                onChange={(e) =>
+                  handleItemsPerPageChange(Number(e.target.value))
+                }
+                className="pr-8 pl-2 py-1 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-primary focus:border-primary"
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+              </select>
+            </div>
+          </div>
+
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
                     №
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Ходим исми
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Амалиёт муддати
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Амалиёт тугаш санаси
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Қолган кунлар
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Ҳолати
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredData.map((item, index) => {
-                  const daysLeft = getDaysUntilExpiration(item.еxpiration_days);
-                  return (
-                    <tr
-                      key={index}
-                      className="hover:bg-gray-50 transition-colors"
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {index + 1}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
+                {currentData.map((item, index) => (
+                  <tr
+                    key={index}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {startIndex + index + 1}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4 text-blue-500" />
+                        <span className="text-sm font-medium text-gray-900">
                           {item.еxpiration}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <Calendar className="h-4 w-4 text-gray-400 mr-2" />
-                          <span className="text-sm text-gray-900">
-                            {formatDate(item.еxpiration_days)}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {daysLeft} кун
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(
-                            daysLeft
-                          )}`}
-                        >
-                          {getStatusText(daysLeft)}
                         </span>
-                      </td>
-                    </tr>
-                  );
-                })}
+                      </div>
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-orange-500" />
+                        <span
+                          className={`text-sm font-medium ${
+                            parseInt(item.еxpiration_days) <= 30
+                              ? "text-red-600"
+                              : "text-gray-900"
+                          }`}
+                        >
+                          {item.еxpiration_days} кун
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
 
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="px-4 sm:px-6 py-3 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-2">
+              <div className="flex items-center">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+
+                {getPageNumbers().map((page, index) => (
+                  <React.Fragment key={index}>
+                    {page === "..." ? (
+                      <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                        ...
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => handlePageChange(page as number)}
+                        className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                          currentPage === page
+                            ? "z-10 bg-primary bg-opacity-10 border-primary text-primary"
+                            : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    )}
+                  </React.Fragment>
+                ))}
+
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="text-sm text-gray-700">
+                Саҳифа {currentPage} / {totalPages}
+              </div>
+            </div>
+          )}
+
           {filteredData.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-gray-500 text-lg">
-                {searchTerm || filterStatus !== "all"
+              <Calendar className="mx-auto h-12 w-12 text-gray-400" />
+              <p className="text-gray-500 text-lg mt-4">
+                {searchTerm
                   ? "Қидирув натижаси топилмади"
                   : "Ҳеч қандай маълумот топилмади"}
               </p>
+              {searchTerm && (
+                <button
+                  onClick={handleClearFilters}
+                  className="mt-4 px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark"
+                >
+                  Филтрни тозалаш
+                </button>
+              )}
             </div>
           )}
         </div>

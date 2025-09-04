@@ -10,6 +10,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { useScrollToTop, scrollToTop } from "../../../hooks/useScrollToTop";
 
 // Types
 interface LanguageSkill {
@@ -70,6 +71,9 @@ const LanguagePage: React.FC = () => {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  // Global scroll to top hook - route o'zgarganda va filterlar o'zgarganda scroll qiladi
+  useScrollToTop([currentPage, searchTerm, filterLanguage, filterLevel]);
 
   // Get unique languages for filter
   const uniqueLanguages = Array.from(
@@ -132,13 +136,9 @@ const LanguagePage: React.FC = () => {
 
   const handleItemsPerPageChange = (items: number) => {
     setItemsPerPage(items);
-    setCurrentPage(1); // Reset to first page
-  };
-
-  // Reset pagination when filters change
-  React.useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, filterLanguage, filterLevel]);
+    scrollToTop(); // Manual scroll
+  };
 
   // Calculate statistics
   const getLanguageStatistics = () => {
@@ -167,6 +167,7 @@ const LanguagePage: React.FC = () => {
     setFilterLanguage("all");
     setFilterLevel("all");
     setCurrentPage(1);
+    // useScrollToTop hook avtomatik scroll qiladi
   };
 
   // Generate page numbers for pagination
