@@ -142,11 +142,11 @@ const InternshipPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gray-100 max-sm:pt-10">
+      <div className="w-full  sm:px-2 lg:px-2">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
             <button
               onClick={handleBack}
               className="flex items-center gap-2 text-blue-600 hover:text-blue-700"
@@ -169,7 +169,7 @@ const InternshipPage: React.FC = () => {
                 placeholder="Ходим исмини қидириш..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 w-full border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="pl-10 pr-4 py-2 w-full border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
               />
             </div>
             <div className="relative">
@@ -177,7 +177,7 @@ const InternshipPage: React.FC = () => {
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="pl-10 pr-8 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white min-w-[200px]"
+                className="pl-10 pr-8 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary appearance-none bg-white min-w-[200px]"
               >
                 <option value="all">Барча ходимлар</option>
                 <option value="expired">Муддати ўтган</option>

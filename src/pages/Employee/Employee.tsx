@@ -31,6 +31,24 @@ interface InternshipData {
   еxpiration_days: string;
 }
 
+interface PassportData {
+  еxpiration_date: number;
+  coming_soon: number;
+}
+
+interface LanguageSkill {
+  name: string;
+  level: string;
+}
+
+interface LanguageData {
+  name: string;
+  branch: string;
+  position: string;
+  department: string;
+  langs: LanguageSkill[];
+}
+
 interface DashboardApiResponse {
   employees_full: number;
   employees_office: number;
@@ -67,6 +85,15 @@ const apiService = {
     const response = await axios.get(`/employers/internship`);
     return response.data;
   },
+
+  async getPassportData(): Promise<PassportData> {
+    const response = await axios.get(`/employers/passport`);
+    return response.data;
+  },
+  async getLanguageData(): Promise<LanguageData[]> {
+    const response = await axios.get(`/employers/langs`);
+    return response.data;
+  },
 };
 
 // Custom hooks using React Query
@@ -74,8 +101,8 @@ const useDashboardData = () => {
   return useQuery<DashboardApiResponse>({
     queryKey: ["dashboard"],
     queryFn: apiService.getDashboardData,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // gcTime o'rniga cacheTime
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 };
 
@@ -101,6 +128,24 @@ const useInternshipData = () => {
   return useQuery<InternshipData[]>({
     queryKey: ["internshipData"],
     queryFn: apiService.getInternshipData,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+};
+
+const usePassportData = () => {
+  return useQuery<PassportData>({
+    queryKey: ["passportData"],
+    queryFn: apiService.getPassportData,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+};
+
+const useLanguageData = () => {
+  return useQuery<LanguageData[]>({
+    queryKey: ["languageData"],
+    queryFn: apiService.getLanguageData,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   });
@@ -135,12 +180,35 @@ const Dashboard: React.FC = () => {
     error: internshipError,
   } = useInternshipData();
 
+  const {
+    data: passportData,
+    isLoading: isPassportLoading,
+    error: passportError,
+  } = usePassportData();
+
+  const {
+    data: languageData = [],
+    isLoading: isLanguageLoading,
+    error: languageError,
+  } = useLanguageData();
+
   // Combined loading state
   const isLoading =
-    isDashboardLoading || isOrgLoading || isBirthLoading || isInternshipLoading;
+    isDashboardLoading ||
+    isOrgLoading ||
+    isBirthLoading ||
+    isInternshipLoading ||
+    isPassportLoading ||
+    isLanguageLoading;
 
   // Combined error state
-  const error = dashboardError || orgError || birthError || internshipError;
+  const error =
+    dashboardError ||
+    orgError ||
+    birthError ||
+    internshipError ||
+    passportError ||
+    languageError;
 
   // Calculate total employees including all branches
   const totalEmployees = employeeData
@@ -158,9 +226,67 @@ const Dashboard: React.FC = () => {
     navigate("/employers/internships");
   };
 
+  // Handler for passport card click
+  const handlePassportClick = () => {
+    navigate("/employers/passports");
+  };
+
+  // Handler for language card click
+  const handleLanguageClick = () => {
+    navigate("/employers/languages");
+  };
+
+  // Calculate passport chart data
+  const getPassportChartData = () => {
+    if (!passportData) return [];
+
+    const total = passportData.еxpiration_date;
+    const comingSoon = passportData.coming_soon;
+    const normal = total - comingSoon;
+
+    return [
+      { name: "Норм", value: normal, color: "#10b981" },
+      { name: "Тез тугайди", value: comingSoon, color: "#ef4444" },
+    ];
+  };
+
+  // Calculate language statistics
+  const getLanguageStats = () => {
+    if (!languageData.length) return { totalEmployees: 0, languages: [] };
+
+    const languageCount: { [key: string]: number } = {};
+
+    languageData.forEach((employee) => {
+      employee.langs.forEach((lang) => {
+        languageCount[lang.name] = (languageCount[lang.name] || 0) + 1;
+      });
+    });
+
+    const sortedLanguages = Object.entries(languageCount)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 3);
+
+    return {
+      totalEmployees: languageData.length,
+      languages: sortedLanguages,
+    };
+  };
+
+  const languageStats = getLanguageStats();
+
+  // Get language chart data
+  const getLanguageChartData = () => {
+    const stats = getLanguageStats();
+    return stats.languages.map(([name, count], index) => ({
+      name,
+      value: count,
+      color: index === 0 ? "#06b6d4" : index === 1 ? "#10b981" : "#f59e0b",
+    }));
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-2 max-sm:pt-12">
-      <div className="max-w-7xl mx-auto">
+      <div className="w-full px-2 sm:px-2 lg:px-2">
         <div className="text-center mb-8">
           <button className="transition duration-200 border shadow-sm items-center justify-center py-2 px-3 rounded-md font-medium cursor-pointer focus:ring-4 focus:ring-blue-500 focus:ring-opacity-20 bg-primary border-primary hover:bg-opacity-80 text-white m-2 mb-2 mr-1 inline-block">
             Комбинат ҳақида умумий маълумот
@@ -241,8 +367,13 @@ const Dashboard: React.FC = () => {
             title="Фаол/нофаол<br />ходимлар"
             value="13500"
             description="Ишда 13 300 Таътилда, касалликда, декретда 200"
-            percentage="98%/2%"
+            percentage="98%"
             hasChart={true}
+            chartType="pie"
+            chartData={[
+              { name: "Фаол", value: 98, color: "#10b981" },
+              { name: "Нофаол", value: 2, color: "#ef4444" },
+            ]}
           />
           <AdditionalStatsCard
             title="Амалиёт муддати<br />тугайдиганлар"
@@ -253,15 +384,33 @@ const Dashboard: React.FC = () => {
             onClick={handleInternshipClick}
           />
           <AdditionalStatsCard
-            title="Бошқа турдаги<br />статистика"
-            value="1450"
-            percentage="45%"
+            title="Паспорт муддати<br />тугайдиганлар"
+            value={passportData?.еxpiration_date.toString() || "0"}
+            description={`30 кун ичида муддати тугайдиганлар: ${
+              passportData?.coming_soon || 0
+            }`}
+            percentage={
+              passportData
+                ? `${Math.round(
+                    (passportData.coming_soon / passportData.еxpiration_date) *
+                      100
+                  )}%`
+                : "0%"
+            }
             hasChart={true}
-          />
+            chartType="pie"
+            chartData={getPassportChartData()}
+            isLoading={isPassportLoading}
+            />
           <AdditionalStatsCard
-            title="Бошқа турдаги<br />статистика"
-            value="180"
-            hasChart={false}
+            title="Чет тилларини<br />биладиганлар"
+            value={languageStats.totalEmployees.toString()}
+            description={`Энг кўп: ${languageStats.languages[0]?.[0] || 'Нет данных'} (${languageStats.languages[0]?.[1] || 0})`}
+            hasChart={true}
+            chartType="pie"
+            chartData={getLanguageChartData()}
+            isLoading={isLanguageLoading}
+            onClick={handleLanguageClick}
           />
         </div>
       </div>

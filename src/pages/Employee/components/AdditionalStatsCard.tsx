@@ -125,6 +125,7 @@ const AdditionalStatsCard: React.FC<AdditionalStatsCardProps> = ({
             />
           ))}
         </div>
+       
       </div>
     );
   };
@@ -153,34 +154,29 @@ const AdditionalStatsCard: React.FC<AdditionalStatsCardProps> = ({
       onClick={onClick}
     >
       <div className="flex items-center justify-between">
-        <div className={hasChart ? "w-1/2" : "flex-1"}>
+        <div className="flex-1">
           <div
-            className="text-lg font-medium text-gray-900 leading-tight"
+            className="text-lg font-medium text-gray-900 leading-tight mb-1"
             dangerouslySetInnerHTML={{ __html: title }}
           ></div>
+
+          {/* Value - hasChart true bo'lsa ham ko'rsatiladi */}
+          <div className="mb-2">
+            <span className="text-2xl font-bold text-cyan-600">{value}</span>
+          </div>
+
           {description && (
-            <div className="mt-1 text-sm text-gray-500 leading-relaxed">
+            <div className="text-sm text-gray-500 leading-relaxed">
               {description}
-            </div>
-          )}
-          {!hasChart && (
-            <div className="mt-2">
-              <span className="text-2xl font-bold text-cyan-600">{value}</span>
             </div>
           )}
         </div>
 
-        {hasChart ? (
-          renderChart()
-        ) : (
-          <div className="ml-auto">
-            <span className="bg-cyan-100 text-cyan-700 text-sm px-3 py-1 rounded-full font-medium">
-              {value}
-            </span>
-          </div>
-        )}
+        {/* Chart o'ng tomonda */}
+        {hasChart && <div className="ml-4">{renderChart()}</div>}
       </div>
 
+      {/* hasChart=false bo'lsa pastda simple chart */}
       {renderSimpleChart()}
     </div>
   );

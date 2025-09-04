@@ -27,8 +27,8 @@ const apiService = {
 const BranchesHeader: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   return (
     <div className="bg-white shadow-sm border-b">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+      <div className="w-full px-2 sm:px-2 lg:px-2">
+        <div className="flex items-center justify-between py-3 flex-wrap gap-3">
           <div className="flex items-center">
             <button
               onClick={onBack}
@@ -39,7 +39,7 @@ const BranchesHeader: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             </button>
           </div>
           
-          <div className="flex items-center space-x-4">
+          {/* <div className="flex items-center space-x-4">
             <button className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
               <Filter className="h-4 w-4 mr-2" />
               Филтр
@@ -48,7 +48,7 @@ const BranchesHeader: React.FC<{ onBack: () => void }> = ({ onBack }) => {
               <Download className="h-4 w-4 mr-2" />
               Экспорт
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
@@ -346,10 +346,10 @@ const BranchesPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100  max-sm:pt-12">
       <BranchesHeader onBack={handleBack} />
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+      <div className="w-full px-2 sm:px-2 lg:px-2 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Барча филиаллар ҳақида маълумот
