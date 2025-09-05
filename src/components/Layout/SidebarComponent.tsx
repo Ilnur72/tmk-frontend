@@ -15,6 +15,7 @@ import {
   X,
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
+import { jwtDecode } from "jwt-decode";
 
 const menuItems = [
   { href: "/", icon: Home, title: "Лойиҳалар ҳаритаси" },
@@ -38,7 +39,19 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const location = useLocation();
-
+  const token = localStorage.getItem("token");
+  const decodeToken = jwtDecode(token ? token : "") as {
+    exp: number;
+    user: { role: string };
+  };
+  menuItems.map((item) => {
+    if (
+      item.href === "/setting" &&
+      !(decodeToken.user.role === "editor" || decodeToken.user.role === "admin")
+    ) {
+      menuItems.splice(menuItems.indexOf(item), 1);
+    }
+  });
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
@@ -103,14 +116,17 @@ const Sidebar = () => {
                     className={({ isActive }) =>
                       `menu flex items-center px-6 py-4 hover:bg-opacity-50 transition-colors ${
                         location.pathname.replace(/\/$/, "") ===
-                    item.href.replace(/\/$/, "") ? "bg-white border-r-4 border-primary" : ""
+                        item.href.replace(/\/$/, "")
+                          ? "bg-white border-r-4 border-primary"
+                          : ""
                       }`
                     }
                     end={item.href === "/"}
                   >
                     <div
                       className={`menu__icon mr-4 ${
-                        item.href.replace(/\/$/, "") === location.pathname.replace(/\/$/, "")
+                        item.href.replace(/\/$/, "") ===
+                        location.pathname.replace(/\/$/, "")
                           ? "text-primary"
                           : "text-white"
                       }`}
@@ -119,7 +135,8 @@ const Sidebar = () => {
                     </div>
                     <div
                       className={`menu__title text-sm font-medium ${
-                        item.href.replace(/\/$/, "") === location.pathname.replace(/\/$/, "")
+                        item.href.replace(/\/$/, "") ===
+                        location.pathname.replace(/\/$/, "")
                           ? "text-black"
                           : "text-white"
                       }`}

@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { API_URL } from "../../../config/const ";
 
 interface ImageModalProps {
   isOpen: boolean;
@@ -92,7 +93,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
 
       <img
         className="image-modal-content block m-auto max-w-[90%] max-h-[90%] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[100001]"
-        src={images[currentIndex]}
+        src={`${API_URL}/mnt/tmkupload/factory-images/${images[currentIndex]}`}
         alt={`Image ${currentIndex + 1}`}
       />
     </div>

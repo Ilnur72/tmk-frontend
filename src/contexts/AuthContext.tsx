@@ -22,6 +22,7 @@ interface AuthContextType {
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
   token: string | null;
+  role: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -71,6 +72,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [role, setRole] = useState<string | null>(null);
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
@@ -80,7 +82,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUser(decodedToken.user);
         setToken(storedToken);
         setIsAuthenticated(true);
-
+        setRole(decodedToken.user.role); // Set user role from token
         // Set axios default headers
         axios.defaults.headers.common[
           "Authorization"
@@ -94,7 +96,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      
       const response = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: {
@@ -151,6 +152,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     login,
     logout,
     token,
+    role,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

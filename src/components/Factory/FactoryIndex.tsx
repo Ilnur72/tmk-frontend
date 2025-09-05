@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { API_URL } from "../../config/const ";
 
 interface Factory {
   id: number;
@@ -591,7 +592,7 @@ const FactoryIndex: React.FC = () => {
                                 objectFit: "cover",
                               }}
                               className="rounded-md"
-                              src={`/mnt/tmkupload/factory-images/${firstImage}`}
+                              src={`${API_URL}/mnt/tmkupload/factory-images/${firstImage}`}
                               alt={item.name}
                             />
                           ) : (

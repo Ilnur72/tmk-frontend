@@ -10,7 +10,8 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 axios.defaults.baseURL = API_URL;
-// if (token) axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+const token = localStorage.getItem("token");
+if (token) axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );

@@ -3,6 +3,7 @@ import FactoryModal from "./modal/FactoryModal";
 import maplibregl from "maplibre-gl";
 import axios from "axios";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { API_URL } from "../../config/const ";
 
 interface Factory {
   id: number;
@@ -196,7 +197,7 @@ const FactoryMap: React.FC = () => {
             <p style="margin: 5px 0; font-size: 1.4em;">Техникалар ҳақида махлумот</p>
             ${
               factory.images
-                ? `<img src="/mnt/tmkupload/factory-images/${
+                ? `<img src="${API_URL}/mnt/tmkupload/factory-images/${
                     JSON.parse(factory.images)[0]
                   }" style="width: 100%; border-radius: 5px;" />`
                 : '<img src="/image/1.jpg" style="width: 100%; border-radius: 5px;" />'

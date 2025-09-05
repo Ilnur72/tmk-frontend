@@ -13,6 +13,7 @@ import {
 import { CameraType } from "../types/factory";
 import ImageModal from "./ImageModal";
 import VideoModal from "./VideoModal";
+import { API_URL } from "../../../config/const ";
 
 interface FactoryDetailsModalProps {
   factory: any;
@@ -201,7 +202,7 @@ export default function FactoryDetailsModal({
                           onClick={() => openImageModal(img, index, images)}
                         >
                           <img
-                            src={`http://localhost:8085/mnt/tmkupload/factory-images/${img}`}
+                            src={`${API_URL}/mnt/tmkupload/factory-images/${img}`}
                             alt={`Factory image ${index + 1}`}
                             className="w-64 h-48 object-cover rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
                           />

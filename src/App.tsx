@@ -23,6 +23,7 @@ import Factory from "./pages/Factory/Factory";
 import BranchesPage from "./pages/Employee/components/BranchData";
 import InternshipPage from "./pages/Employee/components/InternshipPage";
 import LanguagePage from "./pages/Employee/components/LanguagePage";
+import { jwtDecode } from "jwt-decode";
 
 const LoginRoute: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -65,6 +66,13 @@ const queryClient = new QueryClient({
 });
 
 const App: React.FC = () => {
+  const token = localStorage.getItem("token");
+  const decodeToken = jwtDecode(token ? token : "") as {
+    exp: number;
+    user: { role: string };
+  };
+  console.log(decodeToken.user.role);
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
@@ -79,7 +87,10 @@ const App: React.FC = () => {
                     <Routes>
                       <Route path="/" element={<FactoryMap />} />
                       <Route path="/factory" element={<Factory />} />
-                      <Route path="/setting" element={<Setting />} />
+                      {(decodeToken.user.role === "editor" ||
+                        decodeToken.user.role === "admin") && (
+                        <Route path="/setting" element={<Setting />} />
+                      )}
                       <Route path="/employers" element={<Employee />} />
                       <Route
                         path="/employers/branches"
