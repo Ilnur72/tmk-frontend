@@ -49,7 +49,7 @@ const Login: React.FC = () => {
                 <br />
                 boʻlagini qadrlaymiz!
                 </div>
-                <div className="-intro-x mt-5 text-lg text-white text-opacity-70 dark:text-slate-400">
+                <div className="-intro-x mt-5 text-lg text-white text-opacity-70 dark:text-slate-2  00">
                   Tahliliy monitoring tizimi
                 </div>
               </div>
@@ -85,7 +85,7 @@ const Login: React.FC = () => {
                       placeholder="Email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="transition duration-200 ease-in-out w-full text-sm border-slate-200 shadow-sm rounded-md placeholder:text-slate-400/90 focus:ring-4 focus:ring-primary focus:ring-opacity-20 focus:border-primary dark:bg-darkmode-800 dark:border-transparent px-4 py-3"
+                      className="transition duration-200 ease-in-out w-full text-sm border-slate-400 shadow-sm rounded-md placeholder:text-slate-400/90 focus:ring-4 focus:ring-primary focus:ring-opacity-20 focus:border-primary dark:bg-darkmode-800 dark:border-slate-200 px-4 py-3"
                     />
                     <input
                       name="password"
@@ -94,7 +94,7 @@ const Login: React.FC = () => {
                       placeholder="Пароль"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="transition duration-200 ease-in-out w-full text-sm border-slate-200 shadow-sm rounded-md placeholder:text-slate-400/90 focus:ring-4 focus:ring-primary focus:ring-opacity-20 focus:border-primary dark:bg-darkmode-800 dark:border-transparent px-4 py-3 mt-4"
+                      className="transition duration-200 ease-in-out w-full text-sm border-slate-200 shadow-sm rounded-md placeholder:text-slate-400/90 focus:ring-4 focus:ring-primary focus:ring-opacity-20 focus:border-primary dark:bg-darkmode-800 dark:border-slate-200 px-4 py-3 mt-4"
                     />
                   </div>
 
