@@ -8,7 +8,6 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Layout from "./components/Layout/Layout";
 import Login from "./pages/Auth/Login";
-// import Factory from "./pages/Factory/Factory";
 import FactoryMap from "./pages/Factory/FactoryMap";
 import Employee from "./pages/Employee/Employee";
 import Techniques from "./pages/Techniques/Techniques";
@@ -18,12 +17,10 @@ import Production from "./pages/Production/Production";
 import Sales from "./pages/Sales/Sales";
 import Finance from "./pages/Finance/Finance";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
-// import "./App.css";
 import Factory from "./pages/Factory/Factory";
 import BranchesPage from "./pages/Employee/components/BranchData";
 import InternshipPage from "./pages/Employee/components/InternshipPage";
 import LanguagePage from "./pages/Employee/components/LanguagePage";
-import { jwtDecode } from "jwt-decode";
 
 const LoginRoute: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -55,6 +52,62 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
 };
 
+// Role-based route component
+const RoleBasedRoute: React.FC<{
+  children: React.ReactNode;
+  allowedRoles: string[];
+}> = ({ children, allowedRoles }) => {
+  const { role } = useAuth();
+
+  if (!role || !allowedRoles.includes(role)) {
+    return <Navigate to="/factory" />;
+  }
+
+  return <>{children}</>;
+};
+
+// Main routes component
+const AppRoutes: React.FC = () => {
+  const { role } = useAuth();
+
+  return (
+    <Routes>
+      <Route path="/" element={<FactoryMap />} />
+      <Route path="/factory" element={<Factory />} />
+
+      {/* Setting page only for admin and editor */}
+      <Route
+        path="/setting"
+        element={
+          <RoleBasedRoute allowedRoles={["admin", "editor"]}>
+            <Setting />
+          </RoleBasedRoute>
+        }
+      />
+
+      {/* Other pages accessible by admin and user, but not viewer */}
+      {role !== "viewer" && (
+        <>
+          <Route path="/employers" element={<Employee />} />
+          <Route path="/employers/branches" element={<BranchesPage />} />
+          <Route path="/employers/internships" element={<InternshipPage />} />
+          <Route path="/employers/languages" element={<LanguagePage />} />
+          <Route path="/techniques" element={<Techniques />} />
+          <Route path="/cameras" element={<Camera />} />
+          <Route path="/production" element={<Production />} />
+          <Route path="/sales" element={<Sales />} />
+          <Route path="/finance" element={<Finance />} />
+        </>
+      )}
+
+      {/* Viewer can only access factory pages */}
+      {role === "viewer" && (
+        <Route path="*" element={<Navigate to="/factory" />} />
+      )}
+    </Routes>
+  );
+};
+
 // QueryClient yaratish
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -66,13 +119,6 @@ const queryClient = new QueryClient({
 });
 
 const App: React.FC = () => {
-  const token = localStorage.getItem("token");
-  const decodeToken = jwtDecode(token ? token : "") as {
-    exp: number;
-    user: { role: string };
-  };
-  console.log(decodeToken.user.role);
-
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
@@ -84,32 +130,7 @@ const App: React.FC = () => {
               element={
                 <ProtectedRoute>
                   <Layout>
-                    <Routes>
-                      <Route path="/" element={<FactoryMap />} />
-                      <Route path="/factory" element={<Factory />} />
-                      {(decodeToken.user.role === "editor" ||
-                        decodeToken.user.role === "admin") && (
-                        <Route path="/setting" element={<Setting />} />
-                      )}
-                      <Route path="/employers" element={<Employee />} />
-                      <Route
-                        path="/employers/branches"
-                        element={<BranchesPage />}
-                      />
-                      <Route
-                        path="/employers/internships"
-                        element={<InternshipPage />}
-                      />
-                      <Route
-                        path="/employers/languages"
-                        element={<LanguagePage />}
-                      />
-                      <Route path="/techniques" element={<Techniques />} />
-                      <Route path="/cameras" element={<Camera />} />
-                      <Route path="/production" element={<Production />} />
-                      <Route path="/sales" element={<Sales />} />
-                      <Route path="/finance" element={<Finance />} />
-                    </Routes>
+                    <AppRoutes />
                   </Layout>
                 </ProtectedRoute>
               }

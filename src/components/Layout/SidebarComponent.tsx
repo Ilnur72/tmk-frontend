@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   Home,
@@ -15,9 +15,8 @@ import {
   X,
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
-import { jwtDecode } from "jwt-decode";
 
-const menuItems = [
+const allMenuItems = [
   { href: "/", icon: Home, title: "Лойиҳалар ҳаритаси" },
   { href: "/factory", icon: Briefcase, title: "Инвестиция лойиҳалари" },
   { href: "/production", icon: GitPullRequest, title: "Ишлаб чиқариш" },
@@ -30,6 +29,7 @@ const menuItems = [
     icon: Settings,
     title: "Параметр",
     id: "setting-menu-item",
+    roles: ["admin", "editor"], // Only admin and editor can see settings
   },
   { href: "/cameras", icon: Camera, title: "Камералар" },
 ];
@@ -37,21 +37,25 @@ const menuItems = [
 const Sidebar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, role } = useAuth();
   const location = useLocation();
-  const token = localStorage.getItem("token");
-  const decodeToken = jwtDecode(token ? token : "") as {
-    exp: number;
-    user: { role: string };
-  };
-  menuItems.map((item) => {
-    if (
-      item.href === "/setting" &&
-      !(decodeToken.user.role === "editor" || decodeToken.user.role === "admin")
-    ) {
-      menuItems.splice(menuItems.indexOf(item), 1);
+
+  // Filter menu items based on user role
+  const menuItems = useMemo(() => {
+    if (role === "viewer") {
+      // Viewer can only see factory and map
+      return allMenuItems.filter(
+        (item) => item.href === "/" || item.href === "/factory"
+      );
     }
-  });
+
+    return allMenuItems.filter((item) => {
+      if (item.roles) {
+        return item.roles.includes(role || "user");
+      }
+      return true;
+    });
+  }, [role]);
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };

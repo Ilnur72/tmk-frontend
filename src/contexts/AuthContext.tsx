@@ -39,30 +39,45 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-// JWT token parsing function with expiration check
-const parseJwt = (token: string): any => {
-  if (!token) return null;
+// JWT token parsing function with proper error handling
+const parseJwtToken = (token: string): any => {
+  if (!token || typeof token !== "string") {
+    return null;
+  }
 
   try {
-    const base64Url = token.split(".")[1];
+    // Split token into parts
+    const parts = token.split(".");
+    if (parts.length !== 3) {
+      return null;
+    }
+
+    // Decode the payload (second part)
+    const base64Url = parts[1];
     const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+
+    // Add padding if needed
+    const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
+
     const jsonPayload = decodeURIComponent(
       window
-        .atob(base64)
+        .atob(padded)
         .split("")
-        .map((c) => "%" + c.charCodeAt(0).toString(16).padStart(2, "0"))
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
         .join("")
     );
+
     const payload = JSON.parse(jsonPayload);
 
     // Check if token is expired
     if (payload.exp && payload.exp < Date.now() / 1000) {
-      return null; // Token expired
+      console.log("Token expired");
+      return null;
     }
 
     return payload;
-  } catch (e) {
-    console.error("Token parse error:", e);
+  } catch (error) {
+    console.error("JWT parsing error:", error);
     return null;
   }
 };
@@ -74,28 +89,61 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [role, setRole] = useState<string | null>(null);
 
+  // Initialize authentication state
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    if (storedToken) {
-      const decodedToken = parseJwt(storedToken);
-      if (decodedToken && decodedToken.user) {
-        setUser(decodedToken.user);
-        setToken(storedToken);
-        setIsAuthenticated(true);
-        setRole(decodedToken.user.role); // Set user role from token
-        // Set axios default headers
-        axios.defaults.headers.common[
-          "Authorization"
-        ] = `Bearer ${storedToken}`;
-      } else {
+    const initializeAuth = () => {
+      try {
+        const storedToken = localStorage.getItem("token");
+
+        if (storedToken) {
+          const decoded = parseJwtToken(storedToken);
+
+          if (decoded) {
+            // Extract user data from token
+            const userData = {
+              id: decoded.sub || decoded.user_id || decoded.id || "",
+              name: decoded.name || decoded.username || "User",
+              role: decoded.role || "user",
+              email: decoded.email || "",
+            };
+
+            setUser(userData);
+            setToken(storedToken);
+            setRole(decoded.role || "user");
+            setIsAuthenticated(true);
+
+            // Set axios authorization header
+            axios.defaults.headers.common[
+              "Authorization"
+            ] = `Bearer ${storedToken}`;
+          } else {
+            // Token is invalid or expired
+            localStorage.removeItem("token");
+            setUser(null);
+            setToken(null);
+            setRole(null);
+            setIsAuthenticated(false);
+          }
+        }
+      } catch (error) {
+        console.error("Auth initialization error:", error);
         localStorage.removeItem("token");
+        setUser(null);
+        setToken(null);
+        setRole(null);
+        setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
       }
-    }
-    setIsLoading(false);
+    };
+
+    initializeAuth();
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
+      setIsLoading(true);
+
       const response = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: {
@@ -106,7 +154,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = await response.json().catch(() => ({}));
         console.error("Login failed:", errorData);
         return false;
       }
@@ -114,33 +162,47 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const data = await response.json();
 
       if (data.data && data.data.token) {
-        const token = data.data.token;
-        const decodedToken = parseJwt(token);
+        const receivedToken = data.data.token;
+        const decoded = parseJwtToken(receivedToken);
 
-        if (decodedToken && decodedToken.user) {
-          setUser(decodedToken.user);
-          setToken(token);
+        if (decoded) {
+          const userData = {
+            id: decoded.sub || decoded.user_id || decoded.id || "",
+            name: decoded.name || decoded.username || "User",
+            role: decoded.role || "user",
+            email: decoded.email || email,
+          };
+
+          setUser(userData);
+          setToken(receivedToken);
+          setRole(decoded.role || "user");
           setIsAuthenticated(true);
-          localStorage.setItem("token", token);
 
-          // Set axios default headers
-          axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+          localStorage.setItem("token", receivedToken);
+          axios.defaults.headers.common[
+            "Authorization"
+          ] = `Bearer ${receivedToken}`;
 
           return true;
         }
       }
+
       return false;
-    } catch (error: any) {
+    } catch (error) {
       console.error("Login error:", error);
       return false;
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const logout = () => {
     setUser(null);
     setToken(null);
+    setRole(null);
     setIsAuthenticated(false);
     setIsLoading(false);
+
     localStorage.removeItem("token");
     delete axios.defaults.headers.common["Authorization"];
   };
