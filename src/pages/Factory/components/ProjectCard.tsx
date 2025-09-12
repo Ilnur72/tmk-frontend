@@ -107,7 +107,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               <div className="absolute right-2 top-1 z-10 left-auto">
                 <div className="flex gap-2">
                   <button
-                    id="factory-edit-btn-visible"
+                    id="factory-view-btn-visible"
                     className="flex items-center text-primary bg-white/80 hover:bg-white px-2 py-1 rounded"
                     onClick={() => setIsOpen(true)}
                   >
