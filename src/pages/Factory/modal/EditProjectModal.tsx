@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { X, Plus, Minus } from "lucide-react";
 import axios from "axios";
-import { API_URL } from "../../../config/const ";
+import { API_URL } from "../../../config/const";
 import MapComponent from "../components/MapComponent";
 import { toast } from "react-toastify";
 import ImageGallery from "./ImageGallery";

@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import VideoModal from "../Factory/modal/VideoModal";
 import { CameraType } from "../Factory/types/factory";
-import { API_URL } from "../../config/const ";
+import { API_URL } from "../../config/const";
 
 interface Factory {
   id: number;

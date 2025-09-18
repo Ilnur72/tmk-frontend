@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { Edit, Trash2, Settings, Eye } from "lucide-react";
 import Sortable from "sortablejs";
 import { FactoryInterface } from "../types/factory";
-import { API_URL } from "../../../config/const ";
+import { API_URL } from "../../../config/const";
 import FactoryDetailsModal from "../modal/FactoryModal";
 
 interface ProjectCardProps {

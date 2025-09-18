@@ -6,7 +6,7 @@ import React, {
   ReactNode,
 } from "react";
 import axios from "axios";
-import { API_URL } from "../config/const ";
+import { API_URL } from "../config/const";
 
 interface User {
   id: string;

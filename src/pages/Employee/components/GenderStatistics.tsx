@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { EMPLOYEE_API_URL } from "../../../config/const ";
+import { EMPLOYEE_API_URL } from "../../../config/const";
 import axios from "axios";
 import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 

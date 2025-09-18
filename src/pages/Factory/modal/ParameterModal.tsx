@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
-import { ParameterData } from '../types/factory';
-import { showToast } from '../../../utils/toast';
-import { API_URL } from '../../../config/const ';
-import axios from 'axios';
-
+import React, { useState, useEffect } from "react";
+import { X } from "lucide-react";
+import { ParameterData } from "../types/factory";
+import { showToast } from "../../../utils/toast";
+import { API_URL } from "../../../config/const";
+import axios from "axios";
 
 interface ParameterModalProps {
   isOpen: boolean;
@@ -13,9 +12,14 @@ interface ParameterModalProps {
   onSuccess: () => void;
 }
 
-const ParameterModal: React.FC<ParameterModalProps> = ({ isOpen, onClose, parameter, onSuccess }) => {
-  const [status, setStatus] = useState('1');
-  const [comment, setComment] = useState('');
+const ParameterModal: React.FC<ParameterModalProps> = ({
+  isOpen,
+  onClose,
+  parameter,
+  onSuccess,
+}) => {
+  const [status, setStatus] = useState("1");
+  const [comment, setComment] = useState("");
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -29,44 +33,50 @@ const ParameterModal: React.FC<ParameterModalProps> = ({ isOpen, onClose, parame
     if (!parameter) return;
 
     try {
-      const response = await axios.get(`/factory/param/${parameter.factoryParamId}`);
+      const response = await axios.get(
+        `/factory/param/${parameter.factoryParamId}`
+      );
       const data = response.data;
 
-      if (parameter.paramType === 'date') {
+      if (parameter.paramType === "date") {
         try {
-          const logResponse = await axios.get(`/factory/log?query[factoryParamId]=${parameter.factoryParamId}`);
+          const logResponse = await axios.get(
+            `/factory/log?query[factoryParamId]=${parameter.factoryParamId}`
+          );
           const logData = logResponse.data;
           if (logData[0]?.value) {
             const dateValue = new Date(logData[0].value);
             if (!isNaN(dateValue.getTime())) {
-              setStatus(dateValue.toISOString().split('T')[0]);
+              setStatus(dateValue.toISOString().split("T")[0]);
             }
           }
         } catch (error) {
-          setStatus(new Date().toISOString().split('T')[0]);
+          setStatus(new Date().toISOString().split("T")[0]);
         }
       } else {
-        setStatus(data.status?.toString() || '1');
+        setStatus(data.status?.toString() || "1");
       }
 
-      setComment(data.izoh || '');
+      setComment(data.izoh || "");
     } catch (error) {
-      console.error('Error loading parameter data:', error);
+      console.error("Error loading parameter data:", error);
     }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    
-    files.forEach(file => {
-      if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
-        setSelectedFiles(prev => [...prev, file]);
+
+    files.forEach((file) => {
+      if (
+        !selectedFiles.some((f) => f.name === file.name && f.size === file.size)
+      ) {
+        setSelectedFiles((prev) => [...prev, file]);
       }
     });
   };
 
   const removeFile = (index: number) => {
-    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -78,20 +88,25 @@ const ParameterModal: React.FC<ParameterModalProps> = ({ isOpen, onClose, parame
     try {
       // Update parameter status if not date
       if (status.length < 2) {
-        const response = await axios.put(`/factory/param/update/${parameter.factoryParamId}`, {
-          status: status
-        });
+        const response = await axios.put(
+          `/factory/param/update/${parameter.factoryParamId}`,
+          {
+            status: status,
+          }
+        );
 
         if (response.status === 200) {
           const data = response.data;
           // Update UI status image
-          const img = document.getElementById(parameter.factoryParamId.toString());
+          const img = document.getElementById(
+            parameter.factoryParamId.toString()
+          );
           if (img) {
             const imgElement = img as HTMLImageElement;
             if (+data.data.status === 0) {
-              imgElement.src = '/image/error.png';
+              imgElement.src = "/image/error.png";
             } else if (+data.data.status === 1) {
-              imgElement.src = '/image/ok.png';
+              imgElement.src = "/image/ok.png";
             } else {
               imgElement.src = `/image/${data.data.status}.png`;
             }
@@ -101,57 +116,69 @@ const ParameterModal: React.FC<ParameterModalProps> = ({ isOpen, onClose, parame
 
       // Create log entry
       const logFormData = new FormData();
-      logFormData.append('factory_id', parameter.factoryId.toString());
-      logFormData.append('params_id', parameter.paramId.toString());
-      logFormData.append('factory_params_id', parameter.factoryParamId.toString());
-      logFormData.append('value', status);
-      logFormData.append('izoh', comment || '');
-      logFormData.append('date_update', new Date().toISOString());
+      logFormData.append("factory_id", parameter.factoryId.toString());
+      logFormData.append("params_id", parameter.paramId.toString());
+      logFormData.append(
+        "factory_params_id",
+        parameter.factoryParamId.toString()
+      );
+      logFormData.append("value", status);
+      logFormData.append("izoh", comment || "");
+      logFormData.append("date_update", new Date().toISOString());
 
       // Add files
-      selectedFiles.forEach(file => {
-        logFormData.append('files', file);
+      selectedFiles.forEach((file) => {
+        logFormData.append("files", file);
       });
 
-      const logResponse = await axios.post(`${API_URL}/factory/log`, logFormData);
+      const logResponse = await axios.post(
+        `${API_URL}/factory/log`,
+        logFormData
+      );
 
       if (logResponse.status === 201) {
         const logData = logResponse.data;
 
         // Update UI
-        const paramComment = document.querySelector(`[data-param-id="${parameter.factoryParamId}"]`);
-        const paramDate = document.querySelector(`#factory-param-date-${parameter.factoryParamId}`);
-        
+        const paramComment = document.querySelector(
+          `[data-param-id="${parameter.factoryParamId}"]`
+        );
+        const paramDate = document.querySelector(
+          `#factory-param-date-${parameter.factoryParamId}`
+        );
+
         if (status.length > 2) {
           if (paramDate) {
             (paramDate as HTMLElement).textContent = status;
-            paramDate.classList.remove('d-none');
-            (paramDate as HTMLElement).style.display = 'inline';
+            paramDate.classList.remove("d-none");
+            (paramDate as HTMLElement).style.display = "inline";
           }
         } else {
           if (paramDate) {
-            (paramDate as HTMLElement).textContent = '';
-            paramDate.classList.add('d-none');
-            (paramDate as HTMLElement).style.display = 'none';
+            (paramDate as HTMLElement).textContent = "";
+            paramDate.classList.add("d-none");
+            (paramDate as HTMLElement).style.display = "none";
           }
         }
 
         if (paramComment && logData.data?.izoh) {
-          paramComment.classList.add('flex');
-          paramComment.classList.remove('hidden');
-          (paramComment as HTMLElement).textContent = `Изох: ${logData.data.izoh}`;
+          paramComment.classList.add("flex");
+          paramComment.classList.remove("hidden");
+          (
+            paramComment as HTMLElement
+          ).textContent = `Изох: ${logData.data.izoh}`;
         } else if (paramComment && !logData.data?.izoh) {
-          paramComment.classList.add('hidden');
-          paramComment.classList.remove('flex');
+          paramComment.classList.add("hidden");
+          paramComment.classList.remove("flex");
         }
 
         onClose();
         onSuccess();
-        showToast('Параметр статуси муваффақиятли янгиланди', 'success');
+        showToast("Параметр статуси муваффақиятли янгиланди", "success");
       }
     } catch (error) {
-      console.error('Error updating parameter:', error);
-      showToast('Хатолик юз берди. Илтимос, қайтадан уриниб кўринг.', 'error');
+      console.error("Error updating parameter:", error);
+      showToast("Хатолик юз берди. Илтимос, қайтадан уриниб кўринг.", "error");
     } finally {
       setLoading(false);
     }
@@ -180,10 +207,13 @@ const ParameterModal: React.FC<ParameterModalProps> = ({ isOpen, onClose, parame
           <form onSubmit={handleSubmit} className="px-4">
             <div className="space-y-5 pb-5">
               <div>
-                <label htmlFor="param-status" className="mb-2 block text-base font-normal text-gray-900">
+                <label
+                  htmlFor="param-status"
+                  className="mb-2 block text-base font-normal text-gray-900"
+                >
                   Статус
                 </label>
-                {parameter.paramType === 'date' ? (
+                {parameter.paramType === "date" ? (
                   <input
                     type="date"
                     id="param-status"
@@ -205,7 +235,10 @@ const ParameterModal: React.FC<ParameterModalProps> = ({ isOpen, onClose, parame
               </div>
 
               <div>
-                <label htmlFor="param-comment" className="mb-2 block text-base font-normal text-gray-900">
+                <label
+                  htmlFor="param-comment"
+                  className="mb-2 block text-base font-normal text-gray-900"
+                >
                   Изоҳ
                 </label>
                 <textarea
@@ -219,7 +252,10 @@ const ParameterModal: React.FC<ParameterModalProps> = ({ isOpen, onClose, parame
               </div>
 
               <div className="mt-4">
-                <label htmlFor="param-files" className="inline-block bg-blue-50 text-blue-700 font-semibold py-2 px-4 rounded-md cursor-pointer hover:bg-blue-100">
+                <label
+                  htmlFor="param-files"
+                  className="inline-block bg-blue-50 text-blue-700 font-semibold py-2 px-4 rounded-md cursor-pointer hover:bg-blue-100"
+                >
                   Choose Files
                 </label>
                 <input
@@ -227,14 +263,17 @@ const ParameterModal: React.FC<ParameterModalProps> = ({ isOpen, onClose, parame
                   id="param-files"
                   multiple
                   onChange={handleFileChange}
-                  style={{ display: 'none' }}
+                  style={{ display: "none" }}
                 />
                 <div className="mt-2 flex flex-wrap gap-2">
                   {selectedFiles.map((file, index) => (
-                    <span key={index} className="inline-flex items-center bg-slate-100 rounded px-2 py-1 text-sm text-gray-700 mr-2 mb-1">
+                    <span
+                      key={index}
+                      className="inline-flex items-center bg-slate-100 rounded px-2 py-1 text-sm text-gray-700 mr-2 mb-1"
+                    >
                       {file.name}
-                      <button 
-                        type="button" 
+                      <button
+                        type="button"
                         className="ml-2 text-red-500 hover:text-red-700 font-bold"
                         onClick={() => removeFile(index)}
                       >
@@ -258,9 +297,9 @@ const ParameterModal: React.FC<ParameterModalProps> = ({ isOpen, onClose, parame
                 type="submit"
                 disabled={loading}
                 className="rounded-md px-6 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none"
-                style={{ backgroundColor: '#00a0c6' }}
+                style={{ backgroundColor: "#00a0c6" }}
               >
-                {loading ? '⏳ Сақланмоқда...' : 'Сақлаш'}
+                {loading ? "⏳ Сақланмоқда..." : "Сақлаш"}
               </button>
             </div>
           </form>

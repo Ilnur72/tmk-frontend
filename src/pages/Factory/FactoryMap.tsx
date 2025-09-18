@@ -3,7 +3,7 @@ import FactoryModal from "./modal/FactoryModal";
 import maplibregl from "maplibre-gl";
 import axios from "axios";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { API_URL } from "../../config/const ";
+import { API_URL } from "../../config/const";
 
 interface Factory {
   id: number;
@@ -250,9 +250,7 @@ const FactoryMap: React.FC = () => {
               <img src="/image/marker2.png" alt="marker">
             </div>
             <div class="ml-4 mr-auto">
-              <div class="font-small">${index + 1}. ${
-          factory.name
-        }</div>
+              <div class="font-small">${index + 1}. ${factory.name}</div>
             </div>
           </div>
         </div>

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { BirthData } from "../../../types/dashboard";
-import { EMPLOYEE_API_URL } from "../../../config/const ";
+import { EMPLOYEE_API_URL } from "../../../config/const";
 import { Cell, Pie, ResponsiveContainer, PieChart } from "recharts"; // recharts dan import
 
 const calculateAge = (birthDate: string): number => {

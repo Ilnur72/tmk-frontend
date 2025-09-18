@@ -13,7 +13,7 @@ import {
 import { CameraType } from "../types/factory";
 import ImageModal from "./ImageModal";
 import VideoModal from "./VideoModal";
-import { API_URL } from "../../../config/const ";
+import { API_URL } from "../../../config/const";
 
 interface FactoryDetailsModalProps {
   factory: any;

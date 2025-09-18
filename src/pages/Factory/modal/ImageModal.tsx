@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
-import { API_URL } from "../../../config/const ";
+import { API_URL } from "../../../config/const";
 
 interface ImageModalProps {
   isOpen: boolean;
