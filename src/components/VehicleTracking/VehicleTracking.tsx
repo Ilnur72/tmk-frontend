@@ -23,6 +23,7 @@ const VehicleTracking: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const markersRef = useRef<maplibregl.Marker[]>([]);
+  const vehicleDataRef = useRef<Vehicle[]>([]);
 
   const vectorStyle =
     "https://api.maptiler.com/maps/019644f4-f546-7d75-81ed-49e8e52c20c7/style.json?key=Ql4Zhf4TMUJJKxx8Xht6";
@@ -35,7 +36,7 @@ const VehicleTracking: React.FC = () => {
     console.log("✅ Sidebar toggled:", !sidebarCollapsed);
   };
 
-  // Add vehicles to map
+  // Add vehicles to map - FactoryMap style
   const addVehiclesToMap = useCallback((vehicles: Vehicle[]) => {
     if (!map.current) {
       console.log("❌ Map not available for adding markers");
@@ -50,9 +51,53 @@ const VehicleTracking: React.FC = () => {
 
     console.log("📍 Adding vehicles to map:", vehicles.length, vehicles);
 
+    // Check if we can update existing markers instead of recreating
+    const canUpdateExisting =
+      markersRef.current.length > 0 &&
+      markersRef.current.length === vehicles.length &&
+      vehicleDataRef.current.length === vehicles.length;
+
+    if (canUpdateExisting) {
+      console.log("📍 Updating existing marker positions...");
+      let hasAnyChanges = false;
+
+      vehicles.forEach((vehicle, index) => {
+        const currentMarker = markersRef.current[index];
+        const oldVehicle = vehicleDataRef.current[index];
+
+        if (currentMarker && oldVehicle) {
+          const hasPositionChanged =
+            Math.abs(oldVehicle.latitude - vehicle.latitude) > 0.000001 ||
+            Math.abs(oldVehicle.longitude - vehicle.longitude) > 0.000001;
+
+          if (hasPositionChanged) {
+            const newPosition: [number, number] = [
+              vehicle.longitude,
+              vehicle.latitude,
+            ];
+            currentMarker.setLngLat(newPosition);
+            console.log(`🚗 Updated position for ${vehicle.name}`);
+            hasAnyChanges = true;
+          }
+        }
+      });
+
+      // Update stored vehicle data
+      vehicleDataRef.current = [...vehicles];
+
+      if (!hasAnyChanges) {
+        console.log(
+          "📍 No position changes detected, keeping existing markers"
+        );
+      }
+      return;
+    }
+
+    console.log("🔄 Recreating all markers...");
     // Clear existing markers
     markersRef.current.forEach((marker) => marker.remove());
     markersRef.current = [];
+    vehicleDataRef.current = [];
 
     vehicles.forEach((vehicle, index) => {
       console.log(`🚗 Adding vehicle ${index + 1}:`, {
@@ -61,206 +106,88 @@ const VehicleTracking: React.FC = () => {
         status: vehicle.status,
       });
 
-      // Create beautiful marker element
-      const markerElement = document.createElement("div");
+      // Create marker element using img like FactoryMap
+      const el = document.createElement("img");
       const isOnline = vehicle.status === "online";
       const isMoving = vehicle.speed > 0;
 
-      markerElement.className = isMoving
-        ? "vehicle-marker moving"
-        : "vehicle-marker";
-      markerElement.style.cssText = `
-        width: 45px;
-        height: 45px;
-        background: ${
-          isOnline
-            ? isMoving
-              ? "linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)"
-              : "linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%)"
-            : "linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%)"
-        };
-        border: 3px solid white;
-        border-radius: 50%;
-        cursor: pointer;
-        box-shadow: 
-          0 6px 20px rgba(0,0,0,0.15), 
-          0 2px 6px rgba(0,0,0,0.1),
-          inset 0 1px 0 rgba(255,255,255,0.2);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        position: relative;
-        user-select: none;
-      `;
-
-      // Create inner icon container for better styling
-      const iconContainer = document.createElement("div");
-      iconContainer.style.cssText = `
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        height: 100%;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.1);
-      `;
-
-      // Add appropriate icon based on vehicle type and status
+      // Choose icon based on vehicle type and status
+      let iconName = "car.jpg";
       if (
         vehicle.name.toLowerCase().includes("truck") ||
         vehicle.name.toLowerCase().includes("камаз")
       ) {
-        iconContainer.innerHTML = isMoving ? "🚚" : "🚛";
-      } else if (
-        vehicle.name.toLowerCase().includes("bus") ||
-        vehicle.name.toLowerCase().includes("автобус")
-      ) {
-        iconContainer.innerHTML = "�";
+        iconName = isMoving ? "sedan.png" : "car.jpg";
       } else if (
         vehicle.name.toLowerCase().includes("excavator") ||
         vehicle.name.toLowerCase().includes("xcmg")
       ) {
-        iconContainer.innerHTML = "🚜";
+        iconName = "mine-cart.png";
       } else if (isMoving) {
-        iconContainer.innerHTML = "�";
-      } else if (isOnline) {
-        iconContainer.innerHTML = "🚙";
-      } else {
-        iconContainer.innerHTML = "⚫";
+        iconName = "sedan.png";
+      } else if (!isOnline) {
+        iconName = "marker2.png";
       }
 
-      markerElement.appendChild(iconContainer);
+      el.src = `/image/carmarker.png`;
+      el.style.width = "64px";
+      el.style.height = "64px";
+      el.style.cursor = "pointer";
 
-      // Add status indicator dot
-      const statusDot = document.createElement("div");
-      statusDot.style.cssText = `
-        position: absolute;
-        top: -2px;
-        right: -2px;
-        width: 12px;
-        height: 12px;
-        background: ${isMoving ? "#22c55e" : isOnline ? "#3b82f6" : "#ef4444"};
-        border: 2px solid white;
-        border-radius: 50%;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        ${isMoving ? "animation: pulse 1.5s infinite;" : ""}
+      // Create popup content - FactoryMap style
+      const popupContent = `
+        <div style="background: white; padding: 15px; border-radius: 8px; max-width: 280px;">
+          <h3 style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: bold;">${
+            vehicle.name
+          }</h3>
+          <p style="margin: 4px 0; font-size: 13px; color: #64748b;">
+            Status: <span style="color: ${
+              vehicle.status === "online" ? "#10b981" : "#ef4444"
+            };">
+              ${vehicle.status === "online" ? "🟢 Onlayn" : "🔴 Oflayn"}
+            </span>
+          </p>
+          <p style="margin: 4px 0; font-size: 13px; color: #64748b;">Tezlik: ${
+            vehicle.speed
+          } km/h</p>
+          <p style="margin: 4px 0; font-size: 12px; color: #94a3b8;">
+            Koordinatalar: ${vehicle.latitude.toFixed(
+              4
+            )}, ${vehicle.longitude.toFixed(4)}
+          </p>
+        </div>
       `;
-      markerElement.appendChild(statusDot);
 
-      // Create marker
-      const marker = new maplibregl.Marker(markerElement)
+      const popup = new maplibregl.Popup({ offset: 25 }).setHTML(popupContent);
+
+      // Create marker using FactoryMap pattern
+      const marker = new maplibregl.Marker({ element: el })
         .setLngLat([vehicle.longitude, vehicle.latitude])
+        .setPopup(popup)
         .addTo(map.current!);
 
-      console.log(`✅ Marker ${index + 1} added successfully`);
-
-      // Add beautiful popup
-      const popup = new maplibregl.Popup({
-        offset: 30,
-        closeButton: true,
-        closeOnClick: false,
-        className: "vehicle-popup",
-      }).setHTML(`
-        <div style="
-          padding: 20px; 
-          font-family: 'Inter', 'Segoe UI', sans-serif; 
-          max-width: 280px;
-          background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-          border-radius: 12px;
-          box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        ">
-          <div style="display: flex; align-items: center; margin-bottom: 12px;">
-            <div style="
-              width: 40px; 
-              height: 40px; 
-              background: ${
-                isMoving
-                  ? "linear-gradient(135deg, #10b981, #059669)"
-                  : isOnline
-                  ? "linear-gradient(135deg, #3b82f6, #2563eb)"
-                  : "linear-gradient(135deg, #ef4444, #dc2626)"
-              };
-              border-radius: 50%;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              font-size: 16px;
-              margin-right: 12px;
-              box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            ">
-              ${iconContainer.innerHTML}
-            </div>
-            <div>
-              <h3 style="
-                margin: 0 0 4px 0; 
-                font-weight: 700; 
-                color: #1f2937; 
-                font-size: 16px;
-                line-height: 1.2;
-              ">${vehicle.name}</h3>
-              <span style="
-                background: ${
-                  vehicle.status === "online" ? "#dcfce7" : "#fee2e2"
-                };
-                color: ${vehicle.status === "online" ? "#15803d" : "#dc2626"};
-                padding: 2px 8px;
-                border-radius: 12px;
-                font-size: 12px;
-                font-weight: 600;
-              ">
-                ${vehicle.status === "online" ? "🟢 Onlayn" : "🔴 Oflayn"}
-              </span>
-            </div>
-          </div>
-          
-          <div style="
-            background: #f1f5f9;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 12px;
-          ">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-              <span style="color: #64748b; font-size: 13px; font-weight: 500;">🏃‍♂️ Tezlik:</span>
-              <span style="color: #1e293b; font-weight: 700; font-size: 14px;">${
-                vehicle.speed
-              } km/h</span>
-            </div>
-            <div style="display: flex; justify-content: space-between;">
-              <span style="color: #64748b; font-size: 13px; font-weight: 500;">📍 Koordinatalar:</span>
-              <span style="color: #1e293b; font-size: 12px; font-family: monospace;">${vehicle.latitude.toFixed(
-                4
-              )}, ${vehicle.longitude.toFixed(4)}</span>
-            </div>
-          </div>
-          
-          <div style="
-            font-size: 11px; 
-            color: #94a3b8; 
-            text-align: center;
-            border-top: 1px solid #e2e8f0;
-            padding-top: 8px;
-          ">
-            Oxirgi yangilanish: ${new Date(vehicle.lastUpdate).toLocaleString(
-              "uz-UZ"
-            )}
-          </div>
-        </div>
-      `);
-
-      markerElement.addEventListener("click", () => {
+      // Add click event handler - FactoryMap style
+      el.addEventListener("click", (e) => {
+        e.stopPropagation();
         console.log(`🎯 Clicked on vehicle: ${vehicle.name}`);
 
-        // Add click animation
-        markerElement.classList.add("clicked");
-        setTimeout(() => {
-          markerElement.classList.remove("clicked");
-        }, 600);
-
-        popup.addTo(map.current!);
+        // Fly to marker
+        if (map.current) {
+          map.current.flyTo({
+            center: [vehicle.longitude, vehicle.latitude],
+            zoom: 15,
+            speed: 0.8,
+            curve: 1.2,
+            essential: true,
+          });
+        }
       });
 
       markersRef.current.push(marker);
     });
+
+    // Store current vehicle data for next comparison
+    vehicleDataRef.current = [...vehicles];
 
     console.log(
       `✅ Total ${vehicles.length} vehicles added to map. Current markers:`,
@@ -277,11 +204,6 @@ const VehicleTracking: React.FC = () => {
 
       const response = await axios.get(`${API_URL}/tracking/vehicles`);
       console.log("📊 Raw API Response:", response.data);
-      console.log("📊 API Response type:", typeof response.data);
-      console.log(
-        "📊 API Response length:",
-        Array.isArray(response.data) ? response.data.length : "Not an array"
-      );
 
       let vehiclesData = response.data;
 
@@ -295,20 +217,38 @@ const VehicleTracking: React.FC = () => {
           {
             id: 1,
             name: "Test Texnika 1",
-            position: { latitude: 41.2995, longitude: 69.2401, speed: 45 },
-            status: { isOnline: true },
+            latitude: 41.2995,
+            longitude: 69.2401,
+            speed: 45,
+            status: "online",
+            lastUpdate: new Date().toISOString(),
           },
           {
             id: 2,
             name: "Test Texnika 2",
-            position: { latitude: 41.3051, longitude: 69.2797, speed: 0 },
-            status: { isOnline: false },
+            latitude: 41.3051,
+            longitude: 69.2797,
+            speed: 0,
+            status: "offline",
+            lastUpdate: new Date().toISOString(),
           },
           {
             id: 3,
-            name: "Test Texnika 3",
-            position: { latitude: 41.2856, longitude: 69.2034, speed: 30 },
-            status: { isOnline: true },
+            name: "KAMAZ Yuk Mashinasi",
+            latitude: 41.2856,
+            longitude: 69.2034,
+            speed: 30,
+            status: "online",
+            lastUpdate: new Date().toISOString(),
+          },
+          {
+            id: 4,
+            name: "XCMG Ekskavator",
+            latitude: 41.3156,
+            longitude: 69.2434,
+            speed: 0,
+            status: "online",
+            lastUpdate: new Date().toISOString(),
           },
         ];
       }
@@ -322,30 +262,20 @@ const VehicleTracking: React.FC = () => {
           speed: item.speed || 0,
           status: (item.speed > 0 ? "online" : "offline") as
             | "online"
-            | "offline", // Moving vehicles are online
+            | "offline",
           lastUpdate: item.lastUpdate || new Date().toISOString(),
         };
-        console.log(`🚗 Transformed vehicle:`, vehicle);
         return vehicle;
       });
 
-      console.log("🔄 Final transformed vehicles:", transformedData);
-      console.log(`📈 Total vehicles to display: ${transformedData.length}`);
-
       setVehicles(transformedData);
-
-      // Add markers with a small delay to ensure map is ready
       setTimeout(() => {
         addVehiclesToMap(transformedData);
       }, 100);
-
       setLoading(false);
-      console.log("✅ Vehicles loaded and markers should be added!");
     } catch (err) {
       console.error("❌ Error fetching vehicles:", err);
-
       // Use test data on error
-      console.log("🧪 Using test data due to API error...");
       const testVehicles: Vehicle[] = [
         {
           id: 1,
@@ -358,7 +288,7 @@ const VehicleTracking: React.FC = () => {
         },
         {
           id: 2,
-          name: "Fallback Texnika 2",
+          name: "Fallback KAMAZ",
           latitude: 41.3051,
           longitude: 69.2797,
           speed: 0,
@@ -414,6 +344,7 @@ const VehicleTracking: React.FC = () => {
       }
       markersRef.current.forEach((marker) => marker.remove());
       markersRef.current = [];
+      vehicleDataRef.current = [];
     };
   }, [fetchVehicles]);
 
@@ -528,7 +459,10 @@ const VehicleTracking: React.FC = () => {
                       >
                         <div className="flex items-center">
                           <div className="image-fit h-10 w-10 flex-none overflow-hidden rounded-full mr-3">
-                            <img src="/image/car.jpg" alt="vehicle" />
+                            <img
+                              src="/image/sedan.png"
+                              alt="vehicle"
+                            />
                           </div>
                           <div className="flex-1">
                             <div className="font-medium text-sm">

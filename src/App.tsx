@@ -75,8 +75,6 @@ const AppRoutes: React.FC = () => {
     <Routes>
       <Route path="/" element={<FactoryMap />} />
       <Route path="/factory" element={<Factory />} />
-      <Route path="/vehicle-tracking" element={<VehicleTracking />} />
-
       {/* Setting page only for admin and editor */}
       <Route
         path="/setting"
