@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* MapLibre GL CSS */
+@import "maplibre-gl/dist/maplibre-gl.css";
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
@@ -16,24 +19,6 @@ code {
     monospace;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
 /* Line clamp utility */
 .line-clamp-2 {
   display: -webkit-box;
@@ -42,10 +27,6 @@ code {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 @layer utilities {
   .animate-in {
@@ -352,7 +333,7 @@ code {
 
 #map {
   width: 100%;
-  height: 97vh;
+  height: 95vh;
   margin: 0;
   padding: 0;
   left: 0;
@@ -375,43 +356,6 @@ code {
   left: 0px;
 }
 
-.sidebar-content {
-  position: absolute;
-  width: 88%;
-  height: 90%;
-  color: gray;
-}
-
-.sidebar-toggle {
-  position: absolute;
-  width: 1.3em;
-  height: 1.3em;
-  overflow: visible;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.sidebar-toggle.left {
-  right: -1.5em;
-}
-
-.sidebar-toggle:hover {
-  color: #0aa1cf;
-  cursor: pointer;
-}
-
-.sidebar {
-  transition: transform 1s;
-  z-index: 1;
-  width: 300px;
-  height: 100%;
-}
-
-.left.collapsed {
-  transform: translateX(-276px);
-}
-
 .maplibregl-ctrl-top-right {
   bottom: 130px;
   top: auto;
@@ -421,4 +365,264 @@ code {
 .maplibregl-ctrl-bottom-right {
   bottom: 80px;
   right: 7px;
+}
+
+/* Map and Sidebar Styles */
+.maplibregl-map {
+  position: relative;
+}
+
+.sidebar {
+  position: absolute;
+  top: 50px;
+  bottom: 0;
+  width: 300px;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+/* Factory Map specific sidebar styles */
+.sidebar.factory-map {
+  transition: transform 1s;
+  z-index: 1;
+}
+
+.sidebar.factory-map.left.collapsed {
+  transform: translateX(-276px);
+}
+
+/* Vehicle Tracking specific sidebar styles */
+.sidebar.vehicle-tracking {
+  transition: left 0.3s ease;
+}
+
+.sidebar.vehicle-tracking.left {
+  left: 0;
+}
+
+.sidebar.vehicle-tracking.left.collapsed {
+  left: -300px;
+}
+
+.sidebar.factory-map.left.collapsed {
+  left: -300px;
+}
+
+.sidebar-content {
+  position: relative;
+  width: 100%;
+  height: 90%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Factory Map specific content */
+.sidebar-content.factory-map {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  color: gray;
+}
+
+/* Vehicle Tracking specific content */
+.sidebar-content.vehicle-tracking {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-toggle {
+  position: absolute;
+  top: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  transition: all 0.3s ease;
+}
+
+/* Factory Map specific toggle */
+.sidebar-toggle.factory-map {
+  width: 1.3em;
+  height: 1.3em;
+  overflow: visible;
+}
+
+.sidebar-toggle.factory-map.left {
+  right: -1.5em;
+}
+
+.sidebar-toggle.factory-map:hover {
+  color: #0aa1cf;
+}
+
+/* Vehicle Tracking specific toggle */
+.sidebar-toggle.vehicle-tracking:hover {
+  background-color: rgba(255, 255, 255, 1);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.sidebar.vehicle-tracking.left .sidebar-toggle {
+  right: -40px;
+  border-radius: 0 10px 10px 0;
+}
+
+/* Vehicle marker styles */
+.vehicle-marker {
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.vehicle-marker:hover {
+  transform: scale(1.1);
+}
+
+/* Vehicle list item styles */
+.vehicle-list-item {
+  transition: background-color 0.2s ease;
+}
+
+.vehicle-list-item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Status indicator */
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 4px;
+}
+
+.status-indicator.online {
+  background-color: #10b981;
+  animation: pulse 2s infinite;
+}
+
+.status-indicator.offline {
+  background-color: #ef4444;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+  }
+
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+/* MapLibre popup custom styles */
+.maplibregl-popup-content {
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.maplibregl-popup-close-button {
+  color: #6b7280;
+  font-size: 18px;
+}
+
+.maplibregl-popup-close-button:hover {
+  color: #374151;
+}
+
+/* Responsive styles for vehicle tracking */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 280px;
+  }
+
+  .sidebar.left.collapsed {
+    left: -280px;
+  }
+
+  .maplibregl-map {
+    border-radius: 15px;
+  }
+}
+
+/* Vehicle Tracking Map - Isolated Styles */
+.vehicle-tracking-map {
+  position: relative !important;
+  width: 100% !important;
+  height: 95vh !important;
+  min-height: 500px !important;
+  background-color: #f0f0f0;
+}
+
+.vehicle-tracking-map .maplibregl-canvas {
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Ensure vehicle tracking map doesn't inherit factory map styles */
+#vehicleTrackingMapContainer {
+  position: relative;
+  /* overflow: hidden; */
+}
+
+#vehicleTrackingMapContainer .maplibregl-map {
+  width: 100%;
+  height: 100%;
+}
+
+/* VehicleTracking sidebar forced visibility */
+#vehicleTrackingSidebar {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0px !important;
+  width: 300px !important;
+  height: 100% !important;
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(10px) !important;
+  border-radius: 0 20px 20px 0 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 1000 !important;
+  transition: left 0.3s ease !important;
+}
+
+#vehicleTrackingSidebar.collapsed {
+  left: -300px !important;
+}
+
+/* VehicleTracking toggle button */
+.sidebar-toggle.vehicle-tracking {
+  position: absolute !important;
+  top: 50% !important;
+  left: 310px !important;
+  width: 40px !important;
+  height: 60px !important;
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  border-radius: 10px !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 1.5em !important;
+  transform: translateY(-50%) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+  transition: left 0.3s ease !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 1001 !important;
 }

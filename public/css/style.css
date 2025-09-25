@@ -4,7 +4,7 @@
 
 /* Custom styles */
 body {
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
   margin: 0;
   padding: 0;
 }
@@ -57,4 +57,112 @@ h1.text-3xl {
 }
 .param-row.dragging {
   opacity: 0.5;
+}
+
+/* VehicleTracking Component - Force visibility */
+#vehicleTrackingSidebar {
+  position: absolute !important;
+  top: 0px !important;
+  left: 0px !important;
+  width: 300px !important;
+  height: 100% !important;
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(10px) !important;
+  border-radius: 0px 20px 20px 0px !important;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 1000 !important;
+  transition: left 0.3s ease !important;
+}
+
+.sidebar-toggle.vehicle-tracking {
+  position: absolute !important;
+  top: 50% !important;
+  left: 310px !important;
+  width: 40px !important;
+  height: 60px !important;
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  border-radius: 10px !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 1.5em !important;
+  transform: translateY(-50%) !important;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 6px !important;
+  transition: left 0.3s ease !important;
+  z-index: 1001 !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Override any potential hiding classes */
+#vehicleTrackingSidebar.collapsed,
+#vehicleTrackingSidebar.hidden,
+.sidebar-toggle.vehicle-tracking.collapsed,
+.sidebar-toggle.vehicle-tracking.hidden {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* VehicleTracking map container */
+#vehicleTrackingMapContainer {
+  position: relative !important;
+  width: 100% !important;
+  height: 95vh !important;
+  min-height: 500px !important;
+}
+
+/* Vehicle marker animations */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.1),
+      0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  50% {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.1),
+      0 0 0 10px rgba(16, 185, 129, 0.3);
+  }
+  100% {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.1),
+      0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Vehicle marker styles */
+.vehicle-marker {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.vehicle-marker:hover {
+  transform: scale(1.15) !important;
+  z-index: 1000 !important;
+}
+
+.vehicle-marker.moving {
+  animation: pulse 2s infinite;
+}
+
+.vehicle-marker.clicked {
+  animation: bounce 0.6s ease-in-out;
 }

@@ -53,10 +53,38 @@ interface LayerToggleControl {
 const FactoryMap: React.FC = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [selectedFactory, setSelectedFactory] = useState<Factory | null>(null);
   const [showModal, setShowModal] = useState(false);
   const markersRef = useRef<maplibregl.Marker[]>([]);
+
+  // Cleanup any existing VehicleTracking map instances
+  const cleanupVehicleTrackingMaps = useCallback(() => {
+    // Remove any vehicle tracking map containers
+    const vehicleMapContainer = document.getElementById(
+      "vehicleTrackingMapContainer"
+    );
+    if (vehicleMapContainer) {
+      console.log("Cleaning up VehicleTracking map container");
+      vehicleMapContainer.innerHTML = "";
+    }
+
+    // Clear vehicle tracking global variables
+    (window as any).flyToVehicle = undefined;
+    (window as any).currentVehiclesData = undefined;
+
+    // Clear any maplibre-gl maps that might exist
+    const existingMaps = document.querySelectorAll(".maplibregl-map");
+    existingMaps.forEach((mapEl) => {
+      if (mapEl.id === "vehicleTrackingMapContainer") {
+        const mapInstance = (mapEl as any)._map;
+        if (mapInstance && typeof mapInstance.remove === "function") {
+          console.log("Removing conflicting VehicleTracking map instance");
+          mapInstance.remove();
+        }
+      }
+    });
+  }, []);
 
   // Map styles
   const vectorStyle =
@@ -100,31 +128,9 @@ const FactoryMap: React.FC = () => {
   }, []);
 
   // Toggle sidebar function
-  const toggleSidebar = useCallback(
-    (id: string) => {
-      if (!map.current) return;
-
-      const collapsed = sidebarCollapsed;
-      const padding: any = {};
-
-      if (collapsed) {
-        padding[id] = 300;
-        map.current.easeTo({
-          padding,
-          duration: 1000,
-        });
-        setSidebarCollapsed(false);
-      } else {
-        padding[id] = 0;
-        map.current.easeTo({
-          padding,
-          duration: 1000,
-        });
-        setSidebarCollapsed(true);
-      }
-    },
-    [sidebarCollapsed]
-  );
+  const toggleSidebar = useCallback(() => {
+    setSidebarCollapsed(!sidebarCollapsed);
+  }, [sidebarCollapsed]);
 
   // Fly to marker function
   const flyToMarker = useCallback(
@@ -132,7 +138,7 @@ const FactoryMap: React.FC = () => {
       if (!map.current) return;
 
       if (window.innerWidth <= 768 && fromSidebar && !sidebarCollapsed) {
-        toggleSidebar("left");
+        toggleSidebar();
       }
 
       map.current.flyTo({
@@ -326,9 +332,16 @@ const FactoryMap: React.FC = () => {
     };
   }, [vectorStyle, satelliteStyle]);
 
+  // Component mount cleanup
+  useEffect(() => {
+    console.log("FactoryMap component mounted");
+    cleanupVehicleTrackingMaps();
+  }, [cleanupVehicleTrackingMaps]);
+
   useEffect(() => {
     if (map.current || !mapContainer.current) return;
 
+    console.log("Initializing FactoryMap...");
     // Initialize map
     map.current = new maplibregl.Map({
       container: mapContainer.current,
@@ -347,8 +360,6 @@ const FactoryMap: React.FC = () => {
     // Load markers when map is ready
     map.current.on("load", () => {
       fetchFactories();
-      // Auto-collapse sidebar on load
-      toggleSidebar("left");
     });
 
     return () => {
@@ -357,7 +368,18 @@ const FactoryMap: React.FC = () => {
         map.current = null;
       }
     };
-  }, []);
+  }, [createLayerToggleControl, fetchFactories]);
+
+  // Handle sidebar padding changes
+  useEffect(() => {
+    if (!map.current) return;
+
+    const padding = sidebarCollapsed ? { left: 0 } : { left: 300 };
+    map.current.easeTo({
+      padding,
+      duration: 300,
+    });
+  }, [sidebarCollapsed]);
 
   return (
     <>
@@ -370,29 +392,59 @@ const FactoryMap: React.FC = () => {
           >
             <div
               id="left"
-              className={`sidebar flex-center left ${
+              className={`sidebar  left ${
                 sidebarCollapsed ? "collapsed" : ""
               }`}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: sidebarCollapsed ? -300 : 0,
+                width: "300px",
+                height: "100%",
+                backgroundColor: "rgba(255, 255, 255, 0.95)",
+                backdropFilter: "blur(10px)",
+                transition: "left 0.3s ease",
+                zIndex: 1000,
+                borderRadius: "0 20px 20px 0",
+                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+              }}
             >
-              <div className="absolute max-md:top-10 sidebar-content rounded-rect flex-center max-md:h-[87%]">
+              <div className="sidebar-content factory-map">
                 <div
                   id="markerList"
                   style={{
-                    margin: "5px",
                     padding: "5px",
                     overflowY: "auto",
-                    top: sidebarCollapsed ? "30px" : "0",
+                    height: "100%",
                   }}
                 ></div>
-
-                <div
-                  className="sidebar-toggle rounded-rect left"
-                  style={{ fontSize: "2em" }}
-                  onClick={() => toggleSidebar("left")}
-                >
-                  →
-                </div>
               </div>
+            </div>
+
+            {/* Sidebar toggle button - har doim ko'rinadigan */}
+            <div
+              className="sidebar-toggle factory-map rounded-rect left"
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: sidebarCollapsed ? "10px" : "310px",
+                width: "40px",
+                height: "60px",
+                backgroundColor: "rgba(255, 255, 255, 0.9)",
+                borderRadius: "10px",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "1.5em",
+                transform: "translateY(-50%)",
+                boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)",
+                transition: "left 0.3s ease",
+                zIndex: 1001,
+              }}
+              onClick={toggleSidebar}
+            >
+              {sidebarCollapsed ? "→" : "←"}
             </div>
           </div>
         </div>

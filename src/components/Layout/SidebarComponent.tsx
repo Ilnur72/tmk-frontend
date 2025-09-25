@@ -13,6 +13,7 @@ import {
   LogOut,
   Menu,
   X,
+  MapPin,
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 
@@ -24,6 +25,7 @@ const allMenuItems = [
   { href: "/finance", icon: BarChart2, title: "Молиявий кўрсаткичлар" },
   { href: "/employers", icon: Users, title: "Ходимлар" },
   { href: "/techniques", icon: Codepen, title: "Техникалар" },
+  { href: "/vehicle-tracking", icon: MapPin, title: "Техникалар кузатуви" },
   {
     href: "/setting",
     icon: Settings,

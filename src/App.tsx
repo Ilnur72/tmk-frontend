@@ -21,6 +21,7 @@ import Factory from "./pages/Factory/Factory";
 import BranchesPage from "./pages/Employee/components/BranchData";
 import InternshipPage from "./pages/Employee/components/InternshipPage";
 import LanguagePage from "./pages/Employee/components/LanguagePage";
+import VehicleTracking from "./components/VehicleTracking/VehicleTracking";
 
 const LoginRoute: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -74,6 +75,7 @@ const AppRoutes: React.FC = () => {
     <Routes>
       <Route path="/" element={<FactoryMap />} />
       <Route path="/factory" element={<Factory />} />
+      <Route path="/vehicle-tracking" element={<VehicleTracking />} />
 
       {/* Setting page only for admin and editor */}
       <Route
