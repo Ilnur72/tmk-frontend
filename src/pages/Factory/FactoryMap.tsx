@@ -65,7 +65,6 @@ const FactoryMap: React.FC = () => {
       "vehicleTrackingMapContainer"
     );
     if (vehicleMapContainer) {
-      console.log("Cleaning up VehicleTracking map container");
       vehicleMapContainer.innerHTML = "";
     }
 
@@ -79,7 +78,6 @@ const FactoryMap: React.FC = () => {
       if (mapEl.id === "vehicleTrackingMapContainer") {
         const mapInstance = (mapEl as any)._map;
         if (mapInstance && typeof mapInstance.remove === "function") {
-          console.log("Removing conflicting VehicleTracking map instance");
           mapInstance.remove();
         }
       }
@@ -334,14 +332,12 @@ const FactoryMap: React.FC = () => {
 
   // Component mount cleanup
   useEffect(() => {
-    console.log("FactoryMap component mounted");
     cleanupVehicleTrackingMaps();
   }, [cleanupVehicleTrackingMaps]);
 
   useEffect(() => {
     if (map.current || !mapContainer.current) return;
 
-    console.log("Initializing FactoryMap...");
     // Initialize map
     map.current = new maplibregl.Map({
       container: mapContainer.current,
@@ -368,7 +364,7 @@ const FactoryMap: React.FC = () => {
         map.current = null;
       }
     };
-  }, [createLayerToggleControl, fetchFactories]);
+  }, [createLayerToggleControl]);
 
   // Handle sidebar padding changes
   useEffect(() => {

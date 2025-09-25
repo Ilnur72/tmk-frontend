@@ -28,28 +28,23 @@ const VehicleTracking: React.FC = () => {
   const vectorStyle =
     "https://api.maptiler.com/maps/019644f4-f546-7d75-81ed-49e8e52c20c7/style.json?key=Ql4Zhf4TMUJJKxx8Xht6";
 
-  console.log("🚀 VehicleTracking component rendered");
 
   // Toggle sidebar visibility
-  const toggleSidebar = () => {
+  const toggleSidebar = useCallback(() => {
     setSidebarCollapsed(!sidebarCollapsed);
-    console.log("✅ Sidebar toggled:", !sidebarCollapsed);
-  };
+  }, [sidebarCollapsed]);
 
   // Add vehicles to map - FactoryMap style
   const addVehiclesToMap = useCallback((vehicles: Vehicle[]) => {
     if (!map.current) {
-      console.log("❌ Map not available for adding markers");
       return;
     }
 
     if (!map.current.isStyleLoaded()) {
-      console.log("⏳ Map style not loaded yet, retrying in 500ms...");
       setTimeout(() => addVehiclesToMap(vehicles), 500);
       return;
     }
 
-    console.log("📍 Adding vehicles to map:", vehicles.length, vehicles);
 
     // Check if we can update existing markers instead of recreating
     const canUpdateExisting =
@@ -58,7 +53,6 @@ const VehicleTracking: React.FC = () => {
       vehicleDataRef.current.length === vehicles.length;
 
     if (canUpdateExisting) {
-      console.log("📍 Updating existing marker positions...");
       let hasAnyChanges = false;
 
       vehicles.forEach((vehicle, index) => {
@@ -76,7 +70,6 @@ const VehicleTracking: React.FC = () => {
               vehicle.latitude,
             ];
             currentMarker.setLngLat(newPosition);
-            console.log(`🚗 Updated position for ${vehicle.name}`);
             hasAnyChanges = true;
           }
         }
@@ -86,25 +79,18 @@ const VehicleTracking: React.FC = () => {
       vehicleDataRef.current = [...vehicles];
 
       if (!hasAnyChanges) {
-        console.log(
-          "📍 No position changes detected, keeping existing markers"
-        );
+       
       }
       return;
     }
 
-    console.log("🔄 Recreating all markers...");
     // Clear existing markers
     markersRef.current.forEach((marker) => marker.remove());
     markersRef.current = [];
     vehicleDataRef.current = [];
 
     vehicles.forEach((vehicle, index) => {
-      console.log(`🚗 Adding vehicle ${index + 1}:`, {
-        name: vehicle.name,
-        coords: [vehicle.longitude, vehicle.latitude],
-        status: vehicle.status,
-      });
+     
 
       // Create marker element using img like FactoryMap
       const el = document.createElement("img");
@@ -169,7 +155,6 @@ const VehicleTracking: React.FC = () => {
       // Add click event handler - FactoryMap style
       el.addEventListener("click", (e) => {
         e.stopPropagation();
-        console.log(`🎯 Clicked on vehicle: ${vehicle.name}`);
 
         // Fly to marker
         if (map.current) {
@@ -189,21 +174,16 @@ const VehicleTracking: React.FC = () => {
     // Store current vehicle data for next comparison
     vehicleDataRef.current = [...vehicles];
 
-    console.log(
-      `✅ Total ${vehicles.length} vehicles added to map. Current markers:`,
-      markersRef.current.length
-    );
+    
   }, []);
 
   // Fetch vehicles from API
   const fetchVehicles = useCallback(async () => {
     try {
-      console.log("📡 Fetching vehicles from API...");
       setLoading(true);
       setError(null);
 
       const response = await axios.get(`${API_URL}/tracking/vehicles`);
-      console.log("📊 Raw API Response:", response.data);
 
       let vehiclesData = response.data;
 
@@ -212,7 +192,6 @@ const VehicleTracking: React.FC = () => {
         !vehiclesData ||
         (Array.isArray(vehiclesData) && vehiclesData.length === 0)
       ) {
-        console.log("🧪 API returned empty data, using test vehicles...");
         vehiclesData = [
           {
             id: 1,
@@ -274,7 +253,6 @@ const VehicleTracking: React.FC = () => {
       }, 100);
       setLoading(false);
     } catch (err) {
-      console.error("❌ Error fetching vehicles:", err);
       // Use test data on error
       const testVehicles: Vehicle[] = [
         {
@@ -309,7 +287,6 @@ const VehicleTracking: React.FC = () => {
   useEffect(() => {
     if (!mapContainer.current || map.current) return;
 
-    console.log("🗺️ Initializing map...");
 
     try {
       map.current = new maplibregl.Map({
@@ -320,24 +297,20 @@ const VehicleTracking: React.FC = () => {
       });
 
       map.current.on("load", () => {
-        console.log("✅ Map loaded successfully");
         fetchVehicles();
       });
 
       map.current.on("error", (e) => {
-        console.error("❌ Map error:", e);
         setError("Xaritani yuklashda xatolik yuz berdi");
       });
 
       // Add navigation controls
       map.current.addControl(new maplibregl.NavigationControl(), "top-right");
     } catch (error) {
-      console.error("❌ Error initializing map:", error);
       setError("Xaritani yuklashda xatolik yuz berdi");
     }
 
     return () => {
-      console.log("🧹 Cleaning up map...");
       if (map.current) {
         map.current.remove();
         map.current = null;
@@ -352,7 +325,6 @@ const VehicleTracking: React.FC = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       if (!loading) {
-        console.log("🔄 Auto-refreshing vehicles...");
         fetchVehicles();
       }
     }, 30000); // Update every 30 seconds
@@ -496,7 +468,7 @@ const VehicleTracking: React.FC = () => {
 
             {/* Sidebar toggle button */}
             <div
-              className="sidebar-toggle vehicle-tracking rounded-rect left"
+              className="sidebar-toggle factory-map rounded-rect left"
               style={{
                 position: "absolute",
                 top: "50%",

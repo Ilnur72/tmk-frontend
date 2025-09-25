@@ -341,7 +341,6 @@ const BranchesPage: React.FC = () => {
 
   const handleBack = () => {
     // This would typically navigate back using React Router
-    console.log('Navigating back to dashboard');
     window.history.back();
   };
 

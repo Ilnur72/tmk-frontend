@@ -21,7 +21,6 @@ import Factory from "./pages/Factory/Factory";
 import BranchesPage from "./pages/Employee/components/BranchData";
 import InternshipPage from "./pages/Employee/components/InternshipPage";
 import LanguagePage from "./pages/Employee/components/LanguagePage";
-import VehicleTracking from "./components/VehicleTracking/VehicleTracking";
 
 const LoginRoute: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();

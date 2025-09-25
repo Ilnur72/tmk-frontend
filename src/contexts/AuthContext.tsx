@@ -71,7 +71,6 @@ const parseJwtToken = (token: string): any => {
 
     // Check if token is expired
     if (payload.exp && payload.exp < Date.now() / 1000) {
-      console.log("Token expired");
       return null;
     }
 
