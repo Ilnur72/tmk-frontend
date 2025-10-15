@@ -15,12 +15,12 @@ import Setting from "./pages/Setting/Setting";
 import Camera from "./pages/Camera/Camera";
 import Production from "./pages/Production/Production";
 import Sales from "./pages/Sales/Sales";
-import Finance from "./pages/Finance/Finance";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Factory from "./pages/Factory/Factory";
 import BranchesPage from "./pages/Employee/components/BranchData";
 import InternshipPage from "./pages/Employee/components/InternshipPage";
 import LanguagePage from "./pages/Employee/components/LanguagePage";
+import Finance from "./pages/Finance/Finance";
 
 const LoginRoute: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();

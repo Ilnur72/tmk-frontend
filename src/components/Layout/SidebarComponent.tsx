@@ -40,7 +40,6 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const { logout, role } = useAuth();
   const location = useLocation();
-
   // Filter menu items based on user role
   const menuItems = useMemo(() => {
     if (role === "viewer") {

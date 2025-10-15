@@ -8,6 +8,7 @@ import GrowthsChart from "./components/GrowthChart";
 import GenderStatistics from "./components/GenderStatistics";
 import AgeStatistics from "./components/AgeStatistics";
 import AdditionalStatsCard from "./components/AdditionalStatsCard";
+import { API_URL } from "../../config/const";
 
 // Types
 interface EmployeeData {
@@ -71,7 +72,7 @@ const apiService = {
 
   async getOrganizationStats(): Promise<OrganizationData[]> {
     const response = await axios.get(
-      `${EMPLOYEE_API_URL}/tashkilot-statistika/`
+      `${API_URL}/employers/tashkilot-statistika/`
     );
     return response.data;
   },

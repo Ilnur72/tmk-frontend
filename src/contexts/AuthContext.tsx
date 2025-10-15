@@ -96,19 +96,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         if (storedToken) {
           const decoded = parseJwtToken(storedToken);
-
           if (decoded) {
+            const { user } = decoded;
             // Extract user data from token
             const userData = {
-              id: decoded.sub || decoded.user_id || decoded.id || "",
-              name: decoded.name || decoded.username || "User",
-              role: decoded.role || "user",
-              email: decoded.email || "",
+              id: user.sub || user.user_id || user.id || "",
+              name: user.name || user.username || "User",
+              role: user.role || "user",
+              email: user.email || "",
             };
 
             setUser(userData);
             setToken(storedToken);
-            setRole(decoded.role || "user");
+            setRole(user.role || "user");
             setIsAuthenticated(true);
 
             // Set axios authorization header
