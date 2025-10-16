@@ -1,23 +1,49 @@
 import React from "react";
-import { PencilIcon, EyeIcon } from "@heroicons/react/24/outline";
-import { MetalPrice } from "../../types/finance";
+import {
+  CurrencyDollarIcon,
+  EyeIcon,
+  TrashIcon,
+} from "@heroicons/react/24/outline";
+
+interface GroupedElement {
+  elementName: string;
+  metalType: string;
+  sources: Record<
+    string,
+    {
+      currentPrice: number;
+      previousPrice?: number;
+      changePercent?: number;
+      currency: string;
+      sourceUrl?: string;
+      id: number;
+    }
+  >;
+  averagePrice: number;
+  changePercent: number;
+  lastUpdated: string;
+}
 
 interface MetalTableProps {
-  metalPrices: MetalPrice[];
+  metalPrices: GroupedElement[];
   isLoading: boolean;
-  onEdit: (item: MetalPrice) => void;
-  onViewDetail: (item: MetalPrice) => void;
+  onPriceUpdate: (item: any, sourceName: string, sourceData: any) => void;
+  onViewDetail: (item: any) => void;
+  onDelete: (item: any) => void;
   searchQuery?: string;
   selectedSourceFilter?: string;
+  sources: any[];
 }
 
 const MetalTable: React.FC<MetalTableProps> = ({
   metalPrices,
   isLoading,
-  onEdit,
+  onPriceUpdate,
   onViewDetail,
+  onDelete,
   searchQuery,
   selectedSourceFilter,
+  sources,
 }) => {
   const formatCurrency = (amount: number | string) => {
     return new Intl.NumberFormat("uz-UZ").format(Number(amount)) + " сўм";
@@ -41,6 +67,15 @@ const MetalTable: React.FC<MetalTableProps> = ({
     );
   }
 
+  // Manbalar ro'yxatini olish
+  const sourceNames = sources.map((s) => s.name);
+
+  // Debug: ma'lumotlarni tekshirish (development uchun)
+  if (process.env.NODE_ENV === "development") {
+    console.log("MetalTable - metalPrices:", metalPrices);
+    console.log("MetalTable - sources:", sources);
+  }
+
   return (
     <div className="bg-white shadow overflow-hidden sm:rounded-lg">
       <div className="overflow-x-auto">
@@ -50,15 +85,14 @@ const MetalTable: React.FC<MetalTableProps> = ({
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Металл номи
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Жорий нархи
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Охирги нархи
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Ўртача нархи
-              </th>
+              {sourceNames.map((sourceName) => (
+                <th
+                  key={sourceName}
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  {sourceName}
+                </th>
+              ))}
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Ўзгариши
               </th>
@@ -66,28 +100,74 @@ const MetalTable: React.FC<MetalTableProps> = ({
                 Охирги янгиланиш
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Манба
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Амаллар
               </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {metalPrices.map((item) => (
-              <tr key={item.id} className="hover:bg-gray-50">
+            {metalPrices.map((item, index) => (
+              <tr
+                key={`${item.elementName}-${index}`}
+                className="hover:bg-gray-50 group"
+              >
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                   {item.elementName}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {formatCurrency(item.currentPrice)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {formatCurrency(item.previousPrice || 0)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {formatCurrency(item.averagePrice || 0)}
-                </td>
+                {sourceNames.map((sourceName) => {
+                  const sourceData = item.sources[sourceName];
+
+                  // Debug: har bir source ma'lumotini tekshirish (development uchun)
+                  if (process.env.NODE_ENV === "development" && sourceData) {
+                    console.log(
+                      `Source ${sourceName} for ${item.elementName}:`,
+                      sourceData
+                    );
+                  }
+
+                  return (
+                    <td
+                      key={sourceName}
+                      className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                    >
+                      {sourceData ? (
+                        <div className="space-y-1">
+                          <div className="flex items-center space-x-2">
+                            <div className="font-medium">
+                              {formatCurrency(sourceData.currentPrice || 0)}
+                            </div>
+                            <button
+                              onClick={() =>
+                                onPriceUpdate(item, sourceName, sourceData)
+                              }
+                              className="text-blue-600 hover:text-blue-900 opacity-0 group-hover:opacity-100 transition-opacity"
+                              title="Нарх ўзгартириш"
+                            >
+                              <CurrencyDollarIcon className="h-4 w-4" />
+                            </button>
+                          </div>
+                          {sourceData.changePercent !== undefined &&
+                            sourceData.changePercent !== null &&
+                            !isNaN(Number(sourceData.changePercent)) && (
+                              <div
+                                className={`text-xs ${
+                                  Number(sourceData.changePercent) >= 0
+                                    ? "text-green-600"
+                                    : "text-red-600"
+                                }`}
+                              >
+                                {Number(sourceData.changePercent) >= 0
+                                  ? "+"
+                                  : ""}
+                                {Number(sourceData.changePercent).toFixed(2)}%
+                              </div>
+                            )}
+                        </div>
+                      ) : (
+                        <span className="text-gray-400">-</span>
+                      )}
+                    </td>
+                  );
+                })}
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                   <span
                     className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
@@ -101,17 +181,7 @@ const MetalTable: React.FC<MetalTableProps> = ({
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {formatDate(item.updatedAt)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  <a
-                    href={item.source?.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-900 hover:underline"
-                  >
-                    {item.source?.name}
-                  </a>
+                  {formatDate(item.lastUpdated)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div className="flex space-x-2">
@@ -122,12 +192,13 @@ const MetalTable: React.FC<MetalTableProps> = ({
                     >
                       <EyeIcon className="h-5 w-5" />
                     </button>
+
                     <button
-                      onClick={() => onEdit(item)}
-                      className="text-indigo-600 hover:text-indigo-900"
-                      title="Таҳрирлаш"
+                      onClick={() => onDelete(item)}
+                      className="text-red-600 hover:text-red-900"
+                      title="Ўчириш"
                     >
-                      <PencilIcon className="h-5 w-5" />
+                      <TrashIcon className="h-5 w-5" />
                     </button>
                   </div>
                 </td>

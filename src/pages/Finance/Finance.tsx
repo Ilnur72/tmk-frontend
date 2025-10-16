@@ -3,7 +3,7 @@ import { PlusIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 // Types
-import { MetalPrice, MetalType } from "../../types/finance";
+import { MetalPrice } from "../../types/finance";
 
 // Services
 import * as financeService from "../../services/financeService";
@@ -12,17 +12,17 @@ import * as financeService from "../../services/financeService";
 import SearchAndFilter from "../../components/Finance/SearchAndFilter";
 import MetalTable from "../../components/Finance/MetalTable";
 import Pagination from "../../components/Finance/Pagination";
-import MetalModal from "../../components/Finance/MetalModal";
 import SourceModal from "../../components/Finance/SourceModal";
 import PriceLogsDetail from "../../components/Finance/PriceLogsDetail";
+import PriceUpdateModal from "../../components/Finance/PriceUpdateModal";
 
 const Finance: React.FC = () => {
   const queryClient = useQueryClient();
 
   // States
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPriceUpdateModalOpen, setIsPriceUpdateModalOpen] = useState(false);
   const [isSourceModalOpen, setIsSourceModalOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<MetalPrice | null>(null);
+  const [editingPriceItem, setEditingPriceItem] = useState<any>(null);
   const [selectedMetalForDetail, setSelectedMetalForDetail] =
     useState<MetalPrice | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -30,14 +30,11 @@ const Finance: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  const [metalFormData, setMetalFormData] = useState({
-    elementName: "",
-    metalType: MetalType.STEEL,
+  const [priceUpdateData, setPriceUpdateData] = useState({
     currentPrice: "",
     previousPrice: "",
     currency: "UZS",
-    unit: "",
-    sourceId: "",
+    changeReason: "",
   });
 
   const [sourceFormData, setSourceFormData] = useState({
@@ -76,19 +73,11 @@ const Finance: React.FC = () => {
   });
 
   // Mutations
-  const createMetalMutation = useMutation({
-    mutationFn: financeService.createMetalPrice,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-      handleCloseModal();
-    },
-  });
-
   const updateMetalMutation = useMutation({
     mutationFn: financeService.updateMetalPrice,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-      handleCloseModal();
+      handleClosePriceUpdateModal();
     },
   });
 
@@ -100,17 +89,77 @@ const Finance: React.FC = () => {
     },
   });
 
+  const deleteMetalMutation = useMutation({
+    mutationFn: financeService.deleteElement,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+    },
+    onError: (error) => {
+      console.error("Element o'chirishda xato:", error);
+    },
+  });
+
   // Data processing
   const metalPrices = dashboardData?.metalPrices || [];
-  const filteredMetalPrices = metalPrices.filter((item) => {
+
+  // Debug: ma'lumotlarni tekshirish (development uchun)
+  if (process.env.NODE_ENV === "development") {
+    console.log("Dashboard data:", dashboardData);
+    console.log("Metal prices:", metalPrices);
+  }
+
+  // Elementlarni guruhlash (har bir element uchun manbalar bo'yicha)
+  const groupedElements = metalPrices.reduce((acc, item) => {
+    const key = item.elementName;
+    if (!acc[key]) {
+      acc[key] = {
+        elementName: key,
+        metalType: item.metalType,
+        sources: {},
+        averagePrice: 0,
+        changePercent: 0,
+        lastUpdated: item.updatedAt,
+      };
+    }
+
+    acc[key].sources[item.source?.name || "Unknown"] = {
+      currentPrice: item.currentPrice,
+      previousPrice: item.previousPrice,
+      changePercent: item.changePercent
+        ? Number(item.changePercent)
+        : undefined,
+      currency: item.currency,
+      sourceUrl: item.source?.url,
+      id: item.id,
+    };
+
+    return acc;
+  }, {} as Record<string, any>);
+
+  // Guruhlangan elementlarni massivga aylantirish
+  const processedElements = Object.values(groupedElements);
+
+  // Debug: jamlangan ma'lumotlarni ko'rish (development uchun)
+  if (process.env.NODE_ENV === "development") {
+    console.log("Grouped elements:", groupedElements);
+    console.log("Processed elements:", processedElements);
+  }
+
+  const filteredMetalPrices = processedElements.filter((item: any) => {
     const matchesSource =
       !selectedSourceFilter ||
-      item.sourceId.toString() === selectedSourceFilter;
+      Object.keys(item.sources).some(
+        (sourceName) =>
+          item.sources[sourceName] &&
+          Object.values(sources)
+            .find((s) => s.name === sourceName)
+            ?.id.toString() === selectedSourceFilter
+      );
+
     const matchesSearch =
       !searchQuery ||
       item.elementName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.metalType.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.source?.name.toLowerCase().includes(searchQuery.toLowerCase());
+      item.metalType.toLowerCase().includes(searchQuery.toLowerCase());
 
     return matchesSource && matchesSearch;
   });
@@ -127,44 +176,39 @@ const Finance: React.FC = () => {
   const error = dashboardError || sourcesError;
 
   // Handlers
-  const handleOpenModal = (item?: MetalPrice) => {
-    if (item) {
-      setEditingItem(item);
-      setMetalFormData({
-        elementName: item.elementName,
-        metalType: item.metalType,
-        currentPrice: item.currentPrice.toString(),
-        previousPrice: item.previousPrice?.toString() || "",
-        currency: item.currency || "UZS",
-        unit: item.unit || "",
-        sourceId: item.sourceId.toString(),
-      });
-    } else {
-      setEditingItem(null);
-      setMetalFormData({
-        elementName: "",
-        metalType: MetalType.STEEL,
-        currentPrice: "",
-        previousPrice: "",
-        currency: "UZS",
-        unit: "",
-        sourceId: "",
-      });
-    }
-    setIsModalOpen(true);
+  const handlePriceUpdate = (
+    item: any,
+    sourceName: string,
+    sourceData: any
+  ) => {
+    const sourceObj = sources.find((s) => s.name === sourceName);
+
+    setEditingPriceItem({
+      id: sourceData.id,
+      elementName: item.elementName,
+      sourceName: sourceName,
+      sourceId: sourceObj?.id,
+      ...sourceData,
+    });
+
+    setPriceUpdateData({
+      currentPrice: sourceData.currentPrice?.toString() || "",
+      previousPrice: sourceData.previousPrice?.toString() || "",
+      currency: sourceData.currency || "UZS",
+      changeReason: "",
+    });
+
+    setIsPriceUpdateModalOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setEditingItem(null);
-    setMetalFormData({
-      elementName: "",
-      metalType: MetalType.STEEL,
+  const handleClosePriceUpdateModal = () => {
+    setIsPriceUpdateModalOpen(false);
+    setEditingPriceItem(null);
+    setPriceUpdateData({
       currentPrice: "",
       previousPrice: "",
       currency: "UZS",
-      unit: "",
-      sourceId: "",
+      changeReason: "",
     });
   };
 
@@ -178,25 +222,27 @@ const Finance: React.FC = () => {
     setSourceFormData({ name: "", url: "", description: "" });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handlePriceUpdateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const data = {
-      elementName: metalFormData.elementName,
-      metalType: metalFormData.metalType,
-      currentPrice: parseFloat(metalFormData.currentPrice),
-      previousPrice: metalFormData.previousPrice
-        ? parseFloat(metalFormData.previousPrice)
-        : undefined,
-      currency: metalFormData.currency,
-      unit: metalFormData.unit,
-      sourceId: parseInt(metalFormData.sourceId),
+      elementName: editingPriceItem.elementName,
+      metalType: editingPriceItem.metalType,
+      currentPrice: parseFloat(priceUpdateData.currentPrice),
+      previousPrice: priceUpdateData.previousPrice
+        ? parseFloat(priceUpdateData.previousPrice)
+        : editingPriceItem.currentPrice, // Eski narxni saqlash
+      currency: priceUpdateData.currency,
+      unit: editingPriceItem.unit || "",
+      sourceId: editingPriceItem.sourceId,
     };
 
-    if (editingItem) {
-      updateMetalMutation.mutate({ id: editingItem.id, data });
-    } else {
-      createMetalMutation.mutate(data);
+    if (editingPriceItem) {
+      updateMetalMutation.mutate({
+        id: editingPriceItem.id,
+        data,
+      });
+      handleClosePriceUpdateModal();
     }
   };
 
@@ -209,12 +255,55 @@ const Finance: React.FC = () => {
     });
   };
 
-  const handleViewDetail = (item: MetalPrice) => {
-    setSelectedMetalForDetail(item);
+  const handleViewDetail = (item: any) => {
+    // Agar bu groupedElement bo'lsa, birinchi source'dan ma'lumot olish
+    if (item.sources) {
+      const firstSource = Object.values(item.sources)[0] as any;
+      const firstSourceName = Object.keys(item.sources)[0];
+      const sourceObj = sources.find((s) => s.name === firstSourceName);
+
+      const metalPriceItem = {
+        id: firstSource?.id,
+        elementName: item.elementName,
+        metalType: item.metalType,
+        currentPrice: firstSource?.currentPrice,
+        previousPrice: firstSource?.previousPrice,
+        currency: firstSource?.currency || "UZS",
+        sourceId: sourceObj?.id,
+        source: sourceObj,
+      } as MetalPrice;
+
+      setSelectedMetalForDetail(metalPriceItem);
+    } else {
+      setSelectedMetalForDetail(item);
+    }
   };
 
   const handleCloseDetail = () => {
     setSelectedMetalForDetail(null);
+  };
+
+  const handleDelete = (item: any) => {
+    if (item.sources) {
+      const firstSource = Object.values(item.sources)[0] as any;
+      const firstSourceId = firstSource?.id;
+
+      if (
+        window.confirm(
+          `"${item.elementName}" элементини ўчиришга ишонғингиз комилми?`
+        )
+      ) {
+        deleteMetalMutation.mutate(firstSourceId);
+      }
+    } else {
+      if (
+        window.confirm(
+          `"${item.elementName}" элементини ўчиришга ишонғингиз комилми?`
+        )
+      ) {
+        deleteMetalMutation.mutate(item.id);
+      }
+    }
   };
 
   const refreshData = () => {
@@ -271,13 +360,6 @@ const Finance: React.FC = () => {
             />
             Янгилаш
           </button>
-          <button
-            onClick={() => handleOpenModal()}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            <PlusIcon className="h-5 w-5 mr-2" />
-            Металл қўшиш
-          </button>
         </div>
       </div>
 
@@ -322,10 +404,12 @@ const Finance: React.FC = () => {
       <MetalTable
         metalPrices={paginatedMetalPrices}
         isLoading={isLoading}
-        onEdit={handleOpenModal}
+        onPriceUpdate={handlePriceUpdate}
         onViewDetail={handleViewDetail}
+        onDelete={handleDelete}
         searchQuery={searchQuery}
         selectedSourceFilter={selectedSourceFilter}
+        sources={sources}
       />
 
       {/* Pagination */}
@@ -338,18 +422,15 @@ const Finance: React.FC = () => {
         onItemsPerPageChange={handleItemsPerPageChange}
       />
 
-      {/* Metal Modal */}
-      <MetalModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onSubmit={handleSubmit}
-        editingItem={editingItem}
-        formData={metalFormData}
-        setFormData={setMetalFormData}
-        sources={sources}
-        isLoading={
-          createMetalMutation.isPending || updateMetalMutation.isPending
-        }
+      {/* Price Update Modal */}
+      <PriceUpdateModal
+        isOpen={isPriceUpdateModalOpen}
+        onClose={handleClosePriceUpdateModal}
+        onSubmit={handlePriceUpdateSubmit}
+        editingItem={editingPriceItem}
+        formData={priceUpdateData}
+        setFormData={setPriceUpdateData}
+        isLoading={updateMetalMutation.isPending}
       />
 
       {/* Source Modal */}

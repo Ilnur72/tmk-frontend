@@ -20,19 +20,34 @@ export enum MetalType {
 
 export interface MetalPrice {
   id: number;
-  elementName: string;
-  metalType: MetalType;
+  elementName: string; // backward compatibility uchun
+  metalType: MetalType; // backward compatibility uchun
   currentPrice: number;
   previousPrice?: number;
   averagePrice?: number;
   changePercent?: number;
   currency: string;
-  unit?: string;
+  unit?: string; // backward compatibility uchun
   isActive: boolean;
   sourceId: number;
   source: Source;
+  elementId?: number; // yangi relational structure uchun
+  element?: Element; // yangi relational structure uchun
+  priceLogs?: MetalPriceLog[]; // yangi relational structure uchun
   createdAt: string;
   updatedAt: string;
+}
+
+// Yangi Element interface (backend relational structure uchun)
+export interface Element {
+  id: number;
+  elementName: string;
+  metalType: MetalType;
+  unit?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  metalPrices?: MetalPrice[];
 }
 
 export interface MetalPriceLog {
