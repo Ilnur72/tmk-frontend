@@ -86,11 +86,6 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
             </button>
           </div>
         )}
-
-        {/* Results Count */}
-        <div className="text-sm text-gray-500 whitespace-nowrap">
-          {filteredCount} дан {totalCount} та кўрсатилмоқда
-        </div>
       </div>
     </div>
   );

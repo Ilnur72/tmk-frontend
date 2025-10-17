@@ -66,7 +66,7 @@ const MetalTable: React.FC<MetalTableProps> = ({
       </div>
     );
   }
-
+  console.log("MetalTable - metalPrices:", metalPrices);
   // Manbalar ro'yxatini olish
   const sourceNames = sources.map((s) => s.name);
 

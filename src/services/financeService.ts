@@ -13,9 +13,15 @@ export const fetchDashboardData = async (): Promise<DashboardData> => {
   return response.data;
 };
 
-// Yangi API: Barcha elementlarni olish
-export const fetchElements = async (): Promise<MetalPrice[]> => {
-  const response = await axios.get<MetalPrice[]>("/finance/elements");
+// Metal prices API
+export const fetchMetalPrices = async (): Promise<MetalPrice[]> => {
+  const response = await axios.get<MetalPrice[]>("/finance/metal-prices");
+  return response.data;
+};
+
+// Elements list API
+export const fetchElementsList = async () => {
+  const response = await axios.get("/finance/elements");
   return response.data;
 };
 

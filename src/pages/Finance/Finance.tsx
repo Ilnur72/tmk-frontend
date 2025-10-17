@@ -44,13 +44,24 @@ const Finance: React.FC = () => {
   });
 
   // React Query hooks
+  // Metal prices API
   const {
-    data: dashboardData,
-    isLoading: isDashboardLoading,
-    error: dashboardError,
+    data: metalPricesData = [],
+    isLoading: isMetalPricesLoading,
+    error: metalPricesError,
   } = useQuery({
-    queryKey: ["dashboard"],
-    queryFn: financeService.fetchDashboardData,
+    queryKey: ["metal-prices"],
+    queryFn: financeService.fetchMetalPrices,
+  });
+
+  // Elements API
+  const {
+    data: elementsListData = [],
+    isLoading: isElementsListLoading,
+    error: elementsListError,
+  } = useQuery({
+    queryKey: ["elements"],
+    queryFn: financeService.fetchElementsList,
   });
 
   const {
@@ -71,12 +82,12 @@ const Finance: React.FC = () => {
     queryFn: () => financeService.fetchPriceLogs(selectedMetalForDetail!.id),
     enabled: !!selectedMetalForDetail,
   });
-
   // Mutations
   const updateMetalMutation = useMutation({
     mutationFn: financeService.updateMetalPrice,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["metal-prices"] });
+      queryClient.invalidateQueries({ queryKey: ["elements"] });
       handleClosePriceUpdateModal();
     },
   });
@@ -100,50 +111,65 @@ const Finance: React.FC = () => {
   });
 
   // Data processing
-  const metalPrices = dashboardData?.metalPrices || [];
+  const metalPrices = metalPricesData || [];
 
-  // Debug: ma'lumotlarni tekshirish (development uchun)
-  if (process.env.NODE_ENV === "development") {
-    console.log("Dashboard data:", dashboardData);
-    console.log("Metal prices:", metalPrices);
-  }
+  // Elements map yaratish
+  const elementsMap = elementsListData.reduce((acc: any, element: any) => {
+    acc[element.id] = element;
+    return acc;
+  }, {});
+
+  // Debug
+  console.log("Elements map:", elementsMap);
+  console.log("First metal price:", metalPrices[0]);
 
   // Elementlarni guruhlash (har bir element uchun manbalar bo'yicha)
-  const groupedElements = metalPrices.reduce((acc, item) => {
-    const key = item.elementName;
-    if (!acc[key]) {
-      acc[key] = {
-        elementName: key,
-        metalType: item.metalType,
-        sources: {},
-        averagePrice: 0,
-        changePercent: 0,
-        lastUpdated: item.updatedAt,
+  const groupedElements = metalPrices.reduce(
+    (acc: any, item: any, index: number) => {
+      // Element nomini elementsMap dan olish
+      const element = elementsMap[item.elementId];
+      let key = "";
+
+      if (element && element.name) {
+        key = element.name;
+      } else if (element && element.symbol) {
+        key = element.symbol;
+      } else if (item.elementName) {
+        key = item.elementName;
+      } else if (item.metalType) {
+        key = item.metalType;
+      } else {
+        key = `Element_${item.elementId}`;
+      }
+      if (!acc[key]) {
+        acc[key] = {
+          elementName: key,
+          metalType: item.element?.metalType || item.metalType,
+          sources: {},
+          averagePrice: 0,
+          changePercent: 0,
+          lastUpdated: item.updatedAt,
+        };
+      }
+
+      acc[key].sources[item.source?.name || "Unknown"] = {
+        currentPrice: item.currentPrice,
+        previousPrice: item.previousPrice,
+        changePercent: item.changePercent
+          ? Number(item.changePercent)
+          : undefined,
+        currency: item.currency,
+        sourceUrl: item.source?.url,
+        id: item.id,
       };
-    }
 
-    acc[key].sources[item.source?.name || "Unknown"] = {
-      currentPrice: item.currentPrice,
-      previousPrice: item.previousPrice,
-      changePercent: item.changePercent
-        ? Number(item.changePercent)
-        : undefined,
-      currency: item.currency,
-      sourceUrl: item.source?.url,
-      id: item.id,
-    };
-
-    return acc;
-  }, {} as Record<string, any>);
+      return acc;
+    },
+    {} as Record<string, any>
+  );
 
   // Guruhlangan elementlarni massivga aylantirish
-  const processedElements = Object.values(groupedElements);
-
-  // Debug: jamlangan ma'lumotlarni ko'rish (development uchun)
-  if (process.env.NODE_ENV === "development") {
-    console.log("Grouped elements:", groupedElements);
-    console.log("Processed elements:", processedElements);
-  }
+  const processedElements = Object.values(groupedElements) as any[];
 
   const filteredMetalPrices = processedElements.filter((item: any) => {
     const matchesSource =
@@ -172,8 +198,9 @@ const Finance: React.FC = () => {
     startIndex + itemsPerPage
   );
 
-  const isLoading = isDashboardLoading || isSourcesLoading;
-  const error = dashboardError || sourcesError;
+  const isLoading =
+    isMetalPricesLoading || isElementsListLoading || isSourcesLoading;
+  const error = metalPricesError || elementsListError || sourcesError;
 
   // Handlers
   const handlePriceUpdate = (
@@ -182,7 +209,7 @@ const Finance: React.FC = () => {
     sourceData: any
   ) => {
     const sourceObj = sources.find((s) => s.name === sourceName);
-
+    console.log(item);
     setEditingPriceItem({
       id: sourceData.id,
       elementName: item.elementName,

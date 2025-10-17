@@ -41,9 +41,12 @@ export interface MetalPrice {
 // Yangi Element interface (backend relational structure uchun)
 export interface Element {
   id: number;
-  elementName: string;
+  name: string; // Backend Entity da name field
+  symbol: string; // Backend Entity da symbol field
   metalType: MetalType;
-  unit?: string;
+  description?: string; // Backend Entity da description field
+  atomicWeight?: number; // Backend Entity da atomicWeight field
+  atomicNumber?: number; // Backend Entity da atomicNumber field
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
