@@ -15,14 +15,18 @@ import Pagination from "../../components/Finance/Pagination";
 import SourceModal from "../../components/Finance/SourceModal";
 import PriceLogsDetail from "../../components/Finance/PriceLogsDetail";
 import PriceUpdateModal from "../../components/Finance/PriceUpdateModal";
-
+import PriceChartModal from "../../components/Finance/PriceChartModal";
 const Finance: React.FC = () => {
   const queryClient = useQueryClient();
 
   // States
   const [isPriceUpdateModalOpen, setIsPriceUpdateModalOpen] = useState(false);
   const [isSourceModalOpen, setIsSourceModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [editingPriceItem, setEditingPriceItem] = useState<any>(null);
+  const [selectedElementForChart, setSelectedElementForChart] =
+    useState<any>(null);
+  const [selectedSourceType, setSelectedSourceType] = useState<string>("all");
   const [selectedMetalForDetail, setSelectedMetalForDetail] =
     useState<MetalPrice | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -249,6 +253,24 @@ const Finance: React.FC = () => {
     setSourceFormData({ name: "", url: "", description: "" });
   };
 
+  const handleRowClick = (element: any) => {
+    setSelectedElementForChart(element);
+    setSelectedSourceType("all");
+    setIsDetailModalOpen(true);
+  };
+
+  const handleSourceClick = (element: any, sourceType: string) => {
+    setSelectedElementForChart(element);
+    setSelectedSourceType(sourceType);
+    setIsDetailModalOpen(true);
+  };
+
+  const handleCloseDetailModal = () => {
+    setIsDetailModalOpen(false);
+    setSelectedElementForChart(null);
+    setSelectedSourceType("all");
+  };
+
   const handlePriceUpdateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -434,6 +456,8 @@ const Finance: React.FC = () => {
         onPriceUpdate={handlePriceUpdate}
         onViewDetail={handleViewDetail}
         onDelete={handleDelete}
+        onRowClick={handleRowClick}
+        onSourceClick={handleSourceClick}
         searchQuery={searchQuery}
         selectedSourceFilter={selectedSourceFilter}
         sources={sources}
@@ -468,6 +492,15 @@ const Finance: React.FC = () => {
         formData={sourceFormData}
         setFormData={setSourceFormData}
         isLoading={createSourceMutation.isPending}
+      />
+
+      {/* Price Chart Modal */}
+      <PriceChartModal
+        isOpen={isDetailModalOpen}
+        onClose={handleCloseDetailModal}
+        element={selectedElementForChart}
+        sourceType={selectedSourceType}
+        sources={sources}
       />
     </div>
   );

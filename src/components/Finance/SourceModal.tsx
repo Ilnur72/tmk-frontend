@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface SourceModalProps {
   isOpen: boolean;
@@ -21,122 +22,208 @@ const SourceModal: React.FC<SourceModalProps> = ({
   setFormData,
   isLoading,
 }) => {
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
+
+  const modalVariants = {
+    hidden: {
+      opacity: 0,
+      scale: 0.8,
+      y: 50,
+    },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      transition: {
+        type: "spring" as const,
+        damping: 25,
+        stiffness: 300,
+      },
+    },
+    exit: {
+      opacity: 0,
+      scale: 0.8,
+      y: 50,
+      transition: { duration: 0.2 },
+    },
+  };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div className="fixed inset-0 transition-opacity" aria-hidden="true">
-          <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
-        </div>
-
-        <span
-          className="hidden sm:inline-block sm:align-middle sm:h-screen"
-          aria-hidden="true"
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          className="fixed inset-0 z-50 overflow-y-auto"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
         >
-          &#8203;
-        </span>
+          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <motion.div
+              className="fixed inset-0 bg-gray-500 bg-opacity-75"
+              aria-hidden="true"
+              onClick={onClose}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
 
-        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-          <form onSubmit={onSubmit}>
-            <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-              <div className="sm:flex sm:items-start">
-                <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
-                  <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                    Янги манба қўшиш
-                  </h3>
+            <span
+              className="hidden sm:inline-block sm:align-middle sm:h-screen"
+              aria-hidden="true"
+            >
+              &#8203;
+            </span>
 
-                  <div className="space-y-4">
-                    <div>
-                      <label
-                        htmlFor="sourceName"
-                        className="block text-sm font-medium text-gray-700"
+            <motion.div
+              className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+              variants={modalVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              <form onSubmit={onSubmit}>
+                <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                  <div className="sm:flex sm:items-start">
+                    <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
+                      <motion.h3
+                        className="text-lg leading-6 font-medium text-gray-900 mb-4"
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
                       >
-                        Манба номи
-                      </label>
-                      <input
-                        type="text"
-                        id="sourceName"
-                        required
-                        value={formData.name}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            name: e.target.value,
-                          })
-                        }
-                        className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                      />
-                    </div>
+                        Янги манба қўшиш
+                      </motion.h3>
 
-                    <div>
-                      <label
-                        htmlFor="sourceUrl"
-                        className="block text-sm font-medium text-gray-700"
+                      <motion.div
+                        className="space-y-4"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.2 }}
                       >
-                        Манба URL
-                      </label>
-                      <input
-                        type="url"
-                        id="sourceUrl"
-                        required
-                        value={formData.url}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            url: e.target.value,
-                          })
-                        }
-                        className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                        placeholder="https://example.com"
-                      />
-                    </div>
+                        <motion.div
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.3 }}
+                        >
+                          <label
+                            htmlFor="sourceName"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            Манба номи
+                          </label>
+                          <input
+                            type="text"
+                            id="sourceName"
+                            required
+                            value={formData.name}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                name: e.target.value,
+                              })
+                            }
+                            className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                          />
+                        </motion.div>
 
-                    <div>
-                      <label
-                        htmlFor="sourceDescription"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Тавсиф
-                      </label>
-                      <textarea
-                        id="sourceDescription"
-                        rows={3}
-                        value={formData.description}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            description: e.target.value,
-                          })
-                        }
-                        className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                        placeholder="Манба ҳақида қисқача маълумот"
-                      />
+                        <motion.div
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.4 }}
+                        >
+                          <label
+                            htmlFor="sourceUrl"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            Манба URL
+                          </label>
+                          <input
+                            type="url"
+                            id="sourceUrl"
+                            required
+                            value={formData.url}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                url: e.target.value,
+                              })
+                            }
+                            className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                            placeholder="https://example.com"
+                          />
+                        </motion.div>
+
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.5 }}
+                        >
+                          <label
+                            htmlFor="sourceDescription"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            Тавсиф
+                          </label>
+                          <textarea
+                            id="sourceDescription"
+                            rows={3}
+                            value={formData.description}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                description: e.target.value,
+                              })
+                            }
+                            className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                            placeholder="Манба ҳақида қисқача маълумот"
+                          />
+                        </motion.div>
+                      </motion.div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary text-base font-medium text-white hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50"
-              >
-                {isLoading ? "Сақланмоқда..." : "Қўшиш"}
-              </button>
-              <button
-                type="button"
-                onClick={onClose}
-                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-              >
-                Бекор қилиш
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+                <motion.div
+                  className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <motion.button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50"
+                    whileHover={{ scale: isLoading ? 1 : 1.05 }}
+                    whileTap={{ scale: isLoading ? 1 : 0.95 }}
+                  >
+                    {isLoading ? "Юкланмоқда..." : "Сақлаш"}
+                  </motion.button>
+                  <motion.button
+                    type="button"
+                    onClick={onClose}
+                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:w-auto sm:text-sm"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Бекор қилиш
+                  </motion.button>
+                </motion.div>
+              </form>
+            </motion.div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

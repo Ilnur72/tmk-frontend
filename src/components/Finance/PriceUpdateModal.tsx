@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
 interface PriceUpdateModalProps {
@@ -25,13 +25,43 @@ const PriceUpdateModal: React.FC<PriceUpdateModalProps> = ({
   setFormData,
   isLoading,
 }) => {
-  if (!isOpen) return null;
+  const [isVisible, setIsVisible] = useState(false);
+  const [shouldRender, setShouldRender] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setShouldRender(true);
+      document.body.style.overflow = "hidden";
+      setTimeout(() => setIsVisible(true), 10);
+    } else {
+      setIsVisible(false);
+      setTimeout(() => {
+        setShouldRender(false);
+        document.body.style.overflow = "unset";
+      }, 300);
+    }
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
+
+  if (!shouldRender) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
+    <div
+      className={`fixed inset-0 z-50 overflow-y-auto transition-all duration-300 ${
+        isVisible ? "opacity-100" : "opacity-0"
+      }`}
+    >
       <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div className="fixed inset-0 transition-opacity" aria-hidden="true">
-          <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+        <div
+          className={`fixed inset-0 transition-opacity duration-300 ${
+            isVisible ? "opacity-75" : "opacity-0"
+          }`}
+          aria-hidden="true"
+        >
+          <div className="absolute inset-0 bg-gray-500"></div>
         </div>
 
         <span
@@ -41,7 +71,13 @@ const PriceUpdateModal: React.FC<PriceUpdateModalProps> = ({
           &#8203;
         </span>
 
-        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+        <div
+          className={`inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all duration-300 sm:my-8 sm:align-middle sm:max-w-lg sm:w-full ${
+            isVisible
+              ? "scale-100 opacity-100 translate-y-0"
+              : "scale-95 opacity-0 translate-y-4"
+          }`}
+        >
           <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div className="sm:flex sm:items-start">
               <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">

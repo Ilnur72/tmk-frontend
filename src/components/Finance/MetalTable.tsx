@@ -30,6 +30,8 @@ interface MetalTableProps {
   onPriceUpdate: (item: any, sourceName: string, sourceData: any) => void;
   onViewDetail: (item: any) => void;
   onDelete: (item: any) => void;
+  onRowClick: (element: any) => void;
+  onSourceClick?: (element: any, sourceType: string) => void;
   searchQuery?: string;
   selectedSourceFilter?: string;
   sources: any[];
@@ -41,6 +43,8 @@ const MetalTable: React.FC<MetalTableProps> = ({
   onPriceUpdate,
   onViewDetail,
   onDelete,
+  onRowClick,
+  onSourceClick,
   searchQuery,
   selectedSourceFilter,
   sources,
@@ -132,13 +136,23 @@ const MetalTable: React.FC<MetalTableProps> = ({
                       {sourceData ? (
                         <div className="space-y-1">
                           <div className="flex items-center space-x-2">
-                            <div className="font-medium">
+                            <div
+                              className="font-medium cursor-pointer hover:text-blue-600 hover:underline transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (onSourceClick) {
+                                  onSourceClick(item, sourceName);
+                                }
+                              }}
+                              title={`${sourceName} нарх тарихини кўриш`}
+                            >
                               {formatCurrency(sourceData.currentPrice || 0)}
                             </div>
                             <button
-                              onClick={() =>
-                                onPriceUpdate(item, sourceName, sourceData)
-                              }
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onPriceUpdate(item, sourceName, sourceData);
+                              }}
                               className="text-blue-600 hover:text-blue-900 opacity-0 group-hover:opacity-100 transition-opacity"
                               title="Нарх ўзгартириш"
                             >
@@ -186,15 +200,21 @@ const MetalTable: React.FC<MetalTableProps> = ({
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div className="flex space-x-2">
                     <button
-                      onClick={() => onViewDetail(item)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onRowClick(item); // Барча манбаларнинг нарх тарихини кўрсатиш
+                      }}
                       className="text-blue-600 hover:text-blue-900"
-                      title="Тафсилотлар"
+                      title="Барча манбалар нарх тарихи"
                     >
                       <EyeIcon className="h-5 w-5" />
                     </button>
 
                     <button
-                      onClick={() => onDelete(item)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete(item);
+                      }}
                       className="text-red-600 hover:text-red-900"
                       title="Ўчириш"
                     >
