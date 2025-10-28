@@ -62,7 +62,6 @@ interface BirthDataResponse {
 }
 
 // API Service
-const EMPLOYEE_API_URL = "http://84.54.118.39:8444/1c";
 
 const apiService = {
   async getDashboardData(): Promise<DashboardApiResponse> {

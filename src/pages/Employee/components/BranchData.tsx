@@ -9,12 +9,10 @@ interface BranchData {
   hodimlar_soni: number;
 }
 
-// API Service
-const API_BASE_URL = 'http://84.54.118.39:8444/1c';
 
 const apiService = {
   async getAllBranches(): Promise<BranchData[]> {
-    const response = await axios.get(`${API_BASE_URL}/tashkilot-statistika/`);
+    const response = await axios.get(`/employers/tashkilot-statistika/`);
     return response.data.map((item: any, index: number) => ({
       id: index,
       filial_nomi: item.tashkilot,
