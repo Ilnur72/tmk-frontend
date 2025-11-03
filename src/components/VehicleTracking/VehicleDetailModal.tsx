@@ -70,7 +70,7 @@ const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+      <div className="flex items-center justify-center min-h-screen p-4">
         {/* Overlay */}
         <div
           className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
@@ -78,9 +78,9 @@ const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
         ></div>
 
         {/* Modal */}
-        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
-          {/* Header */}
-          <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div className="relative bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col">
+          {/* Header - Fixed */}
+          <div className="bg-white px-6 py-4 border-b border-gray-200 flex-shrink-0">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
                 <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
@@ -115,8 +115,10 @@ const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
                 <X className="h-6 w-6" />
               </button>
             </div>
+          </div>
 
-            {/* Content */}
+          {/* Content - Scrollable */}
+          <div className="flex-1 overflow-y-auto px-6 py-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Joylashuv ma'lumotlari */}
               <div className="bg-gray-50 p-4 rounded-lg">
@@ -336,11 +338,11 @@ const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+          {/* Footer - Fixed */}
+          <div className="bg-gray-50 px-6 py-3 border-t border-gray-200 flex justify-end flex-shrink-0">
             <button
               type="button"
-              className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+              className="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               onClick={onClose}
             >
               Yopish
