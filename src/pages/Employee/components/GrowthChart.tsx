@@ -66,6 +66,11 @@ const monthNames: { [key: number]: { full: string; short: string } } = {
 
 // Data transformation function
 const transformData = (data: EARSData[]): ChartData[] => {
+  // Check if data exists and is an array
+  if (!data || !Array.isArray(data)) {
+    return [];
+  }
+
   // Sort by date (oldest first for proper growth calculation)
   const sortedData = [...data].sort(
     (a, b) => new Date(a.month).getTime() - new Date(b.month).getTime()
@@ -93,6 +98,8 @@ const filterDataByDateRange = (
   data: ChartData[],
   dateRange: DateRange | null
 ): ChartData[] => {
+  // Check if data is valid array
+  if (!data || !Array.isArray(data)) return [];
   if (!dateRange || !dateRange.start || !dateRange.end) return data;
 
   const startDate = new Date(dateRange.start);
@@ -106,7 +113,7 @@ const filterDataByDateRange = (
 
 // Get predefined date ranges
 const getDateRangeOptions = (data: ChartData[]) => {
-  if (!data.length) return [];
+  if (!data || !Array.isArray(data) || !data.length) return [];
 
   const now = new Date();
   const currentYear = now.getFullYear();
@@ -198,7 +205,10 @@ const EmployeeGrowthChart: React.FC = () => {
   const [showCustomDatePicker, setShowCustomDatePicker] = useState(false);
 
   // Transform and filter data
-  const allChartData = earsData ? transformData(earsData) : [];
+  const allChartData = useMemo(() => {
+    return earsData ? transformData(earsData) : [];
+  }, [earsData]);
+
   const dateRangeOptions = getDateRangeOptions(allChartData);
 
   const filteredChartData = useMemo(() => {

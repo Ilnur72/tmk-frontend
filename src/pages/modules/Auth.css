@@ -1,0 +1,389 @@
+.auth-container {
+  display: flex;
+  min-height: 100vh;
+  font-family: "Arial", sans-serif;
+}
+
+.auth-left {
+  flex: 1;
+  background-color: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.auth-form-container {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 480px;
+}
+
+.auth-form-container h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 2rem;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.account-section {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.account-icon {
+  background: #33b5d6;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+  font-size: 1.2rem;
+}
+
+.account-info h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.account-info p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.auth-tabs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.tab {
+  background: none;
+  border: none;
+  color: #33b5d6;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.tab.active {
+  background: #33b5d6;
+  color: white;
+}
+
+.tab:hover:not(.active) {
+  background: #f3f4f6;
+}
+
+.auth-tabs span {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.auth-form {
+  width: 100%;
+}
+
+.form-header h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.875rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #33b5d6;
+}
+
+.password-group {
+  position: relative;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #666;
+}
+
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #666;
+  cursor: pointer;
+}
+
+.remember-me input {
+  width: auto;
+  margin: 0;
+}
+
+.privacy-notice {
+  margin-bottom: 1.5rem;
+}
+
+.privacy-notice p {
+  font-size: 0.8rem;
+  color: #666;
+  line-height: 1.4;
+}
+
+.privacy-link {
+  color: #33b5d6;
+  text-decoration: none;
+}
+
+.privacy-link:hover {
+  text-decoration: underline;
+}
+
+.auth-submit-btn {
+  width: 100%;
+  background: #33b5d6;
+  color: white;
+  border: none;
+  padding: 0.875rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-bottom: 1rem;
+}
+
+.auth-submit-btn:hover {
+  opacity: 0.9;
+}
+
+.forgot-password {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.forgot-link {
+  color: #666;
+  text-decoration: none;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.forgot-link:hover {
+  color: #33b5d6;
+}
+
+.divider {
+  text-align: center;
+  margin: 1.5rem 0;
+  position: relative;
+}
+
+.divider::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #e5e7eb;
+}
+
+.divider span {
+  background: white;
+  padding: 0 1rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.google-auth {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.google-signin-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #dadce0;
+  border-radius: 6px;
+  background: white;
+  color: #3c4043;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+  justify-content: flex-start;
+}
+
+.google-signin-btn:hover {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.google-signin-btn img {
+  width: 18px;
+  height: 18px;
+}
+
+.google-signin-btn .email {
+  color: #5f6368;
+  font-size: 0.8rem;
+  margin-left: auto;
+}
+
+.google-note {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: #f59e0b;
+  text-align: center;
+  line-height: 1.3;
+  padding: 0.5rem;
+  background: #fef3c7;
+  border-radius: 4px;
+  border-left: 3px solid #f59e0b;
+}
+
+.google-note code {
+  background: #374151;
+  color: white;
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  font-size: 0.7rem;
+}
+
+.language-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #666;
+  cursor: pointer;
+}
+
+.language-selector img {
+  width: 20px;
+  height: auto;
+}
+
+/* Right side styles */
+.auth-right {
+  flex: 1;
+  background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  color: white;
+  position: relative;
+}
+
+.mining-logo {
+  margin-bottom: 2rem;
+}
+
+.logo-circle {
+  width: 200px;
+  height: 200px;
+  border: 4px solid white;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.mining-tools {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 2.5rem;
+}
+
+.mining-text {
+  font-size: 1.5rem;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.saudi-title {
+  font-size: 3rem;
+  font-weight: bold;
+  text-align: center;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .auth-container {
+    flex-direction: column;
+  }
+
+  .auth-right {
+    min-height: 300px;
+  }
+
+  .logo-circle {
+    width: 150px;
+    height: 150px;
+  }
+
+  .saudi-title {
+    font-size: 2rem;
+  }
+
+  .mining-tools {
+    font-size: 2rem;
+  }
+
+  .mining-text {
+    font-size: 1.2rem;
+  }
+}

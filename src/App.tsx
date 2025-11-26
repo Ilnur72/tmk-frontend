@@ -21,6 +21,15 @@ import BranchesPage from "./pages/Employee/components/BranchData";
 import InternshipPage from "./pages/Employee/components/InternshipPage";
 import LanguagePage from "./pages/Employee/components/LanguagePage";
 import Finance from "./pages/Finance/Finance";
+import Partners from "./pages/Partners/Partners";
+import Applications from "./pages/Applications/Applications";
+
+// Modules imports - alohida module
+import ModuleAuth from "./pages/modules/Auth";
+import ModuleDashboard from "./pages/modules/Dashboard";
+import ModuleListingForm from "./pages/modules/ListingForm";
+import ModulePartnerProfile from "./pages/modules/PartnerProfile";
+import { useModulesAuth } from "./pages/modules/hooks/useModulesAuth";
 
 const LoginRoute: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -96,12 +105,50 @@ const AppRoutes: React.FC = () => {
           <Route path="/production" element={<Production />} />
           <Route path="/sales" element={<Sales />} />
           <Route path="/finance" element={<Finance />} />
+          <Route path="/partners" element={<Partners />} />
+          <Route path="/applications" element={<Applications />} />
         </>
       )}
 
       {/* Viewer can only access factory pages */}
       {role === "viewer" && (
         <Route path="*" element={<Navigate to="/factory" />} />
+      )}
+    </Routes>
+  );
+};
+
+// Partners Module Routes - alohida auth va layout
+const PartnersModuleRoutes: React.FC = () => {
+  const { isAuthenticated, isLoading } = useModulesAuth();
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <p className="ml-4">Checking authentication...</p>
+      </div>
+    );
+  }
+
+  return (
+    <Routes>
+      <Route path="/auth" element={<ModuleAuth />} />
+
+      {/* Protected routes - faqat authenticated user'lar uchun */}
+      {isAuthenticated ? (
+        <>
+          <Route path="/dashboard" element={<ModuleDashboard />} />
+          <Route path="/applications" element={<ModuleListingForm />} />
+          <Route path="/profile" element={<ModulePartnerProfile />} />
+          <Route
+            path="/"
+            element={<Navigate to="/partner-portal/dashboard" />}
+          />
+        </>
+      ) : (
+        <Route path="*" element={<Navigate to="/partner-portal/auth" />} />
       )}
     </Routes>
   );
@@ -123,7 +170,16 @@ const App: React.FC = () => {
       <AuthProvider>
         <Router>
           <Routes>
+            {/* Asosiy tizim routes */}
             <Route path="/login" element={<LoginRoute />} />
+
+            {/* Partner Portal - alohida tizim, o'z auth va layouti bilan */}
+            <Route
+              path="/partner-portal/*"
+              element={<PartnersModuleRoutes />}
+            />
+
+            {/* Asosiy tizim - himoyalangan routes */}
             <Route
               path="/*"
               element={

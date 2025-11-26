@@ -11,12 +11,6 @@ import AdditionalStatsCard from "./components/AdditionalStatsCard";
 import { API_URL } from "../../config/const";
 
 // Types
-interface EmployeeData {
-  employees_full: number;
-  employees_office: number;
-  employees_office_man: number;
-  employees_office_woman: number;
-}
 
 interface OrganizationData {
   count: number;
@@ -169,7 +163,8 @@ const Dashboard: React.FC = () => {
   } = useOrganizationStats();
 
   const {
-    data: birthData,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    data: _birthData, // TODO: Use birth data for birth analytics
     isLoading: isBirthLoading,
     error: birthError,
   } = useBirthData();
@@ -252,7 +247,8 @@ const Dashboard: React.FC = () => {
 
   // Calculate language statistics
   const getLanguageStats = () => {
-    if (!languageData.length) return { totalEmployees: 0, languages: [] };
+    if (!languageData || !Array.isArray(languageData) || !languageData.length)
+      return { totalEmployees: 0, languages: [] };
 
     const languageCount: { [key: string]: number } = {};
 
@@ -377,7 +373,7 @@ const Dashboard: React.FC = () => {
           />
           <AdditionalStatsCard
             title="Амалиёт муддати<br />тугайдиганлар"
-            value={internshipData.length.toString()}
+            value={(internshipData?.length || 0).toString()}
             description="Амалиёт муддати якин тугайдиган ходимлар"
             hasChart={false}
             isLoading={isInternshipLoading}
@@ -385,12 +381,12 @@ const Dashboard: React.FC = () => {
           />
           <AdditionalStatsCard
             title="Паспорт муддати<br />тугайдиганлар"
-            value={passportData?.еxpiration_date.toString() || "0"}
+            value={passportData?.еxpiration_date?.toString() || "0"}
             description={`30 кун ичида муддати тугайдиганлар: ${
               passportData?.coming_soon || 0
             }`}
             percentage={
-              passportData
+              passportData && passportData.еxpiration_date
                 ? `${Math.round(
                     (passportData.coming_soon / passportData.еxpiration_date) *
                       100
@@ -401,11 +397,14 @@ const Dashboard: React.FC = () => {
             chartType="pie"
             chartData={getPassportChartData()}
             isLoading={isPassportLoading}
-            />
+            onClick={handlePassportClick}
+          />
           <AdditionalStatsCard
             title="Чет тилларини<br />биладиганлар"
-            value={languageStats.totalEmployees.toString()}
-            description={`Энг кўп: ${languageStats.languages[0]?.[0] || 'Нет данных'} (${languageStats.languages[0]?.[1] || 0})`}
+            value={(languageStats.totalEmployees || 0).toString()}
+            description={`Энг кўп: ${
+              languageStats.languages[0]?.[0] || "Нет данных"
+            } (${languageStats.languages[0]?.[1] || 0})`}
             hasChart={true}
             chartType="pie"
             chartData={getLanguageChartData()}

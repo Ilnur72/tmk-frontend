@@ -25,6 +25,8 @@ const allMenuItems = [
   { href: "/finance", icon: BarChart2, title: "Молиявий кўрсаткичлар" },
   { href: "/employers", icon: Users, title: "Ходимлар" },
   { href: "/techniques", icon: Codepen, title: "Техникалар" },
+  { href: "/partners", icon: MapPin, title: "Ҳамкорлар" },
+  { href: "/applications", icon: GitPullRequest, title: "Аризалар" },
   {
     href: "/setting",
     icon: Settings,
@@ -177,11 +179,11 @@ const Sidebar = () => {
       </div>
 
       {/* Desktop Sidebar */}
-      <nav className="side-nav hidden w-[80px] overflow-x-hidden pb-16 pr-5 md:block xl:w-[230px]">
+      <nav className="side-nav hidden w-[80px] overflow-x-hidden  pr-5 md:block xl:w-[230px]">
         <a className="flex items-center pt-4 pl-5 intro-x" href="/">
           <img className="w-42" src="/image/logo-full-w.png" alt="TMK" />
         </a>
-        <div className="my-6 side-nav__divider"></div>
+        <div className="my-3 side-nav__divider"></div>
         <ul>
           {menuItems.map((item) => {
             const Icon = item.icon;
