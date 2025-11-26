@@ -12,7 +12,7 @@ interface FormData {
 
 const Auth: React.FC = () => {
   const [isLogin, setIsLogin] = useState<boolean>(true);
-  const [formData] = useState<FormData>({
+  const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
     email: "",
@@ -80,6 +80,16 @@ const Auth: React.FC = () => {
     }
   }, []);
 
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   return (
     <div className="auth-container">
       <div className="auth-left">
@@ -127,7 +137,7 @@ const Auth: React.FC = () => {
                     name="firstName"
                     placeholder="First Name"
                     value={formData.firstName}
-                    onChange={() => {}}
+                    onChange={handleInputChange}
                     required
                   />
                 </div>
@@ -137,7 +147,7 @@ const Auth: React.FC = () => {
                     name="lastName"
                     placeholder="Last Name"
                     value={formData.lastName}
-                    onChange={() => {}}
+                    onChange={handleInputChange}
                     required
                   />
                 </div>
@@ -147,7 +157,7 @@ const Auth: React.FC = () => {
                     name="email"
                     placeholder="Email"
                     value={formData.email}
-                    onChange={() => {}}
+                    onChange={handleInputChange}
                     required
                   />
                 </div>
@@ -161,7 +171,7 @@ const Auth: React.FC = () => {
                   name="email"
                   placeholder="Email"
                   value={formData.email}
-                  onChange={() => {}}
+                  onChange={handleInputChange}
                   required
                 />
               </div>
@@ -173,7 +183,7 @@ const Auth: React.FC = () => {
                 name="password"
                 placeholder="Password"
                 value={formData.password}
-                onChange={() => {}}
+                onChange={handleInputChange}
                 required
               />
               <span className="password-toggle">👁</span>
@@ -186,7 +196,7 @@ const Auth: React.FC = () => {
                     type="checkbox"
                     name="rememberMe"
                     checked={formData.rememberMe}
-                    onChange={() => {}}
+                    onChange={handleInputChange}
                   />
                   Remember me
                 </label>
