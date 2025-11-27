@@ -6,8 +6,9 @@ import { Activity, Wifi, Zap, ZapOff } from "lucide-react";
 import VehicleDetailModal from "./VehicleDetailModal";
 import TransportListModal from "./TransportListModal";
 import { useWebSocket } from "../../hooks/useWebSocket";
+import { API_URL } from "../../config/const";
 
-const API_BASE_URL = "http://localhost:8085";
+const API_BASE_URL = API_URL || "http://localhost:8085";
 
 interface Vehicle {
   id: number;

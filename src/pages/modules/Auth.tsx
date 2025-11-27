@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "./services/api";
 import "./Auth.css";
+import { API_URL } from "../../config/const";
 
 interface FormData {
   firstName: string;
@@ -292,7 +293,7 @@ const Auth: React.FC = () => {
                 onClick={() => {
                   // Production server address ishlatish
                   const apiUrl =
-                    process.env.REACT_APP_API_URL || "http://localhost:8085";
+                    API_URL || "http://localhost:8085";
                   const url = `${apiUrl}/partners/auth/google`;
 
                   window.location.href = url;

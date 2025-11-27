@@ -1,7 +1,8 @@
 import axios from "axios";
+import { API_URL } from "../../../config/const";
 
 // API base configuration - modules uchun
-const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:8085"; // Backend server manzili
+const API_BASE_URL = API_URL || "http://localhost:8085"; // Backend server manzili
 
 // Modules API instance - o'z token management bilan
 const api = axios.create({
