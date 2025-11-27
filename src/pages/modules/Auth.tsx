@@ -7,7 +7,6 @@ interface FormData {
   lastName: string;
   email: string;
   password: string;
-  rememberMe: boolean;
 }
 
 const Auth: React.FC = () => {
@@ -17,7 +16,6 @@ const Auth: React.FC = () => {
     lastName: "",
     email: "",
     password: "",
-    rememberMe: false,
   });
 
   // Google OAuth callback code ni handle qilish
@@ -90,6 +88,50 @@ const Auth: React.FC = () => {
     }));
   };
 
+  // Form submit handler
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (isLogin) {
+        // Login
+        const resp = await api.post("/partners/auth/login", {
+          email: formData.email,
+          password: formData.password,
+        });
+        if (resp.data?.token) {
+          localStorage.setItem("modules_auth_token", resp.data.token);
+        }
+        if (resp.data?.partner) {
+          localStorage.setItem(
+            "modules_partner_data",
+            JSON.stringify(resp.data.partner)
+          );
+        }
+        window.location.href = "/partner-portal/dashboard";
+      } else {
+        // Register
+        const resp = await api.post("/partners/auth/register", {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          password: formData.password,
+        });
+        if (resp.data?.token) {
+          localStorage.setItem("modules_auth_token", resp.data.token);
+        }
+        if (resp.data?.partner) {
+          localStorage.setItem(
+            "modules_partner_data",
+            JSON.stringify(resp.data.partner)
+          );
+        }
+        window.location.href = "/partner-portal/dashboard";
+      }
+    } catch (err: any) {
+      alert(err?.response?.data?.message || "Auth failed");
+    }
+  };
+
   return (
     <div className="auth-container">
       <div className="auth-left">
@@ -124,7 +166,7 @@ const Auth: React.FC = () => {
             </button>
           </div>
 
-          <form className="auth-form">
+          <form className="auth-form" onSubmit={handleSubmit}>
             <div className="form-header">
               <h2>{isLogin ? "Sign in" : "Register"}</h2>
             </div>
@@ -188,20 +230,6 @@ const Auth: React.FC = () => {
               />
               <span className="password-toggle">👁</span>
             </div>
-
-            {isLogin && (
-              <div className="form-options">
-                <label className="remember-me">
-                  <input
-                    type="checkbox"
-                    name="rememberMe"
-                    checked={formData.rememberMe}
-                    onChange={handleInputChange}
-                  />
-                  Remember me
-                </label>
-              </div>
-            )}
 
             {!isLogin && (
               <div className="privacy-notice">
