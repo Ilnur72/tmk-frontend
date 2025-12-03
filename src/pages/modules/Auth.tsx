@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import api from "./services/api";
 import "./Auth.css";
 import { API_URL } from "../../config/const";
@@ -12,6 +16,7 @@ interface FormData {
 
 const Auth: React.FC = () => {
   const [isLogin, setIsLogin] = useState<boolean>(true);
+  const { t, i18n } = useTranslation();
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
@@ -19,6 +24,7 @@ const Auth: React.FC = () => {
     password: "",
   });
 
+  const navigate = useNavigate();
   // Google OAuth callback code ni handle qilish
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -31,7 +37,7 @@ const Auth: React.FC = () => {
         localStorage.setItem("modules_auth_token", token);
       if (typeof partnerId === "string")
         localStorage.setItem("modules_partner_id", partnerId);
-      window.location.href = `/partner-portal/dashboard`;
+      navigate("/partner-portal/dashboard");
       return;
     }
 
@@ -67,14 +73,15 @@ const Auth: React.FC = () => {
             document.title,
             window.location.pathname
           );
-          window.location.href = `/partner-portal/dashboard`;
+          navigate("/partner-portal/dashboard");
         })
-        .catch(() => {
+        .catch((err) => {
           window.history.replaceState(
             {},
             document.title,
             window.location.pathname
           );
+          toast.error(err?.response?.data?.message || "Google auth failed");
         });
     }
   }, []);
@@ -108,9 +115,11 @@ const Auth: React.FC = () => {
             JSON.stringify(resp.data.partner)
           );
         }
-        window.location.href = "/partner-portal/dashboard";
+        navigate("/partner-portal/dashboard");
       } else {
         // Register
+        console.log("Registering with data:", formData);
+
         const resp = await api.post("/partners/auth/register", {
           firstName: formData.firstName,
           lastName: formData.lastName,
@@ -126,26 +135,27 @@ const Auth: React.FC = () => {
             JSON.stringify(resp.data.partner)
           );
         }
-        window.location.href = "/partner-portal/dashboard";
+        navigate("/partner-portal/dashboard");
       }
     } catch (err: any) {
-      alert(err?.response?.data?.message || "Auth failed");
+      toast.error(err?.response?.data?.message || "Auth failed");
     }
   };
 
   return (
     <div className="auth-container">
+      <ToastContainer position="top-center" autoClose={3000} />
       <div className="auth-left">
         <div className="auth-form-container">
-          <h1>Your listing details</h1>
+          <h1>{t("account")}</h1>
 
           <div className="account-section">
             <div className="account-icon">
               <span>👤</span>
             </div>
             <div className="account-info">
-              <h3>Account</h3>
-              <p>You must be logged in to post new listings.</p>
+              <h3>{t("account")}</h3>
+              <p>{t("you_must_be_logged_in")}</p>
             </div>
           </div>
 
@@ -155,7 +165,7 @@ const Auth: React.FC = () => {
               onClick={() => setIsLogin(true)}
               type="button"
             >
-              👤 Sign in
+              👤 {t("sign_in")}
             </button>
             <span>or</span>
             <button
@@ -163,13 +173,13 @@ const Auth: React.FC = () => {
               onClick={() => setIsLogin(false)}
               type="button"
             >
-              👤 Register
+              👤 {t("sign_up")}
             </button>
           </div>
 
           <form className="auth-form" onSubmit={handleSubmit}>
             <div className="form-header">
-              <h2>{isLogin ? "Sign in" : "Register"}</h2>
+              <h2>{isLogin ? t("sign_in") : t("sign_up")}</h2>
             </div>
 
             {!isLogin && (
@@ -178,7 +188,7 @@ const Auth: React.FC = () => {
                   <input
                     type="text"
                     name="firstName"
-                    placeholder="First Name"
+                    placeholder={t("first_name")}
                     value={formData.firstName}
                     onChange={handleInputChange}
                     required
@@ -188,7 +198,7 @@ const Auth: React.FC = () => {
                   <input
                     type="text"
                     name="lastName"
-                    placeholder="Last Name"
+                    placeholder={t("last_name")}
                     value={formData.lastName}
                     onChange={handleInputChange}
                     required
@@ -198,7 +208,7 @@ const Auth: React.FC = () => {
                   <input
                     type="email"
                     name="email"
-                    placeholder="Email"
+                    placeholder={t("email")}
                     value={formData.email}
                     onChange={handleInputChange}
                     required
@@ -212,7 +222,7 @@ const Auth: React.FC = () => {
                 <input
                   type="email"
                   name="email"
-                  placeholder="Email"
+                  placeholder={t("email")}
                   value={formData.email}
                   onChange={handleInputChange}
                   required
@@ -224,7 +234,7 @@ const Auth: React.FC = () => {
               <input
                 type="password"
                 name="password"
-                placeholder="Password"
+                placeholder={t("password")}
                 value={formData.password}
                 onChange={handleInputChange}
                 required
@@ -234,32 +244,12 @@ const Auth: React.FC = () => {
 
             {!isLogin && (
               <div className="privacy-notice">
-                <p>
-                  Your personal data will be used to support your experience
-                  throughout this website, to manage access to your account, and
-                  for other purposes described in our{" "}
-                  <button
-                    type="button"
-                    className="privacy-link"
-                    tabIndex={0}
-                    style={{
-                      background: "none",
-                      border: "none",
-                      color: "#007bff",
-                      textDecoration: "underline",
-                      cursor: "pointer",
-                      padding: 0,
-                    }}
-                  >
-                    privacy policy
-                  </button>
-                  .
-                </p>
+                <p>{t("privacy_policy")}</p>
               </div>
             )}
 
             <button type="submit" className="auth-submit-btn">
-              👤 {isLogin ? "Sign in" : "Sign Up"}
+              👤 {isLogin ? t("sign_in") : t("sign_up")}
             </button>
 
             {isLogin && (
@@ -283,7 +273,7 @@ const Auth: React.FC = () => {
             )}
 
             <div className="divider">
-              <span>Or connect with</span>
+              <span>{t("or_connect_with")}</span>
             </div>
 
             <div className="google-auth">
@@ -292,8 +282,7 @@ const Auth: React.FC = () => {
                 className="google-signin-btn"
                 onClick={() => {
                   // Production server address ishlatish
-                  const apiUrl =
-                    API_URL || "http://localhost:8085";
+                  const apiUrl = API_URL || "http://localhost:8085";
                   const url = `${apiUrl}/partners/auth/google`;
 
                   window.location.href = url;
@@ -303,14 +292,27 @@ const Auth: React.FC = () => {
                   src="https://developers.google.com/identity/images/g-logo.png"
                   alt="Google"
                 />
-                Вход через аккаунт Google
+                {t("google_signin")}
               </button>
             </div>
           </form>
 
           <div className="language-selector">
-            <img src="https://flagcdn.com/w20/gb.png" alt="English" />
-            <span>English ▼</span>
+            <button
+              onClick={() => i18n.changeLanguage("en")}
+              style={{ marginRight: 8 }}
+            >
+              {t("english")}
+            </button>
+            <button
+              onClick={() => i18n.changeLanguage("ru")}
+              style={{ marginRight: 8 }}
+            >
+              {t("russian")}
+            </button>
+            <button onClick={() => i18n.changeLanguage("uz")}>
+              {t("uzbek")}
+            </button>
           </div>
         </div>
       </div>

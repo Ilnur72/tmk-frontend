@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useScrollToTop, scrollToTop } from "../../../hooks/useScrollToTop";
+import { useTranslation } from "react-i18next";
 
 // Types
 interface InternshipData {
@@ -37,6 +38,7 @@ const useInternshipData = () => {
 };
 
 const InternshipPage: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { data: internshipData = [], isLoading, error } = useInternshipData();
 
@@ -137,13 +139,13 @@ const InternshipPage: React.FC = () => {
           <div className="bg-white rounded-lg shadow-sm p-6">
             <div className="text-center py-12">
               <p className="text-red-500 text-lg">
-                Маълумотларни юклашда хатолик юз берди
+                {t("internship.error_loading_data")}
               </p>
               <button
                 onClick={handleBack}
                 className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
               >
-                Орқага қайтиш
+                {t("internship.back")}
               </button>
             </div>
           </div>
@@ -163,10 +165,10 @@ const InternshipPage: React.FC = () => {
               className="flex items-center gap-2 text-blue-600 hover:text-blue-700"
             >
               <ArrowLeft className="h-5 w-5" />
-              Орқага қайтиш
+              {t("internship.back")}
             </button>
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900 text-center">
-              Амалиёт муддати тугайдиганлар
+              {t("internship.page_title")}
             </h1>
             <div className="w-24 hidden sm:block"></div>
           </div>
@@ -177,7 +179,7 @@ const InternshipPage: React.FC = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Қидириш..."
+                placeholder={t("internship.search_placeholder")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 pr-4 py-2 w-full border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
@@ -256,10 +258,10 @@ const InternshipPage: React.FC = () => {
                     №
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Амалиёт муддати
+                    {t("internship.internship_period")}
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Қолган кунлар
+                    {t("internship.remaining_days")}
                   </th>
                 </tr>
               </thead>
@@ -290,7 +292,7 @@ const InternshipPage: React.FC = () => {
                               : "text-gray-900"
                           }`}
                         >
-                          {item.еxpiration_days} кун
+                          {item.еxpiration_days} {t("internship.days")}
                         </span>
                       </div>
                     </td>

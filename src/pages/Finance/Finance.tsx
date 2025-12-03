@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { PlusIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -17,6 +18,7 @@ import PriceLogsDetail from "../../components/Finance/PriceLogsDetail";
 import PriceUpdateModal from "../../components/Finance/PriceUpdateModal";
 import PriceChartModal from "../../components/Finance/PriceChartModal";
 const Finance: React.FC = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   // States
@@ -338,17 +340,13 @@ const Finance: React.FC = () => {
       const firstSourceId = firstSource?.id;
 
       if (
-        window.confirm(
-          `"${item.elementName}" элементини ўчиришга ишонғингиз комилми?`
-        )
+        window.confirm(t("finance.confirm_delete", { name: item.elementName }))
       ) {
         deleteMetalMutation.mutate(firstSourceId);
       }
     } else {
       if (
-        window.confirm(
-          `"${item.elementName}" элементини ўчиришга ишонғингиз комилми?`
-        )
+        window.confirm(t("finance.confirm_delete", { name: item.elementName }))
       ) {
         deleteMetalMutation.mutate(item.id);
       }
@@ -390,14 +388,16 @@ const Finance: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Молия</h1>
+        <h1 className="text-2xl font-bold text-gray-900">
+          {t("finance.title")}
+        </h1>
         <div className="flex space-x-3">
           <button
             onClick={handleOpenSourceModal}
             className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             <PlusIcon className="h-5 w-5 mr-2" />
-            Манба қўшиш
+            {t("finance.add_source")}
           </button>
           <button
             onClick={refreshData}
@@ -407,7 +407,7 @@ const Finance: React.FC = () => {
             <ArrowPathIcon
               className={`h-5 w-5 mr-2 ${isLoading ? "animate-spin" : ""}`}
             />
-            Янгилаш
+            {t("finance.refresh")}
           </button>
         </div>
       </div>
@@ -431,7 +431,7 @@ const Finance: React.FC = () => {
             </div>
             <div className="ml-3">
               <p className="text-sm text-red-800">
-                {error?.message || "Номаълум хато"}
+                {error?.message || t("finance.unknown_error")}
               </p>
             </div>
           </div>

@@ -10,6 +10,7 @@ import {
   CartesianGrid,
   ResponsiveContainer,
 } from "recharts";
+import { useTranslation } from "react-i18next";
 
 // Types
 interface EARSData {
@@ -112,7 +113,7 @@ const filterDataByDateRange = (
 };
 
 // Get predefined date ranges
-const getDateRangeOptions = (data: ChartData[]) => {
+const getDateRangeOptions = (data: ChartData[], t: any) => {
   if (!data || !Array.isArray(data) || !data.length) return [];
 
   const now = new Date();
@@ -121,7 +122,7 @@ const getDateRangeOptions = (data: ChartData[]) => {
 
   return [
     {
-      label: "Охирги 3 ой",
+      label: t("growth_chart.last_3_months"),
       value: "last3months",
       start: new Date(currentYear, currentMonth - 2, 1)
         .toISOString()
@@ -131,7 +132,7 @@ const getDateRangeOptions = (data: ChartData[]) => {
         .split("T")[0],
     },
     {
-      label: "Охирги 6 ой",
+      label: t("growth_chart.last_6_months"),
       value: "last6months",
       start: new Date(currentYear, currentMonth - 5, 1)
         .toISOString()
@@ -141,7 +142,7 @@ const getDateRangeOptions = (data: ChartData[]) => {
         .split("T")[0],
     },
     {
-      label: "Охирги йил",
+      label: t("growth_chart.last_year"),
       value: "lastyear",
       start: new Date(currentYear - 1, currentMonth, 1)
         .toISOString()
@@ -151,7 +152,7 @@ const getDateRangeOptions = (data: ChartData[]) => {
         .split("T")[0],
     },
     {
-      label: "Бутун маълумот",
+      label: t("growth_chart.all_data"),
       value: "all",
       start: "",
       end: "",
@@ -161,15 +162,21 @@ const getDateRangeOptions = (data: ChartData[]) => {
 
 // Custom Legend Component
 const CustomLegend: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="flex items-center justify-center space-x-6 mb-4">
       <div className="flex items-center">
         <div className="w-4 h-0.5 bg-cyan-500 mr-2"></div>
-        <span className="text-sm text-gray-600">Ходимлар сони</span>
+        <span className="text-sm text-gray-600">
+          {t("growth_chart.employee_count")}
+        </span>
       </div>
       <div className="flex items-center">
         <div className="w-4 h-0.5 border-t-2 border-dashed border-green-500 mr-2"></div>
-        <span className="text-sm text-gray-600">Ўсиш (+/-)</span>
+        <span className="text-sm text-gray-600">
+          {t("growth_chart.growth_change")}
+        </span>
       </div>
     </div>
   );
@@ -194,6 +201,7 @@ const CustomDot: React.FC<any> = (props) => {
 };
 
 const EmployeeGrowthChart: React.FC = () => {
+  const { t } = useTranslation();
   const { data: earsData, isLoading, error } = useEARSData();
 
   // State for date filtering
@@ -209,7 +217,7 @@ const EmployeeGrowthChart: React.FC = () => {
     return earsData ? transformData(earsData) : [];
   }, [earsData]);
 
-  const dateRangeOptions = getDateRangeOptions(allChartData);
+  const dateRangeOptions = getDateRangeOptions(allChartData, t);
 
   const filteredChartData = useMemo(() => {
     if (selectedRange === "custom") {
@@ -281,18 +289,18 @@ const EmployeeGrowthChart: React.FC = () => {
       <div className="bg-white rounded-lg shadow-sm p-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6">
           <h2 className="text-lg font-medium text-gray-900">
-            Ходимлар сонини ўсиши
+            {t("growth_chart.employee_growth_title")}
           </h2>
           <div className="relative mt-3 sm:mt-0">
             <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <select className="pl-10 pr-8 py-2 border border-gray-200 rounded-md shadow-sm focus:ring-2 focus:ring-primary focus:border-primary w-full sm:w-56 appearance-none bg-white">
-              <option>Юкланмоқда...</option>
+              <option>{t("growth_chart.loading")}</option>
             </select>
           </div>
         </div>
 
         <div className="h-96 bg-gray-100 rounded-lg flex items-center justify-center animate-pulse">
-          <p className="text-gray-400">График юкланмоқда...</p>
+          <p className="text-gray-400">{t("growth_chart.chart_loading")}</p>
         </div>
       </div>
     );
@@ -322,7 +330,7 @@ const EmployeeGrowthChart: React.FC = () => {
     <div className="bg-white rounded-lg shadow-sm p-5">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6">
         <h2 className="text-lg font-medium text-gray-900">
-          Ходимлар сонини ўсиши
+          {t("growth_chart.employee_growth_title")}
         </h2>
         <div className="flex flex-col gap-2 mt-3 sm:mt-0">
           <div className="relative">
@@ -369,9 +377,10 @@ const EmployeeGrowthChart: React.FC = () => {
         <div className="flex">
           <div>
             <div className="text-lg font-medium text-blue-600 xl:text-xl">
-              Ходимлар: {currentData.employees.toLocaleString()}
+              {t("growth_chart.employees")}:{" "}
+              {currentData.employees.toLocaleString()}
               <br />
-              Ўсиш: {currentData.growth > 0 ? "+" : ""}
+              {t("growth_chart.growth")}: {currentData.growth > 0 ? "+" : ""}
               {currentData.growth}
             </div>
             <div className="mt-0.5 text-gray-500">{currentData.month}</div>
@@ -379,9 +388,10 @@ const EmployeeGrowthChart: React.FC = () => {
           <div className="mx-4 h-12 w-px border border-dashed border-gray-200 xl:mx-5"></div>
           <div>
             <div className="text-lg font-medium text-gray-500 xl:text-xl">
-              Ходимлар: {previousData.employees.toLocaleString()}
+              {t("growth_chart.employees")}:{" "}
+              {previousData.employees.toLocaleString()}
               <br />
-              Ўсиш: {previousData.growth > 0 ? "+" : ""}
+              {t("growth_chart.growth")}: {previousData.growth > 0 ? "+" : ""}
               {previousData.growth}
             </div>
             <div className="mt-0.5 text-gray-500">{previousData.month}</div>

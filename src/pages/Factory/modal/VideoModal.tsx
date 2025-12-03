@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { CameraType, PTZCommand } from "../types/factory";
 import PTZControls from "../components/PTZControls";
 import axios from "axios";
@@ -15,6 +16,7 @@ export default function VideoModal({
   onClose,
   camera,
 }: VideoModalProps) {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -75,7 +77,7 @@ export default function VideoModal({
           {/* Modal Header */}
           <div className="flex items-center justify-between p-4 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white flex-shrink-0">
             <h3 className="text-lg font-medium">
-              {camera.brand} {camera.model} - Камера кўриниши
+              {camera.brand} {camera.model} - {t("camera.camera_view")}
             </h3>
             <button
               onClick={onClose}

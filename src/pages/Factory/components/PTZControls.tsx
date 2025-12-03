@@ -1,6 +1,6 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { CameraType, PTZCommand } from "../types/factory";
-
 
 interface PTZControlsProps {
   camera: CameraType;
@@ -11,6 +11,7 @@ export default function PTZControls({
   camera,
   onSendCommand,
 }: PTZControlsProps) {
+  const { t } = useTranslation();
   const [activeControl, setActiveControl] = useState<string | null>(null);
 
   const sendPTZCommand = (command: string, pan: number, tilt: number) => {
@@ -94,7 +95,7 @@ export default function PTZControls({
       <div className="flex justify-center items-center">
         <div className="bg-white p-2 md:p-4 rounded-lg shadow-lg w-full max-w-sm md:max-w-none">
           <h4 className="text-sm md:text-lg font-semibold  text-gray-800 text-center">
-            Камера бошқариш
+            {t("camera.camera_control")}
           </h4>
           <div className="flex flex-col items-center">
             <div
@@ -358,7 +359,7 @@ export default function PTZControls({
       <div className="w-full">
         <div className="bg-white rounded-lg p-2 md:p-4 h-full">
           <h5 className="font-semibold mb-2 md:mb-3 text-gray-800 text-sm md:text-base">
-            Камера маълумотлари
+            {t("camera.camera_info")}
           </h5>
           <div className="text-xs md:text-sm space-y-1 md:space-y-2">
             <div className="flex justify-between">

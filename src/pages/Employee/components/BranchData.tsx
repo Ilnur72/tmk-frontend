@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Search, Filter, Download, Users } from 'lucide-react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { ArrowLeft, Search, Filter, Download, Users } from "lucide-react";
+import axios from "axios";
+import { useTranslation } from "react-i18next";
 
 // Types
 interface BranchData {
@@ -9,20 +10,21 @@ interface BranchData {
   hodimlar_soni: number;
 }
 
-
 const apiService = {
   async getAllBranches(): Promise<BranchData[]> {
     const response = await axios.get(`/employers/tashkilot-statistika/`);
     return response.data.map((item: any, index: number) => ({
       id: index,
       filial_nomi: item.tashkilot,
-      hodimlar_soni: item.count
+      hodimlar_soni: item.count,
     }));
-  }
+  },
 };
 
 // Header Component
 const BranchesHeader: React.FC<{ onBack: () => void }> = ({ onBack }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="bg-white shadow-sm border-b">
       <div className="w-full px-2 sm:px-2 lg:px-2">
@@ -33,10 +35,10 @@ const BranchesHeader: React.FC<{ onBack: () => void }> = ({ onBack }) => {
               className="inline-flex items-center px-4 py-2 bg-cyan-600 text-white text-sm font-medium rounded-md hover:bg-cyan-700 transition-colors duration-200"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Орқага қайтиш
+              {t("branch.back")}
             </button>
           </div>
-          
+
           {/* <div className="flex items-center space-x-4">
             <button className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
               <Filter className="h-4 w-4 mr-2" />
@@ -54,16 +56,18 @@ const BranchesHeader: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 };
 
 // Search Component
-const SearchBar: React.FC<{ searchTerm: string; onSearch: (term: string) => void }> = ({ 
-  searchTerm, 
-  onSearch 
-}) => {
+const SearchBar: React.FC<{
+  searchTerm: string;
+  onSearch: (term: string) => void;
+}> = ({ searchTerm, onSearch }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="relative max-w-md">
       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
       <input
         type="text"
-        placeholder="Филиал номи бўйича қидириш..."
+        placeholder={t("branch.search_placeholder")}
         className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
         value={searchTerm}
         onChange={(e) => onSearch(e.target.value)}
@@ -73,12 +77,17 @@ const SearchBar: React.FC<{ searchTerm: string; onSearch: (term: string) => void
 };
 
 // Statistics Summary Component
-const StatsSummary: React.FC<{ branches: BranchData[]; filteredCount: number }> = ({ 
-  branches, 
-  filteredCount 
-}) => {
-  const totalEmployees = branches.reduce((sum, branch) => sum + branch.hodimlar_soni, 0);
-  const averageEmployees = branches.length > 0 ? Math.round(totalEmployees / branches.length) : 0;
+const StatsSummary: React.FC<{
+  branches: BranchData[];
+  filteredCount: number;
+}> = ({ branches, filteredCount }) => {
+  const { t } = useTranslation();
+  const totalEmployees = branches.reduce(
+    (sum, branch) => sum + branch.hodimlar_soni,
+    0
+  );
+  const averageEmployees =
+    branches.length > 0 ? Math.round(totalEmployees / branches.length) : 0;
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -86,37 +95,51 @@ const StatsSummary: React.FC<{ branches: BranchData[]; filteredCount: number }> 
         <div className="flex items-center">
           <Users className="h-8 w-8 text-blue-600" />
           <div className="ml-3">
-            <p className="text-sm font-medium text-gray-600">Жами филиаллар</p>
-            <p className="text-2xl font-bold text-gray-900">{branches.length}</p>
+            <p className="text-sm font-medium text-gray-600">
+              {t("branch.total_branches")}
+            </p>
+            <p className="text-2xl font-bold text-gray-900">
+              {branches.length}
+            </p>
           </div>
         </div>
       </div>
-      
+
       <div className="bg-white rounded-lg shadow-sm p-4 border">
         <div className="flex items-center">
           <Users className="h-8 w-8 text-green-600" />
           <div className="ml-3">
-            <p className="text-sm font-medium text-gray-600">Жами ходимлар</p>
-            <p className="text-2xl font-bold text-gray-900">{totalEmployees.toLocaleString()}</p>
+            <p className="text-sm font-medium text-gray-600">
+              {t("branch.total_employees")}
+            </p>
+            <p className="text-2xl font-bold text-gray-900">
+              {totalEmployees.toLocaleString()}
+            </p>
           </div>
         </div>
       </div>
-      
+
       <div className="bg-white rounded-lg shadow-sm p-4 border">
         <div className="flex items-center">
           <Users className="h-8 w-8 text-purple-600" />
           <div className="ml-3">
-            <p className="text-sm font-medium text-gray-600">Ўртача ходимлар</p>
-            <p className="text-2xl font-bold text-gray-900">{averageEmployees}</p>
+            <p className="text-sm font-medium text-gray-600">
+              {t("branch.average_employees")}
+            </p>
+            <p className="text-2xl font-bold text-gray-900">
+              {averageEmployees}
+            </p>
           </div>
         </div>
       </div>
-      
+
       <div className="bg-white rounded-lg shadow-sm p-4 border">
         <div className="flex items-center">
           <Users className="h-8 w-8 text-orange-600" />
           <div className="ml-3">
-            <p className="text-sm font-medium text-gray-600">Топилган натижалар</p>
+            <p className="text-sm font-medium text-gray-600">
+              {t("branch.search_results")}
+            </p>
             <p className="text-2xl font-bold text-gray-900">{filteredCount}</p>
           </div>
         </div>
@@ -126,14 +149,15 @@ const StatsSummary: React.FC<{ branches: BranchData[]; filteredCount: number }> 
 };
 
 // Table Component
-const BranchesTable: React.FC<{ 
-  branches: BranchData[]; 
+const BranchesTable: React.FC<{
+  branches: BranchData[];
   loading: boolean;
   currentPage: number;
   itemsPerPage: number;
   onPageChange: (page: number) => void;
 }> = ({ branches, loading, currentPage, itemsPerPage, onPageChange }) => {
-  
+  const { t } = useTranslation();
+
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentBranches = branches.slice(startIndex, endIndex);
@@ -145,7 +169,10 @@ const BranchesTable: React.FC<{
         <div className="animate-pulse">
           <div className="h-12 bg-gray-200 rounded-t-lg"></div>
           {[...Array(10)].map((_, i) => (
-            <div key={i} className="h-16 bg-gray-100 border-b border-gray-200"></div>
+            <div
+              key={i}
+              className="h-16 bg-gray-100 border-b border-gray-200"
+            ></div>
           ))}
         </div>
       </div>
@@ -162,13 +189,13 @@ const BranchesTable: React.FC<{
                 #
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Филиал номи
+                {t("branch.branch_name")}
               </th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Ходимлар сони
+                {t("branch.employee_count")}
               </th>
               <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Фоиз
+                {t("branch.percentage")}
               </th>
             </tr>
           </thead>
@@ -176,12 +203,18 @@ const BranchesTable: React.FC<{
             {currentBranches.length > 0 ? (
               currentBranches.map((branch, index) => {
                 const actualIndex = startIndex + index;
-                const totalEmployees = branches.reduce((sum, b) => sum + b.hodimlar_soni, 0);
-                const percentage = totalEmployees > 0 ? ((branch.hodimlar_soni / totalEmployees) * 100).toFixed(1) : '0.0';
-                
+                const totalEmployees = branches.reduce(
+                  (sum, b) => sum + b.hodimlar_soni,
+                  0
+                );
+                const percentage =
+                  totalEmployees > 0
+                    ? ((branch.hodimlar_soni / totalEmployees) * 100).toFixed(1)
+                    : "0.0";
+
                 return (
-                  <tr 
-                    key={branch.id} 
+                  <tr
+                    key={branch.id}
                     className="hover:bg-gray-50 transition-colors duration-200"
                   >
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -210,7 +243,7 @@ const BranchesTable: React.FC<{
                 <td colSpan={4} className="px-6 py-12 text-center">
                   <div className="text-gray-500">
                     <Users className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                    <p className="text-sm">Ҳеч қандай филиал топилмади</p>
+                    <p className="text-sm">{t("branch.no_branches_found")}</p>
                   </div>
                 </td>
               </tr>
@@ -229,26 +262,30 @@ const BranchesTable: React.FC<{
                 disabled={currentPage === 1}
                 className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Олдинги
+                {t("branch.previous")}
               </button>
               <button
-                onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+                onClick={() =>
+                  onPageChange(Math.min(totalPages, currentPage + 1))
+                }
                 disabled={currentPage === totalPages}
                 className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Кейинги
+                {t("branch.next")}
               </button>
             </div>
             <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-gray-700">
-                  Кўрсатилмоқда{' '}
-                  <span className="font-medium">{startIndex + 1}</span>
-                  {' '}дан{' '}
-                  <span className="font-medium">{Math.min(endIndex, branches.length)}</span>
-                  {' '}гача, жами{' '}
-                  <span className="font-medium">{branches.length}</span>
-                  {' '}та натижа
+                  {t("branch.showing")}{" "}
+                  <span className="font-medium">{startIndex + 1}</span>{" "}
+                  {t("branch.from")}{" "}
+                  <span className="font-medium">
+                    {Math.min(endIndex, branches.length)}
+                  </span>{" "}
+                  {t("branch.to")}, {t("branch.total")}{" "}
+                  <span className="font-medium">{branches.length}</span>{" "}
+                  {t("branch.results")}
                 </p>
               </div>
               <div>
@@ -258,9 +295,9 @@ const BranchesTable: React.FC<{
                     disabled={currentPage === 1}
                     className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Олдинги
+                    {t("branch.previous")}
                   </button>
-                  
+
                   {[...Array(Math.min(5, totalPages))].map((_, i) => {
                     const pageNum = i + 1;
                     return (
@@ -269,21 +306,23 @@ const BranchesTable: React.FC<{
                         onClick={() => onPageChange(pageNum)}
                         className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                           currentPage === pageNum
-                            ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                            : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                            ? "z-10 bg-blue-50 border-blue-500 text-blue-600"
+                            : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
                         }`}
                       >
                         {pageNum}
                       </button>
                     );
                   })}
-                  
+
                   <button
-                    onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+                    onClick={() =>
+                      onPageChange(Math.min(totalPages, currentPage + 1))
+                    }
                     disabled={currentPage === totalPages}
                     className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Кейинги
+                    {t("branch.next")}
                   </button>
                 </nav>
               </div>
@@ -297,11 +336,12 @@ const BranchesTable: React.FC<{
 
 // Main Branches Page Component
 const BranchesPage: React.FC = () => {
+  const { t } = useTranslation();
   const [branches, setBranches] = useState<BranchData[]>([]);
   const [filteredBranches, setFilteredBranches] = useState<BranchData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -314,9 +354,9 @@ const BranchesPage: React.FC = () => {
         setBranches(data);
         setFilteredBranches(data);
       } catch (err) {
-        console.error('Error fetching branches:', err);
-        setError('Маълумотларни юклашда хatolik юз берди');
-        
+        console.error("Error fetching branches:", err);
+        setError(t("branch.error_loading_data"));
+
         // Fallback data
         const fallbackData: BranchData[] = [];
         setBranches(fallbackData);
@@ -327,10 +367,10 @@ const BranchesPage: React.FC = () => {
     };
 
     fetchBranches();
-  }, []);
+  }, [t]);
 
   useEffect(() => {
-    const filtered = branches.filter(branch =>
+    const filtered = branches.filter((branch) =>
       branch.filial_nomi.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredBranches(filtered);
@@ -349,11 +389,9 @@ const BranchesPage: React.FC = () => {
       <div className="w-full px-2 sm:px-2 lg:px-2 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Барча филиаллар ҳақида маълумот
+            {t("branch.page_title")}
           </h1>
-          <p className="text-gray-600">
-            Комбинат филиалларидаги ходимлар сони ва статистика маълумотлари
-          </p>
+          <p className="text-gray-600">{t("branch.page_description")}</p>
         </div>
 
         {error && (
@@ -362,7 +400,10 @@ const BranchesPage: React.FC = () => {
           </div>
         )}
 
-        <StatsSummary branches={branches} filteredCount={filteredBranches.length} />
+        <StatsSummary
+          branches={branches}
+          filteredCount={filteredBranches.length}
+        />
 
         <div className="mb-6">
           <SearchBar searchTerm={searchTerm} onSearch={setSearchTerm} />

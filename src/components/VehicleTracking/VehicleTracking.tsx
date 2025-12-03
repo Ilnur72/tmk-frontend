@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import axios from "axios";
@@ -34,6 +35,7 @@ interface VehicleStats {
 }
 
 const VehicleTracking: React.FC = () => {
+  const { t } = useTranslation();
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const markersRef = useRef<Map<number, maplibregl.Marker>>(new Map());
@@ -337,7 +339,13 @@ const VehicleTracking: React.FC = () => {
 
           // Success notification
           alert(
-            `Ҳайдовчи муваффақиятли тайинланди!\n\nИсм: ${driverData.firstName} ${driverData.lastName}\nТелефон: ${driverData.phoneNumber}\nТранспорт ID: ${vehicleId}`
+            `${t("vehicle_tracking.driver_assigned_success")}\n\n${t(
+              "vehicle_tracking.name"
+            )}: ${driverData.firstName} ${driverData.lastName}\n${t(
+              "vehicle_tracking.phone"
+            )}: ${driverData.phoneNumber}\n${t(
+              "vehicle_tracking.transport_id"
+            )}: ${vehicleId}`
           );
         }
       } catch (error: any) {
@@ -349,13 +357,13 @@ const VehicleTracking: React.FC = () => {
 
         // Error notification
         alert(
-          `Хатолик юз берди!\n\n${
+          `${t("vehicle_tracking.error_occurred")}\n\n${
             error.response?.data?.message || error.message
           }`
         );
       }
     },
-    []
+    [t]
   );
 
   const fetchVehicles = useCallback(async () => {
@@ -744,7 +752,7 @@ const VehicleTracking: React.FC = () => {
           <h2 className="text-xl font-semibold text-gray-800 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Activity className="h-6 w-6 text-blue-600" />
-              Transport Monitoring
+              {t("vehicle_tracking.title")}
             </div>
             <div className="flex items-center gap-2">
               {/* Real-time Toggle Button */}
@@ -757,19 +765,19 @@ const VehicleTracking: React.FC = () => {
                 }`}
                 title={
                   isRealTimeEnabled
-                    ? "Real-time yoqilgan (Click: o'chirish)"
-                    : "Real-time o'chirilgan (Click: yoqish)"
+                    ? t("vehicle_tracking.realtime_on_tooltip")
+                    : t("vehicle_tracking.realtime_off_tooltip")
                 }
               >
                 {isRealTimeEnabled ? (
                   <>
                     <Zap className="h-3 w-3" />
-                    Real-time
+                    {t("vehicle_tracking.realtime")}
                   </>
                 ) : (
                   <>
                     <ZapOff className="h-3 w-3" />
-                    Manual
+                    {t("vehicle_tracking.manual")}
                   </>
                 )}
               </button>
@@ -777,20 +785,20 @@ const VehicleTracking: React.FC = () => {
               {/* Connection Status */}
               {isRealTimeEnabled ? (
                 isConnected ? (
-                  <div title="WebSocket Real-time Connected">
+                  <div title={t("vehicle_tracking.ws_connected")}>
                     <Zap className="h-4 w-4 text-green-500" />
                   </div>
                 ) : fallbackMode ? (
-                  <div title="Using REST API Fallback">
+                  <div title={t("vehicle_tracking.rest_fallback")}>
                     <Wifi className="h-4 w-4 text-yellow-500" />
                   </div>
                 ) : (
-                  <div title="Disconnected">
+                  <div title={t("vehicle_tracking.disconnected")}>
                     <ZapOff className="h-4 w-4 text-red-500" />
                   </div>
                 )
               ) : (
-                <div title="Manual Mode - Updates every 30 seconds">
+                <div title={t("vehicle_tracking.manual_mode")}>
                   <Activity className="h-4 w-4 text-blue-500" />
                 </div>
               )}
@@ -807,12 +815,12 @@ const VehicleTracking: React.FC = () => {
                 }`}
               >
                 {!isRealTimeEnabled
-                  ? "Manual (30s)"
+                  ? t("vehicle_tracking.manual_short")
                   : isConnected
-                  ? "WebSocket Live"
+                  ? t("vehicle_tracking.ws_live")
                   : fallbackMode
-                  ? "REST Fallback"
-                  : "Offline"}
+                  ? t("vehicle_tracking.rest_fallback")
+                  : t("vehicle_tracking.offline")}
               </span>
               {wsError && (
                 <div
@@ -826,7 +834,8 @@ const VehicleTracking: React.FC = () => {
           </h2>
           {lastUpdate && (
             <p className="text-xs text-gray-500 mt-1">
-              Last update: {lastUpdate.toLocaleTimeString()}
+              {t("vehicle_tracking.last_update")}:{" "}
+              {lastUpdate.toLocaleTimeString()}
             </p>
           )}
         </div>
@@ -837,9 +846,11 @@ const VehicleTracking: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-blue-600 font-medium">
-                    Jami{" "}
+                    {t("vehicle_tracking.total")}{" "}
                     {!isRealTimeEnabled && (
-                      <span className="text-xs">(Manual)</span>
+                      <span className="text-xs">
+                        ({t("vehicle_tracking.manual")})
+                      </span>
                     )}
                   </p>
                   <p className="text-2xl font-bold text-blue-700">
@@ -852,7 +863,9 @@ const VehicleTracking: React.FC = () => {
             <div className="bg-green-50 rounded-lg p-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-green-600 font-medium">Online</p>
+                  <p className="text-sm text-green-600 font-medium">
+                    {t("vehicle_tracking.online")}
+                  </p>
                   <p className="text-2xl font-bold text-green-700">
                     {stats.online}
                   </p>
@@ -894,11 +907,14 @@ const VehicleTracking: React.FC = () => {
                         }`}
                       />
                       <span className="text-xs">
-                        {vehicle.status.isOnline ? "Online" : "Offline"}
+                        {vehicle.status.isOnline
+                          ? t("vehicle_tracking.online")
+                          : t("vehicle_tracking.offline")}
                       </span>
                     </div>
                     <div className="text-xs text-gray-500 mt-1">
-                      Speed: {vehicle.position.speed} km/h
+                      {t("vehicle_tracking.speed")}: {vehicle.position.speed}{" "}
+                      km/h
                     </div>
                   </div>
                 );
@@ -916,7 +932,7 @@ const VehicleTracking: React.FC = () => {
               <div className="flex items-center gap-3">
                 <div className="w-6 h-6 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
                 <span className="text-gray-700">
-                  Ma'lumotlar yuklanmoqda...
+                  {t("vehicle_tracking.loading_data")}
                 </span>
               </div>
             </div>
@@ -930,21 +946,21 @@ const VehicleTracking: React.FC = () => {
               <>
                 <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
                 <span className="text-sm font-medium text-green-700">
-                  WebSocket Live
+                  {t("vehicle_tracking.websocket_live")}
                 </span>
               </>
             ) : fallbackMode ? (
               <>
                 <div className="w-3 h-3 bg-yellow-500 rounded-full" />
                 <span className="text-sm font-medium text-yellow-700">
-                  REST Fallback (30s)
+                  {t("vehicle_tracking.rest_fallback_30s")}
                 </span>
               </>
             ) : (
               <>
                 <div className="w-3 h-3 bg-red-500 rounded-full" />
                 <span className="text-sm font-medium text-red-700">
-                  Offline
+                  {t("vehicle_tracking.offline")}
                 </span>
               </>
             )}
@@ -955,11 +971,11 @@ const VehicleTracking: React.FC = () => {
             <div className="text-xs text-gray-600 border-t pt-2">
               <div className="flex items-center gap-1">
                 <span className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></span>
-                <span>WebSocket Real-time</span>
+                <span>{t("vehicle_tracking.websocket_live")}</span>
               </div>
               <div className="flex items-center gap-1 mt-1">
                 <span className="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></span>
-                <span>Real-time instant updates</span>
+                <span>{t("vehicle_tracking.realtime")} instant updates</span>
               </div>
 
               {/* Transport Management Button */}
@@ -967,7 +983,7 @@ const VehicleTracking: React.FC = () => {
                 onClick={() => setIsTransportListOpen(true)}
                 className="mt-2 w-full px-2 py-1 text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 rounded border border-blue-300 transition-colors"
               >
-                📋 Транспортлар бошқаруви
+                📋 {t("vehicle_tracking.transport_management")}
               </button>
             </div>
           )}
@@ -977,18 +993,18 @@ const VehicleTracking: React.FC = () => {
             <div className="text-xs text-gray-600 border-t pt-2">
               <div className="flex items-center gap-1">
                 <span className="w-2 h-2 bg-red-400 rounded-full"></span>
-                <span>WebSocket Disconnected</span>
+                <span>WebSocket {t("vehicle_tracking.disconnected")}</span>
               </div>
               <div className="flex items-center gap-1 mt-1">
                 <span className="w-2 h-2 bg-yellow-400 rounded-full"></span>
-                <span>Using REST API fallback</span>
+                <span>{t("vehicle_tracking.rest_fallback")}</span>
               </div>
             </div>
           )}
 
           {lastUpdate && (
             <div className="text-xs text-gray-500 border-t pt-1">
-              Last: {lastUpdate.toLocaleTimeString()}
+              {t("vehicle_tracking.last")}: {lastUpdate.toLocaleTimeString()}
             </div>
           )}
         </div>

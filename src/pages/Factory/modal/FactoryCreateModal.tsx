@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { X, Plus, Minus } from "lucide-react";
 import { showToast } from "../../../utils/toast";
 import axios from "axios";
@@ -26,6 +27,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
   onClose,
   onSuccess,
 }) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [customFields, setCustomFields] = useState<CustomField[]>([
@@ -212,7 +214,9 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
         <div className="w-[70%] max-sm:w-[100%] mx-auto bg-white relative rounded-md shadow-md transition-[margin-top,transform] duration-[0.4s,0.3s] mt-2 max-h-[90vh] overflow-y-auto">
           <div className="text-center">
             <div className="flex justify-between items-center p-4">
-              <h3 className="text-3xl font-medium">Янги лойиҳа қўшиш</h3>
+              <h3 className="text-3xl font-medium">
+                {t("modal.create_project")}
+              </h3>
               <button
                 type="button"
                 className="text-gray-400 hover:text-gray-600"
@@ -231,7 +235,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                     <input
                       required
                       type="text"
-                      placeholder="Лойиҳа номи*"
+                      placeholder={`${t("modal.project_name")}*`}
                       name="name"
                       className="w-full text-sm border border-slate-200 shadow-sm rounded-md p-2.5 placeholder:text-slate-400/90 focus:ring-2 focus:ring-primary focus:border-primary"
                     />
@@ -242,7 +246,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                     <input
                       required
                       type="text"
-                      placeholder="Корхона номи*"
+                      placeholder={`${t("modal.enterprise_name")}*`}
                       name="enterprise_name"
                       className="w-full text-sm border border-slate-200 shadow-sm rounded-md p-2.5 placeholder:text-slate-400/90 focus:ring-2 focus:ring-primary focus:border-primary"
                     />
@@ -253,7 +257,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                     <input
                       required
                       type="text"
-                      placeholder="Лойиҳа мақсади*"
+                      placeholder={`${t("modal.project_goal")}*`}
                       name="project_goal"
                       className="w-full text-sm border border-slate-200 shadow-sm rounded-md p-2.5 placeholder:text-slate-400/90 focus:ring-2 focus:ring-primary focus:border-primary"
                     />
@@ -264,7 +268,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                     <input
                       required
                       type="text"
-                      placeholder="Регион *"
+                      placeholder={`${t("modal.region")}*`}
                       name="region"
                       className="w-full text-sm border border-slate-200 shadow-sm rounded-md p-2.5 placeholder:text-slate-400/90 focus:ring-2 focus:ring-primary focus:border-primary"
                     />
@@ -273,14 +277,14 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                   {/* Work Percentage */}
                   <div>
                     <label className="block mb-2 text-sm font-medium">
-                      Лойиҳа жараёни, %
+                      {t("modal.work_progress_percent")}
                     </label>
                     <input
                       required
                       type="number"
                       min="0"
                       max="100"
-                      placeholder="Лойиҳа жараёни фоизда"
+                      placeholder={t("modal.work_progress_percent")}
                       defaultValue="0"
                       name="work_persent"
                       className="w-full text-sm border border-slate-200 shadow-sm rounded-md p-2.5 placeholder:text-slate-400/90 focus:ring-2 focus:ring-primary focus:border-primary"
@@ -290,7 +294,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                   {/* Status */}
                   <div>
                     <label className="block mb-2 text-sm font-medium">
-                      Лойиҳа статуси
+                      {t("modal.project_status")}
                     </label>
                     <select
                       required
@@ -298,17 +302,21 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                       className="w-full border border-slate-200 bg-white p-2.5 text-sm rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
                     >
                       <option value="REGISTRATION">
-                        Расмийлаштириш жараёнида
+                        {t("modal.status_registration")}
                       </option>
-                      <option value="CONSTRUCTION">Қурилиш жараёнида</option>
-                      <option value="STARTED">Ишга тушган</option>
+                      <option value="CONSTRUCTION">
+                        {t("modal.status_construction")}
+                      </option>
+                      <option value="STARTED">
+                        {t("modal.status_started")}
+                      </option>
                     </select>
                   </div>
 
                   {/* Marker Type */}
                   <div className="mt-4">
                     <label className="block mb-2 font-semibold">
-                      Маркер турини танланг:
+                      {t("modal.marker_type_select")}:
                     </label>
                     <div className="flex justify-center gap-8">
                       {[
@@ -353,7 +361,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                   {/* Image Upload */}
                   <div>
                     <label className="block mb-2 text-sm font-medium">
-                      Лойиҳа расмлари
+                      {t("modal.project_images")}
                     </label>
                     <div
                       className="border-2 border-dashed border-slate-300 rounded-lg p-5 text-center cursor-pointer hover:border-blue-400 transition-colors"
@@ -362,10 +370,10 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                       }
                     >
                       <div className="text-gray-600">
-                        📷 Расмларни танланг *
+                        📷 {t("modal.upload_project_images")}
                         <br />
                         <small className="text-gray-500">
-                          JPG, PNG форматлари, макс 5MB
+                          {t("modal.jpg_png_max_5mb")}
                         </small>
                       </div>
                       <input
@@ -443,13 +451,13 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                   {/* Custom Fields */}
                   <div className="mt-4">
                     <label className="block text-sm font-medium mb-2">
-                      Қўшимча майдонлар
+                      {t("modal.custom_fields")}
                     </label>
                     {customFields.map((field, index) => (
                       <div key={index} className="flex flex-wrap gap-2 mb-2">
                         <input
                           type="text"
-                          placeholder="Майдон номи (масалан: Иш ўрни)"
+                          placeholder={t("modal.field_name_example")}
                           value={field.key}
                           onChange={(e) =>
                             updateCustomField(index, "key", e.target.value)
@@ -458,7 +466,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                         />
                         <input
                           type="text"
-                          placeholder="Қиймати (масалан: 220та)"
+                          placeholder={t("modal.value_example")}
                           value={field.value}
                           onChange={(e) =>
                             updateCustomField(index, "value", e.target.value)
@@ -480,7 +488,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                       className="mt-2 bg-primary text-white px-4 py-2 rounded hover:opacity-80 text-sm flex items-center gap-2"
                     >
                       <Plus className="w-4 h-4" />
-                      Янги майдон қўшиш
+                      {t("modal.add_new_field")}
                     </button>
                   </div>
                 </div>
@@ -490,12 +498,11 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                   {/* Map */}
                   <div className="mb-4">
                     <label className="block mb-2 font-medium">
-                      🗺️ Лойиҳа жойлашуви{" "}
+                      🗺️ {t("modal.project_location")}:{" "}
                       <span className="text-red-500">*</span>
                     </label>
                     <div className="text-sm text-gray-600 mb-2">
-                      <strong>Кўрсатма:</strong> Харитада керакли жойни босинг
-                      ёки маркерни судраб кўчиринг
+                      <strong>{t("modal.map_instruction")}</strong>
                     </div>
                     <MapComponent
                       containerId="create-project-map"
@@ -511,7 +518,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                       <input
                         type="number"
                         step="any"
-                        placeholder="Кенглик"
+                        placeholder={t("modal.latitude")}
                         value={coordinates.lat.toFixed(6)}
                         onChange={(e) =>
                           setCoordinates((prev) => ({
@@ -524,7 +531,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                       <input
                         type="number"
                         step="any"
-                        placeholder="Узунлик"
+                        placeholder={t("modal.longitude")}
                         value={coordinates.lng.toFixed(6)}
                         onChange={(e) =>
                           setCoordinates((prev) => ({
@@ -539,7 +546,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                         onClick={handleLocationSearch}
                         className="bg-primary text-white px-4 py-2 rounded hover:opacity-80 text-sm"
                       >
-                        Кидириш
+                        {t("modal.apply_coordinates")}
                       </button>
                     </div>
                   </div>
@@ -547,25 +554,25 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                   {/* Project Values */}
                   <div className="mt-4">
                     <label className="block text-sm font-medium mb-2">
-                      Лойиҳанинг қиймати
+                      {t("modal.project_value")}
                     </label>
                     <div className="mb-3">
                       <input
                         type="text"
-                        placeholder="Умумий қиймати (масалан: 150 млн доллар)"
+                        placeholder={t("modal.total_project_value")}
                         value={projectValueTotal}
                         onChange={(e) => setProjectValueTotal(e.target.value)}
                         className="w-full p-2 border rounded text-sm focus:ring-2 focus:ring-primary focus:border-primary"
                       />
                     </div>
                     <label className="block text-sm font-medium mb-2">
-                      Лойиҳа қийматларининг бўлимлари
+                      {t("modal.project_value_sections")}
                     </label>
                     {projectValues.map((value, index) => (
                       <div key={index} className="flex flex-wrap gap-2 mb-2">
                         <input
                           type="text"
-                          placeholder="Бўлим номи (масалан: ФРРУ)"
+                          placeholder={t("modal.section_name_example")}
                           value={value.key}
                           onChange={(e) =>
                             updateProjectValue(index, "key", e.target.value)
@@ -574,7 +581,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                         />
                         <input
                           type="text"
-                          placeholder="Миқдори (масалан: 16,5 млн долл)"
+                          placeholder={t("modal.amount_example")}
                           value={value.amount}
                           onChange={(e) =>
                             updateProjectValue(index, "amount", e.target.value)
@@ -596,7 +603,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                       className="mt-2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 text-sm flex items-center gap-2"
                     >
                       <Plus className="w-4 h-4" />
-                      Янги бўлим қўшиш
+                      {t("modal.add_new_section")}
                     </button>
                   </div>
                 </div>
@@ -609,14 +616,14 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                   onClick={onClose}
                   className="mr-3 px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
                 >
-                  Ёпиш
+                  {t("modal.close")}
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
                   className="px-6 py-2 bg-primary text-white rounded-md hover:bg-opacity-80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                  {loading ? "⏳ Сақланмоқда..." : "Сақлаш"}
+                  {loading ? `⏳ ${t("modal.saving")}` : t("modal.save")}
                 </button>
               </div>
             </form>

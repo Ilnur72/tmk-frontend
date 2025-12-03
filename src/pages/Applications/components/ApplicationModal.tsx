@@ -9,6 +9,7 @@ import {
   Image,
   Upload,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   Application,
   CreateApplicationDto,
@@ -38,6 +39,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
   mode,
   isLoading = false,
 }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<CreateApplicationDto>({
     title: application?.title || "",
     description: application?.description || "",
@@ -57,20 +59,20 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
   const galleryImagesRef = useRef<HTMLInputElement>(null);
 
   const regions = [
-    "Тошкент шаҳри",
-    "Тошкент вилояти",
-    "Андижон вилояти",
-    "Бухоро вилояти",
-    "Фарғона вилояти",
-    "Жиззах вилояти",
-    "Хоразм вилояти",
-    "Наманган вилояти",
-    "Навоий вилояти",
-    "Қашқадарё вилояти",
-    "Қорақалпоғистон Республикаси",
-    "Самарқанд вилояти",
-    "Сирдарё вилояти",
-    "Сурхондарё вилояти",
+    t("regions.tashkent_city"),
+    t("regions.tashkent_region"),
+    t("regions.andijan"),
+    t("regions.bukhara"),
+    t("regions.fergana"),
+    t("regions.jizzakh"),
+    t("regions.khorezm"),
+    t("regions.namangan"),
+    t("regions.navoi"),
+    t("regions.kashkadarya"),
+    t("regions.karakalpakstan"),
+    t("regions.samarkand"),
+    t("regions.sirdarya"),
+    t("regions.surkhandarya"),
   ];
 
   React.useEffect(() => {
@@ -223,10 +225,10 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
 
   const modalTitle =
     mode === "create"
-      ? "Янги ариза яратиш"
+      ? t("applications.modal.create_title")
       : mode === "edit"
-      ? "Аризани таҳрирлаш"
-      : "Ариза маълумотлари";
+      ? t("applications.modal.edit_title")
+      : t("applications.modal.view_title");
 
   const isReadOnly = mode === "view";
 
@@ -261,7 +263,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
                 {/* Title */}
                 <div className="sm:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Ариза сарлавҳаси *
+                    {t("applications.modal.title_label")} *
                   </label>
                   <input
                     type="text"
@@ -272,7 +274,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
                     className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-i ${
                       errors.title ? "border-red-300" : "border-gray-300"
                     } ${isReadOnly ? "bg-gray-50" : ""}`}
-                    placeholder="Лойиҳа номи"
+                    placeholder={t("applications.modal.title_placeholder")}
                   />
                   {errors.title && (
                     <p className="mt-1 text-sm text-red-600">{errors.title}</p>
@@ -282,7 +284,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
                 {/* Description */}
                 <div className="sm:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Тафсилот *
+                    {t("applications.modal.description_label")} *
                   </label>
                   <textarea
                     name="description"
@@ -293,7 +295,9 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
                     className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-i ${
                       errors.description ? "border-red-300" : "border-gray-300"
                     } ${isReadOnly ? "bg-gray-50" : ""}`}
-                    placeholder="Лойиҳа ҳақида батафсил маълумот..."
+                    placeholder={t(
+                      "applications.modal.description_placeholder"
+                    )}
                   />
                   {errors.description && (
                     <p className="mt-1 text-sm text-red-600">
@@ -306,7 +310,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     <MapPin className="inline h-4 w-4 mr-1" />
-                    Жойлашув *
+                    {t("applications.modal.location_label")} *
                   </label>
                   <input
                     type="text"
@@ -317,7 +321,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
                     className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-i ${
                       errors.location ? "border-red-300" : "border-gray-300"
                     } ${isReadOnly ? "bg-gray-50" : ""}`}
-                    placeholder="Аниқ манзил"
+                    placeholder={t("applications.modal.location_placeholder")}
                   />
                   {errors.location && (
                     <p className="mt-1 text-sm text-red-600">
@@ -330,7 +334,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     <Building className="inline h-4 w-4 mr-1" />
-                    Вилоят *
+                    {t("applications.modal.region_label")} *
                   </label>
                   <select
                     name="region"
@@ -341,7 +345,9 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
                       errors.region ? "border-red-300" : "border-gray-300"
                     } ${isReadOnly ? "bg-gray-50" : ""}`}
                   >
-                    <option value="">Вилоятни танланг</option>
+                    <option value="">
+                      {t("applications.modal.select_region")}
+                    </option>
                     {regions.map((region) => (
                       <option key={region} value={region}>
                         {region}
@@ -357,7 +363,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     <Phone className="inline h-4 w-4 mr-1" />
-                    Телефон рақами *
+                    {t("applications.modal.phone_label")} *
                   </label>
                   <input
                     type="tel"
@@ -381,7 +387,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     <Mail className="inline h-4 w-4 mr-1" />
-                    Электрон почта *
+                    {t("applications.modal.email_label")} *
                   </label>
                   <input
                     type="email"
@@ -404,7 +410,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
                 {/* Tagline */}
                 <div className="sm:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Қисқа изоҳ
+                    {t("applications.modal.tagline_label")}
                   </label>
                   <input
                     type="text"
@@ -415,14 +421,14 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
                     className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-i border-gray-300 ${
                       isReadOnly ? "bg-gray-50" : ""
                     }`}
-                    placeholder="Лойиҳа ҳақида қисқача"
+                    placeholder={t("applications.modal.tagline_placeholder")}
                   />
                 </div>
 
                 {/* Coordinates */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Кенглик (Latitude)
+                    {t("applications.modal.latitude_label")}
                   </label>
                   <input
                     type="number"
@@ -440,7 +446,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Узунлик (Longitude)
+                    {t("applications.modal.longitude_label")}
                   </label>
                   <input
                     type="number"
@@ -461,7 +467,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
                   <div className="sm:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       <Image className="inline h-4 w-4 mr-1" />
-                      Асосий расм
+                      {t("applications.modal.cover_image_label")}
                     </label>
                     <div className="flex items-center space-x-4">
                       {formData.coverImage && (
@@ -478,7 +484,9 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
                         className="flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
                       >
                         <Upload className="h-4 w-4 mr-2" />
-                        {imageUploading ? "Юкланмоқда..." : "Расм юклаш"}
+                        {imageUploading
+                          ? t("applications.modal.uploading")
+                          : t("applications.modal.upload_image")}
                       </button>
                       <input
                         ref={coverImageRef}
@@ -495,7 +503,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
                 {!isReadOnly && (
                   <div className="sm:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Галерея расмлари
+                      {t("applications.modal.gallery_images_label")}
                     </label>
                     <div className="space-y-4">
                       {formData.galleryImages &&
@@ -526,7 +534,9 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
                         className="flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
                       >
                         <Upload className="h-4 w-4 mr-2" />
-                        {imageUploading ? "Юкланмоқда..." : "Расмлар қўшиш"}
+                        {imageUploading
+                          ? t("applications.modal.uploading")
+                          : t("applications.modal.add_images")}
                       </button>
                       <input
                         ref={galleryImagesRef}
@@ -546,34 +556,34 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                       <div>
                         <label className="block text-sm font-medium text-gray-700">
-                          Статус
+                          {t("applications.modal.status_label")}
                         </label>
                         <div className="mt-1">
                           {application.status === "approved" && (
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                              Тасдиқланган
+                              {t("applications.status_labels.approved")}
                             </span>
                           )}
                           {application.status === "pending" && (
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                              Кутилмоқда
+                              {t("applications.status_labels.pending")}
                             </span>
                           )}
                           {application.status === "in-review" && (
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                              Кўриб чиқилмоқда
+                              {t("applications.status_labels.in_review")}
                             </span>
                           )}
                           {application.status === "rejected" && (
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                              Рад этилган
+                              {t("applications.status_labels.rejected")}
                             </span>
                           )}
                         </div>
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700">
-                          Яратилган сана
+                          {t("applications.modal.created_date_label")}
                         </label>
                         <p className="mt-1 text-sm text-gray-900">
                           {new Date(application.createdAt).toLocaleDateString(
@@ -607,12 +617,14 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
                 {isLoading ? (
                   <div className="flex items-center">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Сақланмоқда...
+                    {t("applications.modal.saving")}
                   </div>
                 ) : (
                   <>
                     <Save className="h-4 w-4 mr-2" />
-                    {mode === "create" ? "Яратиш" : "Сақлаш"}
+                    {mode === "create"
+                      ? t("applications.modal.create_button")
+                      : t("applications.modal.save_button")}
                   </>
                 )}
               </button>
@@ -621,7 +633,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
                 onClick={onClose}
                 className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-i sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
               >
-                Ёпиш
+                {t("applications.modal.close_button")}
               </button>
             </div>
           )}
@@ -633,7 +645,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
                 onClick={onClose}
                 className="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-i sm:w-auto sm:text-sm"
               >
-                Ёпиш
+                {t("applications.modal.close_button")}
               </button>
             </div>
           )}

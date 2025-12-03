@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";
 import { ParameterData } from "../types/factory";
 import { showToast } from "../../../utils/toast";
@@ -18,6 +19,7 @@ const ParameterModal: React.FC<ParameterModalProps> = ({
   parameter,
   onSuccess,
 }) => {
+  const { t } = useTranslation();
   const [status, setStatus] = useState("1");
   const [comment, setComment] = useState("");
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -193,7 +195,7 @@ const ParameterModal: React.FC<ParameterModalProps> = ({
           {/* Header */}
           <div className="flex items-center justify-between p-4 pb-3">
             <h3 className="text-xl font-medium text-gray-900">
-              Параметр статусини янгилаш: {parameter.paramName}
+              {t("modal.parameter_update")}: {parameter.paramName}
             </h3>
             <button
               type="button"
@@ -211,7 +213,7 @@ const ParameterModal: React.FC<ParameterModalProps> = ({
                   htmlFor="param-status"
                   className="mb-2 block text-base font-normal text-gray-900"
                 >
-                  Статус
+                  {t("modal.parameter_status")}
                 </label>
                 {parameter.paramType === "date" ? (
                   <input
@@ -239,7 +241,7 @@ const ParameterModal: React.FC<ParameterModalProps> = ({
                   htmlFor="param-comment"
                   className="mb-2 block text-base font-normal text-gray-900"
                 >
-                  Изоҳ
+                  {t("modal.parameter_comment")}
                 </label>
                 <textarea
                   id="param-comment"
@@ -247,7 +249,7 @@ const ParameterModal: React.FC<ParameterModalProps> = ({
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   className="block w-full rounded-md border border-gray-300 bg-white p-2.5 text-base text-gray-400 focus:border-blue-500 focus:ring-blue-500"
-                  placeholder="Изоҳ киритинг..."
+                  placeholder={`${t("modal.parameter_comment")}...`}
                 />
               </div>
 
@@ -256,7 +258,7 @@ const ParameterModal: React.FC<ParameterModalProps> = ({
                   htmlFor="param-files"
                   className="inline-block bg-blue-50 text-blue-700 font-semibold py-2 px-4 rounded-md cursor-pointer hover:bg-blue-100"
                 >
-                  Choose Files
+                  {t("modal.select_files")}
                 </label>
                 <input
                   type="file"
@@ -291,7 +293,7 @@ const ParameterModal: React.FC<ParameterModalProps> = ({
                 onClick={onClose}
                 className="rounded-md border border-gray-300 bg-white px-6 py-2.5 text-sm font-medium text-gray-500 hover:bg-gray-100"
               >
-                Бекор қилиш
+                {t("cancel")}
               </button>
               <button
                 type="submit"
@@ -299,7 +301,7 @@ const ParameterModal: React.FC<ParameterModalProps> = ({
                 className="rounded-md px-6 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none"
                 style={{ backgroundColor: "#00a0c6" }}
               >
-                {loading ? "⏳ Сақланмоқда..." : "Сақлаш"}
+                {loading ? `⏳ ${t("modal.saving")}` : t("modal.save")}
               </button>
             </div>
           </form>

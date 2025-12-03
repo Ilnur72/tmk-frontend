@@ -1,5 +1,6 @@
 import React from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import { useTranslation } from "react-i18next";
 
 interface PaginationProps {
   currentPage: number;
@@ -18,6 +19,7 @@ const Pagination: React.FC<PaginationProps> = ({
   totalItems,
   onItemsPerPageChange,
 }) => {
+  const { t } = useTranslation();
   const startItem = (currentPage - 1) * itemsPerPage + 1;
   const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 
@@ -72,22 +74,24 @@ const Pagination: React.FC<PaginationProps> = ({
           disabled={currentPage === 1}
           className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Олдинги
+          {t("finance.previous")}
         </button>
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
           className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Кейинги
+          {t("finance.next")}
         </button>
       </div>
       <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
         <div className="flex items-center space-x-4">
           <p className="text-sm text-gray-700">
-            <span className="font-medium">{startItem}</span> дан{" "}
-            <span className="font-medium">{endItem}</span> гача кўрсатилмоқда,{" "}
-            <span className="font-medium">{totalItems}</span> тадан
+            {t("finance.showing_items", {
+              start: startItem,
+              end: endItem,
+              total: totalItems,
+            })}
           </p>
 
           {/* Items Per Page Selector */}
@@ -96,7 +100,7 @@ const Pagination: React.FC<PaginationProps> = ({
               htmlFor="itemsPerPage"
               className="text-sm font-medium text-gray-700"
             >
-              Саҳифада:
+              {t("finance.per_page")}
             </label>
             <select
               id="itemsPerPage"
@@ -104,11 +108,13 @@ const Pagination: React.FC<PaginationProps> = ({
               onChange={(e) => onItemsPerPageChange(Number(e.target.value))}
               className="focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md px-4"
             >
-              <option value={5}>5 та</option>
-              <option value={10}>10 та</option>
-              <option value={20}>20 та</option>
-              <option value={50}>50 та</option>
-              <option value={100}>100 та</option>
+              <option value={5}>{t("finance.n_items", { count: 5 })}</option>
+              <option value={10}>{t("finance.n_items", { count: 10 })}</option>
+              <option value={20}>{t("finance.n_items", { count: 20 })}</option>
+              <option value={50}>{t("finance.n_items", { count: 50 })}</option>
+              <option value={100}>
+                {t("finance.n_items", { count: 100 })}
+              </option>
             </select>
           </div>
         </div>
@@ -119,7 +125,7 @@ const Pagination: React.FC<PaginationProps> = ({
               disabled={currentPage === 1}
               className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <span className="sr-only">Олдинги</span>
+              <span className="sr-only">{t("finance.previous")}</span>
               <ChevronLeftIcon className="h-5 w-5" />
             </button>
 
@@ -155,7 +161,7 @@ const Pagination: React.FC<PaginationProps> = ({
               disabled={currentPage === totalPages}
               className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <span className="sr-only">Кейинги</span>
+              <span className="sr-only">{t("finance.next")}</span>
               <ChevronRightIcon className="h-5 w-5" />
             </button>
           </nav>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { ShoppingCart, Monitor, CreditCard } from "lucide-react";
 import { FactoryInterface, FactoryCounts } from "./types/factory";
 import { showToast } from "../../utils/toast";
@@ -196,13 +197,14 @@ const Factory: React.FC = () => {
     showToast("Лойиҳа муваффақиятли ўчирилди!", "success");
   };
 
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen min-w-0 max-w-full flex-1 rounded-[30px] bg-slate-100 px-4 max-sm:py-8 dark:bg-darkmode-700 md:px-[22px]">
       <div className="grid grid-cols-12 gap-6">
         <div className="col-span-12 mt-8">
           <div className="intro-y lg:flex items-center justify-between">
-            <h2 className="mr-5 text-lg font-medium">
-              Инвестиция лойиҳалари ҳолати мониторинги
+            <h2 className="mr-5 text-xl font-bold">
+              {t("investment_project_monitoring")}
             </h2>
             <button
               id="create-factory-btn"
@@ -210,7 +212,7 @@ const Factory: React.FC = () => {
               className="bg-primary hover:opacity-70 text-white font-bold py-2 px-4 rounded"
               style={{ backgroundColor: "#00a0c6" }}
             >
-              Лойиҳа қўшиш
+              {t("add_project")}
             </button>
           </div>
 

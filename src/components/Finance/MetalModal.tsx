@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { MetalPrice, MetalType, Source } from "../../types/finance";
 
 interface MetalModalProps {
@@ -51,6 +52,7 @@ const MetalModal: React.FC<MetalModalProps> = ({
     };
   }, [isOpen]);
 
+  const { t } = useTranslation();
   if (!shouldRender) return null;
 
   return (
@@ -88,7 +90,9 @@ const MetalModal: React.FC<MetalModalProps> = ({
               <div className="sm:flex sm:items-start">
                 <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
                   <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                    {editingItem ? "Металлни таҳрирлаш" : "Янги металл қўшиш"}
+                    {editingItem
+                      ? t("finance.edit_metal")
+                      : t("finance.add_new_metal")}
                   </h3>
 
                   <div className="space-y-4">
@@ -97,7 +101,7 @@ const MetalModal: React.FC<MetalModalProps> = ({
                         htmlFor="elementName"
                         className="block text-sm font-medium text-gray-700"
                       >
-                        Элемент номи
+                        {t("finance.element_name")}
                       </label>
                       <input
                         type="text"
@@ -119,7 +123,7 @@ const MetalModal: React.FC<MetalModalProps> = ({
                         htmlFor="metalType"
                         className="block text-sm font-medium text-gray-700"
                       >
-                        Металл тури
+                        {t("finance.metal_type")}
                       </label>
                       <select
                         id="metalType"
@@ -133,13 +137,27 @@ const MetalModal: React.FC<MetalModalProps> = ({
                         }
                         className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                       >
-                        <option value={MetalType.STEEL}>Полат</option>
-                        <option value={MetalType.IRON}>Темир</option>
-                        <option value={MetalType.COPPER}>Мис</option>
-                        <option value={MetalType.ALUMINUM}>Алюминий</option>
-                        <option value={MetalType.ZINC}>Рух</option>
-                        <option value={MetalType.LEAD}>Қўрғошин</option>
-                        <option value={MetalType.NICKEL}>Никель</option>
+                        <option value={MetalType.STEEL}>
+                          {t("finance.steel")}
+                        </option>
+                        <option value={MetalType.IRON}>
+                          {t("finance.iron")}
+                        </option>
+                        <option value={MetalType.COPPER}>
+                          {t("finance.copper")}
+                        </option>
+                        <option value={MetalType.ALUMINUM}>
+                          {t("finance.aluminum")}
+                        </option>
+                        <option value={MetalType.ZINC}>
+                          {t("finance.zinc")}
+                        </option>
+                        <option value={MetalType.LEAD}>
+                          {t("finance.lead")}
+                        </option>
+                        <option value={MetalType.NICKEL}>
+                          {t("finance.nickel")}
+                        </option>
                       </select>
                     </div>
 
@@ -148,7 +166,7 @@ const MetalModal: React.FC<MetalModalProps> = ({
                         htmlFor="currentPrice"
                         className="block text-sm font-medium text-gray-700"
                       >
-                        Жорий нархи
+                        {t("finance.current_price")}
                       </label>
                       <input
                         type="number"
@@ -171,7 +189,7 @@ const MetalModal: React.FC<MetalModalProps> = ({
                         htmlFor="previousPrice"
                         className="block text-sm font-medium text-gray-700"
                       >
-                        Охирги нархи
+                        {t("finance.previous_price")}
                       </label>
                       <input
                         type="number"
@@ -193,7 +211,7 @@ const MetalModal: React.FC<MetalModalProps> = ({
                         htmlFor="currency"
                         className="block text-sm font-medium text-gray-700"
                       >
-                        Валюта
+                        {t("finance.currency")}
                       </label>
                       <select
                         id="currency"
@@ -207,9 +225,9 @@ const MetalModal: React.FC<MetalModalProps> = ({
                         }
                         className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                       >
-                        <option value="UZS">UZS (Сўм)</option>
-                        <option value="USD">USD (Доллар)</option>
-                        <option value="EUR">EUR (Евро)</option>
+                        <option value="UZS">UZS ({t("finance.soum")})</option>
+                        <option value="USD">USD ({t("finance.dollar")})</option>
+                        <option value="EUR">EUR ({t("finance.euro")})</option>
                       </select>
                     </div>
 
@@ -218,7 +236,7 @@ const MetalModal: React.FC<MetalModalProps> = ({
                         htmlFor="unit"
                         className="block text-sm font-medium text-gray-700"
                       >
-                        Ўлчов бирлиги
+                        {t("finance.unit")}
                       </label>
                       <input
                         type="text"
@@ -231,7 +249,7 @@ const MetalModal: React.FC<MetalModalProps> = ({
                           })
                         }
                         className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                        placeholder="кг, тонна, метр"
+                        placeholder={t("finance.unit_placeholder")}
                       />
                     </div>
 
@@ -240,7 +258,7 @@ const MetalModal: React.FC<MetalModalProps> = ({
                         htmlFor="sourceId"
                         className="block text-sm font-medium text-gray-700"
                       >
-                        Манба
+                        {t("finance.source")}
                       </label>
                       <select
                         id="sourceId"
@@ -254,7 +272,7 @@ const MetalModal: React.FC<MetalModalProps> = ({
                         }
                         className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                       >
-                        <option value="">Манбани танланг</option>
+                        <option value="">{t("finance.select_source")}</option>
                         {sources.map((source) => (
                           <option key={source.id} value={source.id}>
                             {source.name}
@@ -273,17 +291,17 @@ const MetalModal: React.FC<MetalModalProps> = ({
                 className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary text-base font-medium text-white hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50"
               >
                 {isLoading
-                  ? "Сақланмоқда..."
+                  ? t("finance.saving")
                   : editingItem
-                  ? "Янгилаш"
-                  : "Қўшиш"}
+                  ? t("finance.update")
+                  : t("finance.add")}
               </button>
               <button
                 type="button"
                 onClick={onClose}
                 className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
               >
-                Бекор қилиш
+                {t("cancel")}
               </button>
             </div>
           </form>

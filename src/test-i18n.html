@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>i18n Test</title>
+  </head>
+  <body>
+    <h1>Translation Test</h1>
+    <p>Browser cache tozalash uchun:</p>
+    <ul>
+      <li>Chrome/Safari: Cmd + Shift + R</li>
+      <li>Developer Tools > Network > "Disable cache" + Refresh</li>
+      <li>Yoki Browser Settings > Clear Browsing Data</li>
+    </ul>
+
+    <p>
+      Agar cache tozalangach ham keylar ko'rinsa, bu yerdan boshqa muammo bor.
+    </p>
+
+    <script>
+      // Browser cache clear qilish
+      if ("caches" in window) {
+        caches.keys().then((names) => {
+          names.forEach((name) => {
+            caches.delete(name);
+          });
+        });
+      }
+
+      // LocalStorage va SessionStorage tozalash
+      localStorage.clear();
+      sessionStorage.clear();
+
+      alert("Cache cleared! Refresh the main app now.");
+    </script>
+  </body>
+</html>

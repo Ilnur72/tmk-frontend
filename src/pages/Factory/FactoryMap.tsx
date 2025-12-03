@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import FactoryModal from "./modal/FactoryModal";
 import maplibregl from "maplibre-gl";
 import axios from "axios";
@@ -51,6 +52,7 @@ interface LayerToggleControl {
 }
 
 const FactoryMap: React.FC = () => {
+  const { t } = useTranslation();
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -189,25 +191,37 @@ const FactoryMap: React.FC = () => {
 
         if (!isFactoryMap) {
           const popupContent = `
-          <div style="background: white; padding: 10px; border-radius: 5px;" class="w-96 max-md:w-[300px]">
-            <h2 style="margin: 0; color: #2c3e50;" class="font-bold text-lg">${
-              factory.name
-            }</h2>
-            <p style="margin: 5px 0; font-size: 1.4em;">Лойиҳа ва объект бўйича маълумот</p>
-            <p style="margin: 5px 0; font-size: 1.4em;">Қурилиш жараёни маълумотлари</p>
-            <p style="margin: 5px 0; font-size: 1.4em;">Ишлаб чиқариш жараёни маълумотлари</p>
-            <p style="margin: 5px 0; font-size: 1.4em;">Онлайн видео кузатув</p>
-            <p style="margin: 5px 0; font-size: 1.4em;">Ходимлар ҳақида махлумот</p>
-            <p style="margin: 5px 0; font-size: 1.4em;">Техникалар ҳақида махлумот</p>
-            ${
-              factory.images
-                ? `<img src="${API_URL}/mnt/tmkupload/factory-images/${
-                    JSON.parse(factory.images)[0]
-                  }" style="width: 100%; border-radius: 5px;" />`
-                : '<img src="/image/1.jpg" style="width: 100%; border-radius: 5px;" />'
-            }
-          </div>
-        `;
+            <div style="background: white; padding: 10px; border-radius: 5px;" class="w-96 max-md:w-[300px]">
+              <h2 style="margin: 0; color: #2c3e50;" class="font-bold text-lg">${
+                factory.name
+              }</h2>
+              <p style="margin: 5px 0; font-size: 1.4em;">${t(
+                "factory.info.project_object"
+              )}</p>
+              <p style="margin: 5px 0; font-size: 1.4em;">${t(
+                "factory.info.construction_process"
+              )}</p>
+              <p style="margin: 5px 0; font-size: 1.4em;">${t(
+                "factory.info.production_process"
+              )}</p>
+              <p style="margin: 5px 0; font-size: 1.4em;">${t(
+                "factory.info.online_video"
+              )}</p>
+              <p style="margin: 5px 0; font-size: 1.4em;">${t(
+                "factory.info.employee_info"
+              )}</p>
+              <p style="margin: 5px 0; font-size: 1.4em;">${t(
+                "factory.info.technique_info"
+              )}</p>
+              ${
+                factory.images
+                  ? `<img src=\"${API_URL}/mnt/tmkupload/factory-images/${
+                      JSON.parse(factory.images)[0]
+                    }\" style=\"width: 100%; border-radius: 5px;\" />`
+                  : '<img src="/image/1.jpg" style="width: 100%; border-radius: 5px;" />'
+              }
+            </div>
+          `;
           popup = new maplibregl.Popup({ offset: 25 }).setHTML(popupContent);
         }
 
@@ -296,7 +310,7 @@ const FactoryMap: React.FC = () => {
 
       addMarkersToMap(processedData);
     } catch (error) {
-      console.error("Error fetching factories:", error);
+      console.error(t("factory.errors.fetch"), error);
     }
   }, [addMarkersToMap]);
 
@@ -388,9 +402,7 @@ const FactoryMap: React.FC = () => {
           >
             <div
               id="left"
-              className={`sidebar  left ${
-                sidebarCollapsed ? "collapsed" : ""
-              }`}
+              className={`sidebar  left ${sidebarCollapsed ? "collapsed" : ""}`}
               style={{
                 position: "absolute",
                 top: 0,

@@ -15,6 +15,7 @@ import {
   X,
   MapPin,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../contexts/AuthContext";
 
 const allMenuItems = [
@@ -38,6 +39,7 @@ const allMenuItems = [
 ];
 
 const Sidebar = () => {
+  const { t } = useTranslation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { logout, role } = useAuth();
@@ -147,7 +149,7 @@ const Sidebar = () => {
                           : "text-white"
                       }`}
                     >
-                      {item.title}
+                      {t(item.title)}
                     </div>
                   </NavLink>
                 </li>
@@ -162,7 +164,7 @@ const Sidebar = () => {
                   <LogOut className={`w-5 h-5`} />
                 </div>
                 <div className={`menu__title text-sm font-medium `}>
-                  Тизимдан чиқиш
+                  {t("sidebar.logout")}
                 </div>
               </div>
             </li>

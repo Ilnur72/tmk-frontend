@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { Edit, Trash2, Settings, Eye } from "lucide-react";
 import Sortable from "sortablejs";
 import { FactoryInterface } from "../types/factory";
@@ -24,6 +25,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   onParameterControl,
   onImageModal,
 }) => {
+  const { t } = useTranslation();
   const sortableRef = useRef<any>(null);
   const [isOpen, setIsOpen] = React.useState(false);
   useEffect(() => {
@@ -225,7 +227,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                               param.visible ? "flex" : "hidden"
                             }`}
                           >
-                            Изох: {param.latestLog.izoh}
+                            {t("comment")}: {param.latestLog.izoh}
                           </span>
                         ) : (
                           <span
@@ -257,7 +259,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               className="text-primary flex gap-1 items-center"
               style={{ color: "#00a0c6" }}
             >
-              Параметрларини Бошкариш
+              {t("manage_parameters")}
               <Settings className="w-5 h-5" />
             </button>
           </div>

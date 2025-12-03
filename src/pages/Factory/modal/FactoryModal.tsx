@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   X,
   Building2,
@@ -26,6 +27,7 @@ export default function FactoryDetailsModal({
   isOpen,
   onClose,
 }: FactoryDetailsModalProps) {
+  const { t } = useTranslation();
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const [videoModalOpen, setVideoModalOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -37,11 +39,11 @@ export default function FactoryDetailsModal({
   const getStatusText = (status: string) => {
     switch (status) {
       case "REGISTRATION":
-        return "Расмийлаштириш жараёнида";
+        return t("factory.status.registration");
       case "CONSTRUCTION":
-        return "Қурилиш";
+        return t("factory.status.construction");
       case "STARTED":
-        return "Ишлаб турибди";
+        return t("factory.status.started");
       default:
         return status;
     }
@@ -50,11 +52,11 @@ export default function FactoryDetailsModal({
   const getImportanceText = (importance: string) => {
     switch (importance) {
       case "HIGH":
-        return "Юқори";
+        return t("factory.importance.high");
       case "AVERAGE":
-        return "Ўрта";
+        return t("factory.importance.average");
       case "LOW":
-        return "Паст";
+        return t("factory.importance.low");
       default:
         return importance;
     }
@@ -102,7 +104,7 @@ export default function FactoryDetailsModal({
   const parseCoordinates = (
     coords: [number, number] | string | undefined
   ): string => {
-    if (!coords) return "Координаталар топилмади";
+    if (!coords) return t("factory.no_coordinates");
     try {
       let coordsArray: [number, number];
       if (typeof coords === "string") {
@@ -112,7 +114,7 @@ export default function FactoryDetailsModal({
       }
       return `${coordsArray[1] || "0.000000"}, ${coordsArray[0] || "0.000000"}`;
     } catch {
-      return "Координаталар топилмади";
+      return t("factory.no_coordinates");
     }
   };
 
@@ -161,10 +163,11 @@ export default function FactoryDetailsModal({
               </div>
               <div>
                 <h3 className="text-2xl font-bold">
-                  {factory.name || "Лойиҳа тафсилотлари"}
+                  {factory.name || t("factory.details.title")}
                 </h3>
                 <p className="text-white/80 text-sm">
-                  ID: {factory.id || "-"} | Сорт: {factory.sort_num || "-"}
+                  ID: {factory.id || "-"} | {t("factory.details.sort")}:{" "}
+                  {factory.sort_num || "-"}
                 </p>
               </div>
             </div>
@@ -185,7 +188,7 @@ export default function FactoryDetailsModal({
                 <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
                   <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                     <Image className="w-5 h-5 mr-2 text-cyan-600" />
-                    Лойиҳа расмлари
+                    {t("factory.details.images")}
                   </h4>
                   <div
                     className="flex space-x-3 overflow-x-auto pb-2"
@@ -232,7 +235,7 @@ export default function FactoryDetailsModal({
                         <div className="text-center">
                           <Image className="w-16 h-16 mx-auto text-gray-400 mb-3" />
                           <p className="text-gray-500 text-sm">
-                            Расм мавжуд эмас
+                            {t("factory.details.no_images")}
                           </p>
                         </div>
                       </div>
@@ -244,12 +247,12 @@ export default function FactoryDetailsModal({
                 <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
                   <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                     <User className="w-5 h-5 mr-2 text-cyan-600" />
-                    Асосий маълумотлар
+                    {t("factory.details.basic_info")}
                   </h4>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between py-2 border-b border-gray-100">
                       <span className="text-gray-600 font-medium">
-                        Лойиҳа номи:
+                        {t("factory.details.project_name")}:
                       </span>
                       <span className="font-semibold text-gray-900">
                         {factory.name || "-"}
@@ -257,7 +260,7 @@ export default function FactoryDetailsModal({
                     </div>
                     <div className="flex items-center justify-between py-2 border-b border-gray-100">
                       <span className="text-gray-600 font-medium">
-                        Корхона номи:
+                        {t("factory.details.enterprise_name")}:
                       </span>
                       <span className="font-semibold text-gray-900">
                         {factory.enterprise_name || "-"}
@@ -265,28 +268,32 @@ export default function FactoryDetailsModal({
                     </div>
                     <div className="flex items-center justify-between py-2 border-b border-gray-100">
                       <span className="text-gray-600 font-medium">
-                        Лойиҳа мақсади:
+                        {t("factory.details.project_goal")}:
                       </span>
                       <span className="font-medium text-gray-900">
                         {factory.project_goal || "-"}
                       </span>
                     </div>
                     <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                      <span className="text-gray-600 font-medium">Регион:</span>
+                      <span className="text-gray-600 font-medium">
+                        {t("factory.details.region")}:
+                      </span>
                       <span className="font-medium text-gray-900">
                         {factory.region || "-"}
                       </span>
                     </div>
                     <div className="flex items-center justify-between py-2 border-b border-gray-100">
                       <span className="text-gray-600 font-medium">
-                        Лойиҳа жараёни:
+                        {t("factory.details.work_percent")}:
                       </span>
                       <span className="font-medium text-gray-900">
                         {factory.work_percent || "-"} %
                       </span>
                     </div>
                     <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                      <span className="text-gray-600 font-medium">Статус:</span>
+                      <span className="text-gray-600 font-medium">
+                        {t("factory.details.status")}:
+                      </span>
                       <span
                         className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusBadgeColor(
                           factory.status
@@ -297,7 +304,7 @@ export default function FactoryDetailsModal({
                     </div>
                     <div className="flex items-center justify-between py-2 border-b border-gray-100">
                       <span className="text-gray-600 font-medium">
-                        Ахамияти:
+                        {t("factory.details.importance")}:
                       </span>
                       <span
                         className={`px-3 py-1 rounded-full text-sm font-medium ${getImportanceBadgeColor(
@@ -309,7 +316,7 @@ export default function FactoryDetailsModal({
                     </div>
                     <div className="flex items-center justify-between py-2">
                       <span className="text-gray-600 font-medium">
-                        Координаталари:
+                        {t("factory.details.coordinates")}:
                       </span>
                       <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded">
                         {parseCoordinates(factory.coords)}
@@ -326,7 +333,7 @@ export default function FactoryDetailsModal({
                   <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
                     <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                       <BarChart3 className="w-5 h-5 mr-2 text-cyan-600" />
-                      Қўшимча майдонлар
+                      {t("factory.details.custom_fields")}
                     </h4>
                     <div className="space-y-2">
                       {Object.entries(factory.custom_fields!).map(
@@ -348,7 +355,7 @@ export default function FactoryDetailsModal({
                   <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
                     <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                       <FileText className="w-5 h-5 mr-2 text-cyan-600" />
-                      Лойиҳа қийматлари
+                      {t("factory.details.project_values")}
                     </h4>
                     <div className="space-y-2">
                       {Object.entries(factory.project_values!).map(
@@ -409,7 +416,7 @@ export default function FactoryDetailsModal({
                 <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
                   <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                     <Settings className="w-5 h-5 mr-2 text-cyan-600" />
-                    Параметрлар
+                    {t("factory.details.parameters")}
                   </h4>
                   <div className="space-y-2">
                     {factory.factoryParams &&
@@ -424,10 +431,10 @@ export default function FactoryDetailsModal({
                             : "bg-gray-100 text-gray-800";
                         const statusText =
                           status === 1
-                            ? "Яхши"
+                            ? t("factory.param_status.good")
                             : status === 2
-                            ? "Ёмон"
-                            : "Нормал";
+                            ? t("factory.param_status.bad")
+                            : t("factory.param_status.normal");
                         const statusIcon =
                           status === 1 ? "✓" : status === 2 ? "✗" : "○";
 
@@ -473,7 +480,7 @@ export default function FactoryDetailsModal({
                           <Settings className="w-8 h-8 text-gray-400" />
                         </div>
                         <p className="text-gray-500">
-                          Бу лойиҳа учун параметрлар мавжуд эмас
+                          {t("factory.details.no_parameters")}
                         </p>
                       </div>
                     )}
@@ -484,7 +491,7 @@ export default function FactoryDetailsModal({
                 <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
                   <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                     <Video className="w-5 h-5 mr-2 text-cyan-600" />
-                    Видео кузатув
+                    {t("factory.details.video_surveillance")}
                   </h4>
                   <div className="space-y-3">
                     {factory.cameras && factory.cameras.length > 0 ? (
@@ -496,10 +503,10 @@ export default function FactoryDetailsModal({
                           broken: "bg-gray-100 text-gray-800",
                         };
                         const statusTexts = {
-                          active: "Фаол",
-                          inactive: "Фаол эмас",
-                          maintenance: "Техник хизмат",
-                          broken: "Ишламайди",
+                          active: t("factory.camera_status.active"),
+                          inactive: t("factory.camera_status.inactive"),
+                          maintenance: t("factory.camera_status.maintenance"),
+                          broken: t("factory.camera_status.broken"),
                         };
 
                         return (
@@ -543,7 +550,7 @@ export default function FactoryDetailsModal({
                           <Camera className="w-8 h-8 text-gray-400" />
                         </div>
                         <p className="text-gray-500">
-                          Бу лойиҳа учун камералар мавжуд эмас
+                          {t("factory.details.no_cameras")}
                         </p>
                       </div>
                     )}

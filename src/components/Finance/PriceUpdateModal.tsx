@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
 interface PriceUpdateModalProps {
@@ -46,6 +47,7 @@ const PriceUpdateModal: React.FC<PriceUpdateModalProps> = ({
     };
   }, [isOpen]);
 
+  const { t } = useTranslation();
   if (!shouldRender) return null;
 
   return (
@@ -83,7 +85,7 @@ const PriceUpdateModal: React.FC<PriceUpdateModalProps> = ({
               <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg leading-6 font-medium text-gray-900">
-                    Нарх ўзгартириш - {editingItem?.elementName}
+                    {t("finance.update_price")} - {editingItem?.elementName}
                   </h3>
                   <button
                     onClick={onClose}
@@ -95,13 +97,13 @@ const PriceUpdateModal: React.FC<PriceUpdateModalProps> = ({
 
                 <div className="mt-4">
                   <p className="text-sm text-gray-600 mb-4">
-                    Манба: {editingItem?.sourceName}
+                    {t("finance.source")}: {editingItem?.sourceName}
                   </p>
 
                   <form onSubmit={onSubmit} className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Янги нарх *
+                        {t("finance.new_price")} *
                       </label>
                       <input
                         type="number"
@@ -120,7 +122,7 @@ const PriceUpdateModal: React.FC<PriceUpdateModalProps> = ({
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Валюта
+                        {t("finance.currency")}
                       </label>
                       <select
                         value={formData.currency}
@@ -137,7 +139,7 @@ const PriceUpdateModal: React.FC<PriceUpdateModalProps> = ({
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Ўзгартириш сабаби
+                        {t("finance.change_reason")}
                       </label>
                       <textarea
                         value={formData.changeReason}
@@ -149,7 +151,7 @@ const PriceUpdateModal: React.FC<PriceUpdateModalProps> = ({
                         }
                         rows={3}
                         className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="Нарх ўзгартириш сабабини киритинг..."
+                        placeholder={t("finance.change_reason_placeholder")}
                       />
                     </div>
 
@@ -159,14 +161,14 @@ const PriceUpdateModal: React.FC<PriceUpdateModalProps> = ({
                         onClick={onClose}
                         className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                       >
-                        Бекор қилиш
+                        {t("finance.cancel")}
                       </button>
                       <button
                         type="submit"
                         disabled={isLoading}
                         className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                       >
-                        {isLoading ? "Сақланмоқда..." : "Сақлаш"}
+                        {isLoading ? t("finance.saving") : t("finance.save")}
                       </button>
                     </div>
                   </form>

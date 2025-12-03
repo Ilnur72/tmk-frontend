@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface SourceModalProps {
@@ -22,6 +23,7 @@ const SourceModal: React.FC<SourceModalProps> = ({
   setFormData,
   isLoading,
 }) => {
+  const { t } = useTranslation();
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -102,7 +104,7 @@ const SourceModal: React.FC<SourceModalProps> = ({
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
                       >
-                        Янги манба қўшиш
+                        {t("finance.add_new_source")}
                       </motion.h3>
 
                       <motion.div
@@ -120,7 +122,7 @@ const SourceModal: React.FC<SourceModalProps> = ({
                             htmlFor="sourceName"
                             className="block text-sm font-medium text-gray-700"
                           >
-                            Манба номи
+                            {t("finance.source_name")}
                           </label>
                           <input
                             type="text"
@@ -146,7 +148,7 @@ const SourceModal: React.FC<SourceModalProps> = ({
                             htmlFor="sourceUrl"
                             className="block text-sm font-medium text-gray-700"
                           >
-                            Манба URL
+                            {t("finance.source_url")}
                           </label>
                           <input
                             type="url"
@@ -173,7 +175,7 @@ const SourceModal: React.FC<SourceModalProps> = ({
                             htmlFor="sourceDescription"
                             className="block text-sm font-medium text-gray-700"
                           >
-                            Тавсиф
+                            {t("finance.description")}
                           </label>
                           <textarea
                             id="sourceDescription"
@@ -186,7 +188,9 @@ const SourceModal: React.FC<SourceModalProps> = ({
                               })
                             }
                             className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                            placeholder="Манба ҳақида қисқача маълумот"
+                            placeholder={t(
+                              "finance.source_description_placeholder"
+                            )}
                           />
                         </motion.div>
                       </motion.div>
@@ -206,7 +210,7 @@ const SourceModal: React.FC<SourceModalProps> = ({
                     whileHover={{ scale: isLoading ? 1 : 1.05 }}
                     whileTap={{ scale: isLoading ? 1 : 0.95 }}
                   >
-                    {isLoading ? "Юкланмоқда..." : "Сақлаш"}
+                    {isLoading ? t("finance.loading") : t("finance.save")}
                   </motion.button>
                   <motion.button
                     type="button"
@@ -215,7 +219,7 @@ const SourceModal: React.FC<SourceModalProps> = ({
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    Бекор қилиш
+                    {t("finance.cancel")}
                   </motion.button>
                 </motion.div>
               </form>

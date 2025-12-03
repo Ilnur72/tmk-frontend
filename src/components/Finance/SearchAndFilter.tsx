@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Source } from "../../types/finance";
 
@@ -26,6 +27,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
     setSelectedSourceFilter("");
   };
 
+  const { t } = useTranslation();
   return (
     <div className="bg-white shadow rounded-lg p-4 mb-4">
       <div className="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-4">
@@ -35,7 +37,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
             htmlFor="search"
             className="block text-sm font-medium text-gray-700 mb-1"
           >
-            Қидириш:
+            {t("finance.search")}
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -44,7 +46,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
             <input
               type="text"
               id="search"
-              placeholder="Металл номи, тури ёки манба номи бўйича қидиринг..."
+              placeholder={t("finance.search_placeholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 shadow-sm sm:text-sm border-gray-300 rounded-md"
@@ -58,7 +60,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
             htmlFor="sourceFilter"
             className="block text-sm font-medium text-gray-700 mb-1"
           >
-            Манба бойича филтерлаш:
+            {t("finance.filter_by_source")}
           </label>
           <select
             id="sourceFilter"
@@ -66,7 +68,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
             onChange={(e) => setSelectedSourceFilter(e.target.value)}
             className="focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
           >
-            <option value="">Барча манбалар</option>
+            <option value="">{t("finance.all_sources")}</option>
             {sources.map((source) => (
               <option key={source.id} value={source.id}>
                 {source.name}
@@ -82,7 +84,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
               onClick={clearAllFilters}
               className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-md text-sm"
             >
-              Барча филтерларни очириш
+              {t("finance.clear_all_filters")}
             </button>
           </div>
         )}

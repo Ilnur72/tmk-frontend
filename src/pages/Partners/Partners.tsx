@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import {
   Search,
   Users,
@@ -13,6 +14,7 @@ import { getAllPartners } from "../../services/partnersService";
 import { Partner } from "../../types/partner";
 
 const Partners: React.FC = () => {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
@@ -64,7 +66,7 @@ const Partners: React.FC = () => {
   if (error) {
     return (
       <div className="text-center text-red-600 p-8">
-        Hamkorlarni yuklashda xatolik yuz berdi
+        {t("partners.loading_error")}
       </div>
     );
   }
@@ -82,8 +84,10 @@ const Partners: React.FC = () => {
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Hamkorlar</h1>
-            <p className="text-gray-600">Barcha hamkorlar ro'yxati</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              {t("partners.title")}
+            </h1>
+            <p className="text-gray-600">{t("partners.all_partners_list")}</p>
           </div>
         </div>
 
@@ -94,7 +98,7 @@ const Partners: React.FC = () => {
               <Users className="h-10 w-10 text-blue-500" />
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">
-                  Jami hamkorlar
+                  {t("partners.total_partners")}
                 </p>
                 <p className="text-2xl font-bold text-gray-900">
                   {(partners as Partner[]).length}
@@ -107,7 +111,7 @@ const Partners: React.FC = () => {
               <Building className="h-10 w-10 text-green-500" />
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">
-                  Faol hamkorlar
+                  {t("partners.active_partners")}
                 </p>
                 <p className="text-2xl font-bold text-gray-900">
                   {activePartners}
@@ -120,7 +124,7 @@ const Partners: React.FC = () => {
               <Filter className="h-10 w-10 text-yellow-500" />
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">
-                  Kutilayotgan
+                  {t("partners.pending_partners")}
                 </p>
                 <p className="text-2xl font-bold text-gray-900">
                   {pendingPartners}
@@ -138,7 +142,7 @@ const Partners: React.FC = () => {
             <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Qidirish..."
+              placeholder={t("partners.search_placeholder")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
@@ -149,10 +153,10 @@ const Partners: React.FC = () => {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
           >
-            <option value="all">Barcha holat</option>
-            <option value="active">Faol</option>
-            <option value="inactive">Faol emas</option>
-            <option value="pending">Kutilayotgan</option>
+            <option value="all">{t("partners.all_statuses")}</option>
+            <option value="active">{t("partners.active")}</option>
+            <option value="inactive">{t("partners.inactive")}</option>
+            <option value="pending">{t("partners.pending")}</option>
           </select>
         </div>
       </div>
@@ -164,19 +168,19 @@ const Partners: React.FC = () => {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Kompaniya
+                  {t("partners.company")}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Aloqa shaxsi
+                  {t("partners.contact_person")}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Bog'lanish
+                  {t("partners.contact_info")}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Manzil
+                  {t("partners.address")}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Holat
+                  {t("partners.status")}
                 </th>
               </tr>
             </thead>
@@ -191,7 +195,8 @@ const Partners: React.FC = () => {
                           {partner.company || partner.name}
                         </div>
                         <div className="text-sm text-gray-500">
-                          {partner.website || "Veb-sayt ko'rsatilmagan"}
+                          {partner.website ||
+                            t("partners.website_not_specified")}
                         </div>
                       </div>
                     </div>
@@ -201,7 +206,7 @@ const Partners: React.FC = () => {
                       {partner.name}
                     </div>
                     <div className="text-sm text-gray-500">
-                      {partner.position || "Lavozim ko'rsatilmagan"}
+                      {partner.position || t("partners.position_not_specified")}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -211,13 +216,14 @@ const Partners: React.FC = () => {
                     </div>
                     <div className="flex items-center text-sm text-gray-900">
                       <Phone className="h-4 w-4 mr-2 text-gray-400" />
-                      {partner.phone || "Telefon ko'rsatilmagan"}
+                      {partner.phone || t("partners.phone_not_specified")}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center text-sm text-gray-900">
                       <MapPin className="h-4 w-4 mr-2 text-gray-400" />
-                      {partner.description || "Manzil ko'rsatilmagan"}
+                      {partner.description ||
+                        t("partners.address_not_specified")}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -227,10 +233,10 @@ const Partners: React.FC = () => {
                       )}`}
                     >
                       {partner.status === "active"
-                        ? "Faol"
+                        ? t("partners.active")
                         : partner.status === "inactive"
-                        ? "Faol emas"
-                        : "Kutilayotgan"}
+                        ? t("partners.inactive")
+                        : t("partners.pending")}
                     </span>
                   </td>
                 </tr>
@@ -243,10 +249,10 @@ const Partners: React.FC = () => {
           <div className="text-center py-12">
             <Users className="mx-auto h-12 w-12 text-gray-400" />
             <h3 className="mt-2 text-sm font-medium text-gray-900">
-              Hamkor topilmadi
+              {t("partners.no_partners_found")}
             </h3>
             <p className="mt-1 text-sm text-gray-500">
-              Qidiruv shartlariga mos hamkor mavjud emas
+              {t("partners.no_matching_partners")}
             </p>
           </div>
         )}

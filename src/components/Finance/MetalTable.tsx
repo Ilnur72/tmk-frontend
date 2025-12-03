@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   CurrencyDollarIcon,
   EyeIcon,
@@ -49,8 +50,13 @@ const MetalTable: React.FC<MetalTableProps> = ({
   selectedSourceFilter,
   sources,
 }) => {
+  const { t } = useTranslation();
   const formatCurrency = (amount: number | string) => {
-    return new Intl.NumberFormat("uz-UZ").format(Number(amount)) + " сўм";
+    return (
+      new Intl.NumberFormat("uz-UZ").format(Number(amount)) +
+      " " +
+      t("finance.soum")
+    );
   };
 
   const formatDate = (dateString: string) => {
@@ -66,7 +72,7 @@ const MetalTable: React.FC<MetalTableProps> = ({
     return (
       <div className="flex justify-center items-center py-8">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        <span className="ml-2 text-gray-600">Юкланмоқда...</span>
+        <span className="ml-2 text-gray-600">{t("finance.loading")}</span>
       </div>
     );
   }
@@ -87,7 +93,7 @@ const MetalTable: React.FC<MetalTableProps> = ({
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Металл номи
+                {t("finance.metal_name")}
               </th>
               {sourceNames.map((sourceName) => (
                 <th
@@ -98,13 +104,13 @@ const MetalTable: React.FC<MetalTableProps> = ({
                 </th>
               ))}
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Ўзгариши
+                {t("finance.change")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Охирги янгиланиш
+                {t("finance.last_updated")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Амаллар
+                {t("finance.actions")}
               </th>
             </tr>
           </thead>
@@ -144,7 +150,9 @@ const MetalTable: React.FC<MetalTableProps> = ({
                                   onSourceClick(item, sourceName);
                                 }
                               }}
-                              title={`${sourceName} нарх тарихини кўриш`}
+                              title={t("finance.view_price_history", {
+                                source: sourceName,
+                              })}
                             >
                               {formatCurrency(sourceData.currentPrice || 0)}
                             </div>
@@ -154,7 +162,7 @@ const MetalTable: React.FC<MetalTableProps> = ({
                                 onPriceUpdate(item, sourceName, sourceData);
                               }}
                               className="text-blue-600 hover:text-blue-900 opacity-0 group-hover:opacity-100 transition-opacity"
-                              title="Нарх ўзгартириш"
+                              title={t("finance.update_price")}
                             >
                               <CurrencyDollarIcon className="h-4 w-4" />
                             </button>
@@ -205,7 +213,7 @@ const MetalTable: React.FC<MetalTableProps> = ({
                         onRowClick(item); // Барча манбаларнинг нарх тарихини кўрсатиш
                       }}
                       className="text-blue-600 hover:text-blue-900"
-                      title="Барча манбалар нарх тарихи"
+                      title={t("finance.all_sources_price_history")}
                     >
                       <EyeIcon className="h-5 w-5" />
                     </button>
@@ -216,7 +224,7 @@ const MetalTable: React.FC<MetalTableProps> = ({
                         onDelete(item);
                       }}
                       className="text-red-600 hover:text-red-900"
-                      title="Ўчириш"
+                      title={t("finance.delete")}
                     >
                       <TrashIcon className="h-5 w-5" />
                     </button>
@@ -232,15 +240,15 @@ const MetalTable: React.FC<MetalTableProps> = ({
         <div className="text-center py-12">
           <p className="text-gray-500">
             {searchQuery || selectedSourceFilter
-              ? "Қидириш натижаси топилмади"
-              : "Ҳеч қандай маълумот топилмади"}
+              ? t("finance.no_search_results")
+              : t("finance.no_data")}
           </p>
           {(searchQuery || selectedSourceFilter) && (
             <button
               onClick={clearAllFilters}
               className="mt-2 text-blue-600 hover:text-blue-800 text-sm"
             >
-              Барча маълумотларни кўрсатиш
+              {t("finance.show_all_data")}
             </button>
           )}
         </div>

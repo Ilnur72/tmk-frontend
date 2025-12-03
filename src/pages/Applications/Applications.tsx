@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Search, Filter, RefreshCw, MapPin } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import ApplicationModal from "./components/ApplicationModal";
 import ApplicationsTable from "./components/ApplicationsTable";
 import {
@@ -14,6 +15,7 @@ import { Application, UpdateApplicationDto } from "../../types/application";
 import { showToast } from "../../utils/toast";
 
 const Applications: React.FC = () => {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [regionFilter, setRegionFilter] = useState<string>("all");
@@ -43,12 +45,12 @@ const Applications: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["applications"] });
       setModalState({ isOpen: false, mode: "view", application: null });
-      showToast("Ариза маълумотлари янгиланди", "success");
+      showToast(t("applications.updated_success"), "success");
     },
     onError: (error: any) => {
       console.error("Update application error:", error);
       showToast(
-        error.response?.data?.message || "Ариза янгилашда хато",
+        error.response?.data?.message || t("applications.update_error"),
         "error"
       );
     },
@@ -59,12 +61,12 @@ const Applications: React.FC = () => {
     mutationFn: deleteApplication,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["applications"] });
-      showToast("Ариза ўчирилди", "success");
+      showToast(t("applications.deleted_success"), "success");
     },
     onError: (error: any) => {
       console.error("Delete application error:", error);
       showToast(
-        error.response?.data?.message || "Ариза ўчиришда хато",
+        error.response?.data?.message || t("applications.delete_error"),
         "error"
       );
     },
@@ -81,12 +83,12 @@ const Applications: React.FC = () => {
     }) => updateApplicationStatus(id, status),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["applications"] });
-      showToast("Ариза статуси янгиланди", "success");
+      showToast(t("applications.status_updated"), "success");
     },
     onError: (error: any) => {
       console.error("Update status error:", error);
       showToast(
-        error.response?.data?.message || "Статус янгилашда хато",
+        error.response?.data?.message || t("applications.status_update_error"),
         "error"
       );
     },
@@ -98,11 +100,14 @@ const Applications: React.FC = () => {
       updateApplicationComment(id, comment),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["applications"] });
-      showToast("Админ изоҳи қўшилди", "success");
+      showToast(t("applications.comment_added"), "success");
     },
     onError: (error: any) => {
       console.error("Update comment error:", error);
-      showToast(error.response?.data?.message || "Изоҳ қўшишда хато", "error");
+      showToast(
+        error.response?.data?.message || t("applications.comment_error"),
+        "error"
+      );
     },
   });
 
@@ -116,7 +121,7 @@ const Applications: React.FC = () => {
   };
 
   const handleDeleteApplication = (id: string) => {
-    if (window.confirm("Ҳақиқатдан ҳам бу аризани ўчирмоқчимисиз?")) {
+    if (window.confirm(t("applications.delete_confirm"))) {
       deleteMutation.mutate(id);
     }
   };
@@ -184,20 +189,17 @@ const Applications: React.FC = () => {
           <div className="flex">
             <div className="ml-3">
               <h3 className="text-sm font-medium text-red-800">
-                Маълумот юклашда хато
+                {t("applications.load_error_title")}
               </h3>
               <div className="mt-2 text-sm text-red-700">
-                <p>
-                  Ариза маълумотларини юклашда хато юз берди. Илтимос, қайта
-                  уриниб кўринг.
-                </p>
+                <p>{t("applications.load_error_message")}</p>
               </div>
               <div className="mt-4">
                 <button
                   onClick={() => refetch()}
                   className="bg-red-100 px-3 py-2 rounded-md text-sm font-medium text-red-800 hover:bg-red-200"
                 >
-                  Қайта уринib кўриш
+                  {t("applications.retry")}
                 </button>
               </div>
             </div>
@@ -208,14 +210,17 @@ const Applications: React.FC = () => {
   }
 
   return (
-    <div className="p-6">
-      <div className="sm:flex sm:items-center sm:justify-between">
+    <div
+      className="p-6 flex flex-col"
+      style={{ minHeight: "calc(100vh - 120px)" }}
+    >
+      <div className="sm:flex sm:items-center sm:justify-between flex-shrink-0">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
-            Аризаларни бошқариш
+            {t("applications.title")}
           </h1>
           <p className="mt-2 text-sm text-gray-700">
-            Ҳамкорлар томонидан юборилган аризаларни кўринг ва тасдиқланг
+            {t("applications.subtitle")}
           </p>
         </div>
         <div className="mt-4 sm:mt-0">
@@ -227,13 +232,13 @@ const Applications: React.FC = () => {
             <RefreshCw
               className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
             />
-            Янгилаш
+            {t("applications.refresh")}
           </button>
         </div>
       </div>
 
       {/* Statistics */}
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5 mt-8 mb-8">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5 mt-8 mb-8 flex-shrink-0">
         <div className="bg-white overflow-hidden shadow rounded-lg">
           <div className="p-5">
             <div className="flex items-center">
@@ -245,7 +250,7 @@ const Applications: React.FC = () => {
               <div className="ml-5 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">
-                    Жами
+                    {t("applications.total")}
                   </dt>
                   <dd className="text-lg font-medium text-gray-900">
                     {applicationStats.total}
@@ -267,7 +272,7 @@ const Applications: React.FC = () => {
               <div className="ml-5 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">
-                    Тасдиқланганлар
+                    {t("applications.approved")}
                   </dt>
                   <dd className="text-lg font-medium text-gray-900">
                     {applicationStats.approved}
@@ -289,7 +294,7 @@ const Applications: React.FC = () => {
               <div className="ml-5 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">
-                    Кутилаётганлар
+                    {t("applications.pending")}
                   </dt>
                   <dd className="text-lg font-medium text-gray-900">
                     {applicationStats.pending}
@@ -311,7 +316,7 @@ const Applications: React.FC = () => {
               <div className="ml-5 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">
-                    Кўрилаётганлар
+                    {t("applications.in_review")}
                   </dt>
                   <dd className="text-lg font-medium text-gray-900">
                     {applicationStats.inReview}
@@ -333,7 +338,7 @@ const Applications: React.FC = () => {
               <div className="ml-5 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">
-                    Рад этилганлар
+                    {t("applications.rejected")}
                   </dt>
                   <dd className="text-lg font-medium text-gray-900">
                     {applicationStats.rejected}
@@ -346,7 +351,7 @@ const Applications: React.FC = () => {
       </div>
 
       {/* Filters */}
-      <div className="bg-white shadow rounded-lg mb-6">
+      <div className="bg-white shadow rounded-lg mb-6 flex-shrink-0">
         <div className="px-6 py-4">
           <div className="flex flex-col sm:flex-row gap-4">
             {/* Search */}
@@ -355,7 +360,7 @@ const Applications: React.FC = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Ариза номи, тафсилоти ёки жой бўйича қидириш..."
+                  placeholder={t("applications.search_placeholder")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:outline-none "
@@ -371,11 +376,11 @@ const Applications: React.FC = () => {
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none "
               >
-                <option value="all">Барча статуслар</option>
-                <option value="pending">Кутилмоқда</option>
-                <option value="in-review">Кўрилаётган</option>
-                <option value="approved">Тасдиқланган</option>
-                <option value="rejected">Рад этилган</option>
+                <option value="all">{t("applications.all_statuses")}</option>
+                <option value="pending">{t("applications.pending")}</option>
+                <option value="in-review">{t("applications.in_review")}</option>
+                <option value="approved">{t("applications.approved")}</option>
+                <option value="rejected">{t("applications.rejected")}</option>
               </select>
             </div>
 
@@ -387,7 +392,7 @@ const Applications: React.FC = () => {
                 onChange={(e) => setRegionFilter(e.target.value)}
                 className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none "
               >
-                <option value="all">Барча вилоятлар</option>
+                <option value="all">{t("applications.all_regions")}</option>
                 {regions.map((region) => (
                   <option key={region} value={region}>
                     {region}
@@ -399,22 +404,29 @@ const Applications: React.FC = () => {
 
           {/* Results info */}
           <div className="mt-4 text-sm text-gray-600">
-            {filteredApplications.length} дан {applications.length} ариза
-            кўрсатилмоқда
+            {t("applications.showing_results", {
+              filtered: filteredApplications.length,
+              total: applications.length,
+            })}
           </div>
         </div>
       </div>
 
       {/* Applications Table */}
-      <ApplicationsTable
-        applications={filteredApplications}
-        isLoading={isLoading}
-        onEdit={handleEditApplication}
-        onView={handleViewApplication}
-        onDelete={handleDeleteApplication}
-        onStatusChange={handleStatusChange}
-        onAddComment={handleAddComment}
-      />
+      <div
+        className="flex-1 flex flex-col min-h-0"
+        style={{ minHeight: "400px" }}
+      >
+        <ApplicationsTable
+          applications={filteredApplications}
+          isLoading={isLoading}
+          onEdit={handleEditApplication}
+          onView={handleViewApplication}
+          onDelete={handleDeleteApplication}
+          onStatusChange={handleStatusChange}
+          onAddComment={handleAddComment}
+        />
+      </div>
 
       {/* Application Modal */}
       <ApplicationModal

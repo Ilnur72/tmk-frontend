@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LineChart,
@@ -60,19 +61,20 @@ const PriceChartModal: React.FC<PriceChartModalProps> = ({
     };
   }, [isOpen]);
 
+  const { t } = useTranslation();
   const months = [
-    { value: 1, label: "Январ" },
-    { value: 2, label: "Феврал" },
-    { value: 3, label: "Март" },
-    { value: 4, label: "Апрел" },
-    { value: 5, label: "Май" },
-    { value: 6, label: "Июн" },
-    { value: 7, label: "Июл" },
-    { value: 8, label: "Август" },
-    { value: 9, label: "Сентябр" },
-    { value: 10, label: "Октябр" },
-    { value: 11, label: "Ноябр" },
-    { value: 12, label: "Декабр" },
+    { value: 1, label: t("finance.month_jan") },
+    { value: 2, label: t("finance.month_feb") },
+    { value: 3, label: t("finance.month_mar") },
+    { value: 4, label: t("finance.month_apr") },
+    { value: 5, label: t("finance.month_may") },
+    { value: 6, label: t("finance.month_jun") },
+    { value: 7, label: t("finance.month_jul") },
+    { value: 8, label: t("finance.month_aug") },
+    { value: 9, label: t("finance.month_sep") },
+    { value: 10, label: t("finance.month_oct") },
+    { value: 11, label: t("finance.month_nov") },
+    { value: 12, label: t("finance.month_dec") },
   ];
 
   const years = [2023, 2024, 2025];
@@ -141,24 +143,22 @@ const PriceChartModal: React.FC<PriceChartModalProps> = ({
 
   const formatCurrency = (value: number) => {
     if (isNaN(value) || value === null || value === undefined) {
-      return "0 сўм";
+      return "0 " + t("finance.soum");
     }
-    return new Intl.NumberFormat("uz-UZ").format(value) + " сўм";
+    return (
+      new Intl.NumberFormat("uz-UZ").format(value) + " " + t("finance.soum")
+    );
   };
 
   // Source nomlarini olish
   const getSourceName = (sourceType: string) => {
     if (sourceType === "all") {
-      return "Барча манбалар";
+      return t("finance.all_sources");
     }
-
-    // API dan kelgan source nomlaridan qidirish
     const foundSource = sources.find((s) => s.name === sourceType);
     if (foundSource) {
       return foundSource.name;
     }
-
-    // Fallback - qattiq kodlangan nomlar
     const sourceNames: { [key: string]: string } = {
       FastMarkets: "FastMarkets",
       ArgusMetals: "Argus Metals",
@@ -329,8 +329,8 @@ const PriceChartModal: React.FC<PriceChartModalProps> = ({
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
                   >
-                    {element?.elementName} - {getSourceName(sourceType)} Нарх
-                    Тарихи
+                    {element?.elementName} - {getSourceName(sourceType)}{" "}
+                    {t("finance.price_history")}
                   </motion.h3>
 
                   <motion.div
@@ -350,7 +350,7 @@ const PriceChartModal: React.FC<PriceChartModalProps> = ({
                           htmlFor="year"
                           className="block text-sm font-medium text-gray-700"
                         >
-                          Йил
+                          {t("finance.year")}
                         </label>
                         <select
                           id="year"
@@ -377,7 +377,7 @@ const PriceChartModal: React.FC<PriceChartModalProps> = ({
                           htmlFor="month"
                           className="block text-sm font-medium text-gray-700"
                         >
-                          Ой
+                          {t("finance.month")}
                         </label>
                         <select
                           id="month"
@@ -411,7 +411,7 @@ const PriceChartModal: React.FC<PriceChartModalProps> = ({
                         transition={{ delay: 0.5 }}
                       >
                         <h4 className="text-sm font-medium text-gray-700 mb-3">
-                          Нарх Тарихи
+                          {t("finance.price_history")}
                         </h4>
                         <div
                           className="overflow-y-auto space-y-2 pr-2"
@@ -485,7 +485,7 @@ const PriceChartModal: React.FC<PriceChartModalProps> = ({
                                       {item[sourceType] !== undefined &&
                                       item[sourceType] !== null
                                         ? formatCurrency(item[sourceType])
-                                        : "Маълумот йўқ"}
+                                        : t("finance.no_data")}
                                     </span>
                                   </div>
                                 )}
@@ -503,7 +503,7 @@ const PriceChartModal: React.FC<PriceChartModalProps> = ({
                         transition={{ delay: 0.5 }}
                       >
                         <h4 className="text-sm font-medium text-gray-700 mb-3">
-                          Нарх Диаграммаси
+                          {t("finance.price_chart")}
                         </h4>
                         <motion.div
                           style={{ height: "45vh", minHeight: "300px" }}
@@ -518,7 +518,9 @@ const PriceChartModal: React.FC<PriceChartModalProps> = ({
                                 dataKey="date"
                                 tickFormatter={(value) => {
                                   const date = new Date(value);
-                                  return `${date.getDate()}-кун`;
+                                  return `${date.getDate()}-${t(
+                                    "finance.day"
+                                  )}`;
                                 }}
                               />
                               <YAxis
@@ -548,7 +550,9 @@ const PriceChartModal: React.FC<PriceChartModalProps> = ({
                                 }}
                                 labelFormatter={(label) => {
                                   const date = new Date(label);
-                                  return `${date.getDate()}-кун, ${
+                                  return `${date.getDate()}-${t(
+                                    "finance.day"
+                                  )}, ${
                                     months.find(
                                       (m) => m.value === date.getMonth() + 1
                                     )?.label
@@ -579,7 +583,7 @@ const PriceChartModal: React.FC<PriceChartModalProps> = ({
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  Ёпиш
+                  {t("finance.close")}
                 </motion.button>
               </motion.div>
             </motion.div>

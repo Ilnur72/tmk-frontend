@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { EMPLOYEE_API_URL } from "../../../config/const";
 import axios from "axios";
 import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 
 const GenderStatistics: React.FC = () => {
+  const { t } = useTranslation();
   const [genderData, setGenderData] = useState([
-    { label: "Эркак киши", value: 0, color: "#3b82f6" },
-    { label: "Аёл киши", value: 0, color: "#f59e0b" },
+    { label: t("employee.male"), value: 0, color: "#3b82f6" },
+    { label: t("employee.female"), value: 0, color: "#f59e0b" },
   ]);
   const [loading, setLoading] = useState(true);
 
@@ -22,15 +24,19 @@ const GenderStatistics: React.FC = () => {
         const womanPercent = 100 - manPercent;
 
         setGenderData([
-          { label: "Эркак киши", value: manPercent, color: "#3b82f6" },
-          { label: "Аёл киши", value: womanPercent, color: "#f59e0b" },
+          { label: t("employee.male"), value: manPercent, color: "#3b82f6" },
+          {
+            label: t("employee.female"),
+            value: womanPercent,
+            color: "#f59e0b",
+          },
         ]);
       } catch (error) {
         console.error("Error fetching gender data:", error);
         // Set default values on error
         setGenderData([
-          { label: "Эркак киши", value: 95, color: "#3b82f6" },
-          { label: "Аёл киши", value: 5, color: "#f59e0b" },
+          { label: t("employee.male"), value: 95, color: "#3b82f6" },
+          { label: t("employee.female"), value: 5, color: "#f59e0b" },
         ]);
       } finally {
         setLoading(false);
@@ -38,7 +44,7 @@ const GenderStatistics: React.FC = () => {
     };
 
     fetchGenderData();
-  }, []);
+  }, [t]);
 
   const renderCustomLabel = ({
     cx,
@@ -74,10 +80,10 @@ const GenderStatistics: React.FC = () => {
     return (
       <div className="bg-white rounded-lg shadow-sm p-5">
         <h2 className="text-lg font-medium text-gray-900 mb-5">
-          Гендер статистикаси
+          {t("employee.gender_statistics")}
         </h2>
         <div className="h-52 bg-gray-100 rounded-lg flex items-center justify-center animate-pulse">
-          <p className="text-gray-400">Юкланмоқда...</p>
+          <p className="text-gray-400">{t("employee.loading")}</p>
         </div>
       </div>
     );
@@ -86,7 +92,7 @@ const GenderStatistics: React.FC = () => {
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
       <h2 className="text-lg font-medium text-gray-900 mb-6">
-        Гендер статистикаси
+        {t("employee.gender_statistics")}
       </h2>
       <div className="h-80">
         <ResponsiveContainer width="100%" height="100%">

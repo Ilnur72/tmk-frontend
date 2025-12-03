@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { List } from "lucide-react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
@@ -147,6 +148,7 @@ const useLanguageData = () => {
 
 // Main Dashboard Component
 const Dashboard: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   // Using React Query hooks
@@ -240,8 +242,16 @@ const Dashboard: React.FC = () => {
     const normal = total - comingSoon;
 
     return [
-      { name: "Норм", value: normal, color: "#10b981" },
-      { name: "Тез тугайди", value: comingSoon, color: "#ef4444" },
+      {
+        name: t("employee_dashboard.passport_normal"),
+        value: normal,
+        color: "#10b981",
+      },
+      {
+        name: t("employee_dashboard.passport_expiring_soon"),
+        value: comingSoon,
+        color: "#ef4444",
+      },
     ];
   };
 
@@ -285,31 +295,30 @@ const Dashboard: React.FC = () => {
       <div className="w-full px-2 sm:px-2 lg:px-2">
         <div className="text-center mb-8">
           <button className="transition duration-200 border shadow-sm items-center justify-center py-2 px-3 rounded-md font-medium cursor-pointer focus:ring-4 focus:ring-blue-500 focus:ring-opacity-20 bg-primary border-primary hover:bg-opacity-80 text-white m-2 mb-2 mr-1 inline-block">
-            Комбинат ҳақида умумий маълумот
+            {t("employee_dashboard.general_info")}
           </button>
           <button className="transition duration-200 border shadow-sm items-center justify-center py-2 px-3 rounded-md font-medium cursor-pointer focus:ring-4 focus:ring-blue-500 focus:ring-opacity-20 bg-primary border-primary hover:bg-opacity-80 text-white m-2 mb-2 mr-1 inline-block">
-            Ходимлар онлайн маълумоти
+            {t("employee_dashboard.online_info")}
           </button>
         </div>
 
         {/* Error Message */}
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            Ma'lumotlarni yuklashda xatolik yuz berdi:{" "}
-            {(error as Error).message}
+            {t("employee_dashboard.load_error")}: {(error as Error).message}
           </div>
         )}
 
         {/* Header Section */}
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-lg font-medium text-gray-900">
-            Комбинат ҳақида умумий маълумот
+            {t("employee_dashboard.general_info")}
           </h2>
           <a
             href="employers/branches"
             className="flex items-center text-blue-600 hover:text-blue-700 gap-2"
           >
-            Барча филиаллар ҳақида маълумот
+            {t("employee_dashboard.all_branches_info")}
             <List className="h-5 w-5" />
           </a>
         </div>
@@ -317,30 +326,32 @@ const Dashboard: React.FC = () => {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
           <StatCard
-            title="Жами ходимлар"
+            title={t("employee_dashboard.total_employees")}
             value={totalEmployees}
-            description="Комбинатда жами ходимлар сони"
+            description={t("employee_dashboard.total_employees_desc")}
             isLoading={isLoading}
           />
           <StatCard
-            title="Марказий корхона"
+            title={t("employee_dashboard.central_office")}
             value={employeeData?.employees_office || 0}
-            description="Марказий корхона"
+            description={t("employee_dashboard.central_office")}
             isLoading={isLoading}
           />
           <StatCard
-            title="Филиал 1"
+            title={t("employee_dashboard.branch1")}
             value={organizationData[2]?.count || 0}
             description={
-              organizationData[2]?.tashkilot || "Филиал 1 Ангрен кони"
+              organizationData[2]?.tashkilot ||
+              t("employee_dashboard.branch1_desc")
             }
             isLoading={isLoading}
           />
           <StatCard
-            title="Филиал 2"
+            title={t("employee_dashboard.branch2")}
             value={organizationData[3]?.count || 0}
             description={
-              organizationData[3]?.tashkilot || "Филиал 2 Олмалиқ кони"
+              organizationData[3]?.tashkilot ||
+              t("employee_dashboard.branch2_desc")
             }
             isLoading={isLoading}
           />
@@ -360,31 +371,39 @@ const Dashboard: React.FC = () => {
         {/* Additional Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
           <AdditionalStatsCard
-            title="Фаол/нофаол<br />ходимлар"
+            title={t("employee_dashboard.active_inactive")}
             value="13500"
-            description="Ишда 13 300 Таътилда, касалликда, декретда 200"
+            description={t("employee_dashboard.active_inactive_desc")}
             percentage="98%"
             hasChart={true}
             chartType="pie"
             chartData={[
-              { name: "Фаол", value: 98, color: "#10b981" },
-              { name: "Нофаол", value: 2, color: "#ef4444" },
+              {
+                name: t("employee_dashboard.active"),
+                value: 98,
+                color: "#10b981",
+              },
+              {
+                name: t("employee_dashboard.inactive"),
+                value: 2,
+                color: "#ef4444",
+              },
             ]}
           />
           <AdditionalStatsCard
-            title="Амалиёт муддати<br />тугайдиганлар"
+            title={t("employee_dashboard.internship_expiring")}
             value={(internshipData?.length || 0).toString()}
-            description="Амалиёт муддати якин тугайдиган ходимлар"
+            description={t("employee_dashboard.internship_expiring_desc")}
             hasChart={false}
             isLoading={isInternshipLoading}
             onClick={handleInternshipClick}
           />
           <AdditionalStatsCard
-            title="Паспорт муддати<br />тугайдиганлар"
+            title={t("employee_dashboard.passport_expiring")}
             value={passportData?.еxpiration_date?.toString() || "0"}
-            description={`30 кун ичида муддати тугайдиганлар: ${
-              passportData?.coming_soon || 0
-            }`}
+            description={t("employee_dashboard.passport_expiring_desc", {
+              count: passportData?.coming_soon || 0,
+            })}
             percentage={
               passportData && passportData.еxpiration_date
                 ? `${Math.round(
@@ -400,11 +419,14 @@ const Dashboard: React.FC = () => {
             onClick={handlePassportClick}
           />
           <AdditionalStatsCard
-            title="Чет тилларини<br />биладиганлар"
+            title={t("employee_dashboard.knows_languages")}
             value={(languageStats.totalEmployees || 0).toString()}
-            description={`Энг кўп: ${
-              languageStats.languages[0]?.[0] || "Нет данных"
-            } (${languageStats.languages[0]?.[1] || 0})`}
+            description={t("employee_dashboard.most_common_language", {
+              lang:
+                languageStats.languages[0]?.[0] ||
+                t("employee_dashboard.no_data"),
+              count: languageStats.languages[0]?.[1] || 0,
+            })}
             hasChart={true}
             chartType="pie"
             chartData={getLanguageChartData()}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";
 import axios from "axios";
 
@@ -23,6 +24,7 @@ const ParameterControlModal: React.FC<ParameterControlModalProps> = ({
   factoryId,
   onSuccess,
 }) => {
+  const { t } = useTranslation();
   const [params, setParams] = useState<ParamItem[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -47,9 +49,7 @@ const ParameterControlModal: React.FC<ParameterControlModalProps> = ({
 
   const toggleParam = (id: number) => {
     setParams((prev) =>
-      prev.map((p) =>
-        p.id === id ? { ...p, visible: !p.visible } : p
-      )
+      prev.map((p) => (p.id === id ? { ...p, visible: !p.visible } : p))
     );
   };
 
@@ -76,15 +76,23 @@ const ParameterControlModal: React.FC<ParameterControlModalProps> = ({
     <div className="modal show bg-black/60 fixed inset-0 z-50 flex items-center justify-center">
       <div className="w-[90%] sm:w-[460px] bg-white rounded-lg shadow-lg">
         <div className="p-5 border-b flex justify-between items-center">
-          <h3 className="text-xl font-semibold">Лойиҳа Параметрларини Бошқариш</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <h3 className="text-xl font-semibold">
+            {t("modal.parameter_control")}
+          </h3>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600"
+          >
             <X className="w-6 h-6" />
           </button>
         </div>
 
-        <form id="parameter-control-modal-form" className="flex flex-col max-h-[65vh] overflow-y-auto p-4">
+        <form
+          id="parameter-control-modal-form"
+          className="flex flex-col max-h-[65vh] overflow-y-auto p-4"
+        >
           {loading ? (
-            <p className="text-center text-gray-500">Юкланмоқда...</p>
+            <p className="text-center text-gray-500">{t("modal.loading")}</p>
           ) : (
             params.map((item) => (
               <label
@@ -97,12 +105,16 @@ const ParameterControlModal: React.FC<ParameterControlModalProps> = ({
                   onChange={() => toggleParam(item.id)}
                   className="sr-only peer"
                 />
-                <div className="relative w-9 h-5 bg-gray-200 rounded-full peer-focus:outline-none dark:bg-gray-700 
+                <div
+                  className="relative w-9 h-5 bg-gray-200 rounded-full peer-focus:outline-none dark:bg-gray-700 
                                 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full 
                                 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] 
                                 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 
-                                after:transition-all dark:border-gray-600 peer-checked:bg-blue-600" />
-                <span className="ms-3 text-sm font-medium">{item.param.name}</span>
+                                after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
+                />
+                <span className="ms-3 text-sm font-medium">
+                  {item.param.name}
+                </span>
               </label>
             ))
           )}
@@ -114,14 +126,14 @@ const ParameterControlModal: React.FC<ParameterControlModalProps> = ({
             onClick={onClose}
             className="border border-gray-300 bg-white px-6 py-2.5 text-sm font-medium text-gray-500 rounded-md hover:bg-gray-100"
           >
-            Ёпиш
+            {t("modal.close")}
           </button>
           <button
             type="button"
             onClick={handleSave}
             className="bg-[#00a0c6] text-white px-6 py-2.5 rounded-md hover:bg-[#008fb0]"
           >
-            Сақлаш
+            {t("modal.save")}
           </button>
         </div>
       </div>

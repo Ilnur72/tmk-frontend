@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useScrollToTop, scrollToTop } from "../../../hooks/useScrollToTop";
+import { useTranslation } from "react-i18next";
 
 // Types
 interface LanguageSkill {

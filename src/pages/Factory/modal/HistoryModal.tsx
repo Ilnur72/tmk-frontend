@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";
 import axios from "axios";
 
@@ -20,6 +21,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({
   onClose,
   factoryParamId,
 }) => {
+  const { t } = useTranslation();
   const [historyData, setHistoryData] = useState<HistoryFile[]>([]);
 
   useEffect(() => {
@@ -48,7 +50,9 @@ const HistoryModal: React.FC<HistoryModalProps> = ({
       <div className="w-[90%] mx-auto bg-white relative rounded-md shadow-md transition-[margin-top,transform] duration-[0.4s,0.3s] mt-16 dark:bg-darkmode-600 sm:w-[600px]">
         <div className="p-5">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-2xl font-semibold">Параметр тарихи</h3>
+            <h3 className="text-2xl font-semibold">
+              {t("modal.parameter_history")}
+            </h3>
             <button
               type="button"
               className="text-gray-400 hover:text-gray-600"
@@ -95,7 +99,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({
               ))
             ) : (
               <h1 className="ms-3 text-xl text-center font-medium text-gray-500 py-4">
-                Изох мавжуд эмас
+                {t("modal.history_empty")}
               </h1>
             )}
           </div>
@@ -106,7 +110,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({
               onClick={onClose}
               className="transition duration-200 border shadow-sm inline-flex items-center justify-center py-2 px-3 rounded-md font-medium cursor-pointer border-secondary text-gray-500 hover:bg-gray-100 dark:border-darkmode-100/40"
             >
-              Ёпиш
+              {t("modal.close")}
             </button>
           </div>
         </div>

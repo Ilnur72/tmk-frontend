@@ -11,6 +11,7 @@ import {
   Calendar,
   Building,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Application } from "../../../types/application";
 
 interface ApplicationsTableProps {
@@ -35,6 +36,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
   onAddComment,
   isLoading = false,
 }) => {
+  const { t } = useTranslation();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [commentModal, setCommentModal] = useState<{
     isOpen: boolean;
@@ -47,31 +49,31 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
       case "approved":
         return (
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-            Тасдиқланган
+            {t("applications.status_labels.approved")}
           </span>
         );
       case "pending":
         return (
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-            Кутилмоқда
+            {t("applications.status_labels.pending")}
           </span>
         );
       case "in-review":
         return (
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-            Кўриб чиқилмоқда
+            {t("applications.status_labels.in_review")}
           </span>
         );
       case "rejected":
         return (
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-            Рад этилган
+            {t("applications.status_labels.rejected")}
           </span>
         );
       default:
         return (
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-            Номаълум
+            {t("applications.status_labels.unknown")}
           </span>
         );
     }
@@ -88,8 +90,8 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
 
   if (isLoading) {
     return (
-      <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-        <div className="px-4 py-5 sm:p-6">
+      <div className="bg-white shadow overflow-hidden sm:rounded-lg h-full">
+        <div className="px-4 py-5 sm:p-6 h-full">
           <div className="animate-pulse">
             <div className="space-y-4">
               {[...Array(5)].map((_, i) => (
@@ -104,14 +106,14 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
 
   if (!applications.length) {
     return (
-      <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+      <div className="bg-white shadow overflow-hidden sm:rounded-lg h-full flex items-center justify-center">
         <div className="px-4 py-8 sm:p-12 text-center">
           <FileText className="mx-auto h-12 w-12 text-gray-400" />
           <h3 className="mt-2 text-sm font-medium text-gray-900">
-            Ҳеч қандай ариза топилмади
+            {t("applications.no_applications_found")}
           </h3>
           <p className="mt-1 text-sm text-gray-500">
-            Янги ариза яратиш учун "Янги ариза" тугмасини босинг
+            {t("applications.create_new_application_hint")}
           </p>
         </div>
       </div>
@@ -119,31 +121,31 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
   }
 
   return (
-    <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-      <div className="overflow-x-auto">
+    <div className="bg-white shadow overflow-hidden sm:rounded-lg flex-1 flex flex-col">
+      <div className="overflow-x-auto overflow-y-auto flex-1">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Ариза
+                {t("applications.application")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Ҳамкор
+                {t("applications.partner")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Жойлашув
+                {t("applications.location")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Алоқа маълумотлари
+                {t("applications.contact_info")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Статус
+                {t("applications.status")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Сана
+                {t("applications.date")}
               </th>
               <th className="relative px-6 py-3">
-                <span className="sr-only">Амаллар</span>
+                <span className="sr-only">{t("applications.actions")}</span>
               </th>
             </tr>
           </thead>
@@ -193,10 +195,11 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
                     <div className="ml-3">
                       <div className="text-sm font-medium text-gray-900">
                         {application.partner?.companyName ||
-                          "Номаълум компания"}
+                          t("applications.unknown")}
                       </div>
                       <div className="text-sm text-gray-500">
-                        {application.partner?.contactPerson || "Номаълум шахс"}
+                        {application.partner?.contactPerson ||
+                          t("applications.unknown")}
                       </div>
                     </div>
                   </div>
@@ -261,7 +264,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
                           className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                         >
                           <Eye className="h-4 w-4 mr-2" />
-                          Батафсил кўриш
+                          {t("applications.view_details")}
                         </button>
                         <button
                           onClick={() => {
@@ -271,7 +274,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
                           className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                         >
                           <Edit className="h-4 w-4 mr-2" />
-                          Таҳрирлаш
+                          {t("applications.edit")}
                         </button>
 
                         {/* Status change submenu */}
@@ -279,9 +282,9 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
                           <>
                             <div className="relative group">
                               <div className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
-                                Статус ўзгартириш
+                                {t("applications.change_status")}
                               </div>
-                              <div className="absolute left-full top-0 w-48 bg-white rounded-md shadow-lg border hidden group-hover:block ml-1">
+                              <div className="absolute right-full top-0 w-48 bg-white rounded-md shadow-lg border hidden group-hover:block mr-1">
                                 <div className="py-1">
                                   {application.status !== "pending" && (
                                     <button
@@ -294,7 +297,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
                                       }}
                                       className="flex items-center px-4 py-2 text-sm text-yellow-700 hover:bg-yellow-50 w-full text-left"
                                     >
-                                      Кутилмоқда
+                                      {t("applications.status_actions.pending")}
                                     </button>
                                   )}
                                   {application.status !== "in-review" && (
@@ -308,7 +311,9 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
                                       }}
                                       className="flex items-center px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 w-full text-left"
                                     >
-                                      Кўриб чиқилмоқда
+                                      {t(
+                                        "applications.status_actions.in_review"
+                                      )}
                                     </button>
                                   )}
                                   {application.status !== "approved" && (
@@ -322,7 +327,9 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
                                       }}
                                       className="flex items-center px-4 py-2 text-sm text-green-700 hover:bg-green-50 w-full text-left"
                                     >
-                                      Тасдиқлаш
+                                      {t(
+                                        "applications.status_actions.approved"
+                                      )}
                                     </button>
                                   )}
                                   {application.status !== "rejected" && (
@@ -336,7 +343,9 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
                                       }}
                                       className="flex items-center px-4 py-2 text-sm text-red-700 hover:bg-red-50 w-full text-left"
                                     >
-                                      Рад этиш
+                                      {t(
+                                        "applications.status_actions.rejected"
+                                      )}
                                     </button>
                                   )}
                                 </div>
@@ -359,7 +368,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
                             className="flex items-center px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 w-full text-left"
                           >
                             <FileText className="w-4 h-4 mr-2" />
-                            Изоҳ қўшиш
+                            {t("applications.add_comment")}
                           </button>
                         )}
 
@@ -367,9 +376,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
                         <button
                           onClick={() => {
                             if (
-                              window.confirm(
-                                "Ҳақиқатдан ҳам бу аризани ўчирмоқчимисиз?"
-                              )
+                              window.confirm(t("applications.confirm_delete"))
                             ) {
                               onDelete(application.id);
                             }
@@ -378,7 +385,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
                           className="flex items-center px-4 py-2 text-sm text-red-700 hover:bg-red-50 w-full text-left"
                         >
                           <Trash2 className="h-4 w-4 mr-2" />
-                          Ўчириш
+                          {t("applications.delete")}
                         </button>
                       </div>
                     </div>
@@ -413,7 +420,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
                 <div className="sm:flex sm:items-start">
                   <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
                     <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                      Админ изоҳи
+                      {t("applications.admin_comment")}
                     </h3>
                     <div className="mt-2">
                       <textarea
@@ -424,7 +431,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
                             comment: e.target.value,
                           }))
                         }
-                        placeholder="Изоҳ киритинг..."
+                        placeholder={t("applications.enter_comment")}
                         rows={4}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                       />
@@ -450,7 +457,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
                   }}
                   className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
                 >
-                  Сақлаш
+                  {t("applications.save")}
                 </button>
                 <button
                   type="button"
@@ -463,7 +470,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
                   }
                   className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                 >
-                  Бекор қилиш
+                  {t("applications.cancel")}
                 </button>
               </div>
             </div>

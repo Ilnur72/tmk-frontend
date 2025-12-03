@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import VideoModal from "../Factory/modal/VideoModal";
 import { CameraType } from "../Factory/types/factory";
 import { API_URL } from "../../config/const";
@@ -11,19 +12,19 @@ interface Factory {
 }
 
 const App: React.FC = () => {
+  const { t } = useTranslation();
   const [factories, setFactories] = useState<Factory[]>([]);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [currentCamera, setCurrentCamera] = useState<CameraType | null>(null);
 
   useEffect(() => {
-    loadData();
+    const loadDataAsync = async () => {
+      const response = await axios.get("/cameras");
+      setFactories(response.data.factories);
+    };
+    loadDataAsync();
   }, []);
-
-  const loadData = async () => {
-    const response = await axios.get("/cameras");
-    setFactories(response.data.factories);
-  };
 
   const setupCameraModal = (camera: CameraType) => {
     setCurrentCamera(camera);
@@ -38,15 +39,15 @@ const App: React.FC = () => {
   const getStatusText = (status: string) => {
     switch (status) {
       case "active":
-        return "Фаол";
+        return t("camera.status_active");
       case "inactive":
-        return "Фаол эмас";
+        return t("camera.status_inactive");
       case "maintenance":
-        return "Техник хизмат";
+        return t("camera.status_maintenance");
       case "broken":
-        return "Ишламайди";
+        return t("camera.status_broken");
       default:
-        return "Ноаниқ";
+        return t("camera.status_unknown");
     }
   };
 
@@ -81,7 +82,7 @@ const App: React.FC = () => {
           <div className="col-span-12 mt-8">
             <div className="intro-y lg:flex items-center justify-between mb-5">
               <h2 className="mr-5 text-lg font-medium text-primary">
-                Камералар рўйхати
+                {t("camera.cameras_list")}
               </h2>
             </div>
             {factories.map(
@@ -128,7 +129,7 @@ const App: React.FC = () => {
                                     <circle cx="12" cy="12" r="3" />
                                   </svg>
                                   <p className="text-sm">
-                                    Screenshot yuklashda xatolik
+                                    {t("camera.screenshot_error")}
                                   </p>
                                 </div>
                               </div>

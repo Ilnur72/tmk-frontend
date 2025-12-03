@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   ShoppingCart,
   Monitor,
@@ -19,6 +20,7 @@ const StatisticsCards: React.FC<StatisticsCardsProps> = ({
   counts,
   onFilterChange,
 }) => {
+  const { t } = useTranslation();
   const ConstructionIcon = () => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -70,7 +72,9 @@ const StatisticsCards: React.FC<StatisticsCardsProps> = ({
             >
               {total}
             </div>
-            <div className="mt-1 text-base text-slate-500">Жами лойиҳалар</div>
+            <div className="mt-1 text-base text-slate-500">
+              {t("total_projects")}
+            </div>
           </div>
         </div>
       </div>
@@ -95,7 +99,7 @@ const StatisticsCards: React.FC<StatisticsCardsProps> = ({
               {counts.registrationCount}
             </div>
             <div className="mt-1 text-base text-slate-500">
-              Расмийлаштириш жараёнида
+              {t("in_registration")}
             </div>
           </div>
         </div>
@@ -121,7 +125,7 @@ const StatisticsCards: React.FC<StatisticsCardsProps> = ({
               {counts.constructionCount}
             </div>
             <div className="mt-1 text-base text-slate-500">
-              Қурилиш жараёнида
+              {t("in_construction")}
             </div>
           </div>
         </div>
@@ -146,7 +150,7 @@ const StatisticsCards: React.FC<StatisticsCardsProps> = ({
             <div className="mt-6 text-3xl font-medium leading-8">
               {counts.startedCount}
             </div>
-            <div className="mt-1 text-base text-slate-500">Ишга тушганлари</div>
+            <div className="mt-1 text-base text-slate-500">{t("launched")}</div>
           </div>
         </div>
       </div>

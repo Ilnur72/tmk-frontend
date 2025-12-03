@@ -1,7 +1,8 @@
-import React from 'react';
-import { AlertTriangle } from 'lucide-react';
-import axios from 'axios';
-import { toast } from 'react-toastify';
+import React from "react";
+import { useTranslation } from "react-i18next";
+import { AlertTriangle } from "lucide-react";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 interface DeleteConfirmModalProps {
   isOpen: boolean;
@@ -10,7 +11,13 @@ interface DeleteConfirmModalProps {
   onSuccess: () => void;
 }
 
-const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({ isOpen, onClose, factory, onSuccess }) => {
+const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
+  isOpen,
+  onClose,
+  factory,
+  onSuccess,
+}) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = React.useState(false);
 
   const handleDelete = async () => {
@@ -21,19 +28,21 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({ isOpen, onClose
     try {
       const response = await axios.delete(`/factory/${factory.id}`, {
         headers: {
-          'Content-Type': 'application/json',
-        }
+          "Content-Type": "application/json",
+        },
       });
 
       if (response.status !== 200) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
 
       onClose();
       onSuccess();
-      toast("Лойиҳани ўчириш муваффақиятли амалга оширилди!", { type: "success" });
+      toast("Лойиҳани ўчириш муваффақиятли амалга оширилди!", {
+        type: "success",
+      });
     } catch (error) {
-      console.error('Error deleting factory:', error);
+      console.error("Error deleting factory:", error);
       toast("Лойиҳани ўчиришда хато юз берди!", { type: "error" });
     } finally {
       setLoading(false);
@@ -41,9 +50,9 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({ isOpen, onClose
   };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === 'Escape') {
+    if (event.key === "Escape") {
       onClose();
-    } else if (event.key === 'Enter') {
+    } else if (event.key === "Enter") {
       handleDelete();
     }
   };
@@ -51,7 +60,7 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({ isOpen, onClose
   if (!isOpen || !factory) return null;
 
   return (
-    <div 
+    <div
       className="modal show bg-black/60 transition-all duration-300 w-screen h-screen fixed left-0 top-0 visible opacity-100 z-50"
       onKeyDown={handleKeyDown}
       tabIndex={-1}
@@ -64,14 +73,11 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({ isOpen, onClose
             </div>
 
             <div className="text-xl font-semibold text-gray-900 mb-2">
-              Лойиҳани ўчириш
+              {t("modal.delete_confirm")}
             </div>
             <div className="text-gray-600 mb-6">
-              <span className="font-medium">{factory.name}</span> лойиҳасини ўчиришни хоҳлайсизми?
-              <br />
-              <br />
-              <span className="text-red-600 font-medium">Диққат!</span>
-              Бу амални қайтариб бўлмайди. Барча маълумотлар ўчирилади.
+              {t("modal.confirm_delete")}{" "}
+              <span className="font-medium">{factory.name}</span>?
             </div>
 
             <div className="flex justify-center space-x-3">
@@ -80,7 +86,7 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({ isOpen, onClose
                 onClick={onClose}
                 className="rounded-md border border-gray-300 bg-white px-6 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
               >
-                Бекор қилиш
+                {t("cancel")}
               </button>
               <button
                 type="button"
@@ -88,7 +94,7 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({ isOpen, onClose
                 disabled={loading}
                 className="rounded-md bg-red-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
               >
-                {loading ? '⏳ Ўчириляпти...' : 'Ҳа, ўчириш'}
+                {loading ? `⏳ ${t("modal.deleting")}` : t("modal.delete")}
               </button>
             </div>
           </div>

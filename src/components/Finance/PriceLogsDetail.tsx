@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { MetalPrice, MetalPriceLog } from "../../types/finance";
 
@@ -17,8 +18,13 @@ const PriceLogsDetail: React.FC<PriceLogsDetailProps> = ({
   error,
   onClose,
 }) => {
+  const { t } = useTranslation();
   const formatCurrency = (amount: number | string) => {
-    return new Intl.NumberFormat("uz-UZ").format(Number(amount)) + " сўм";
+    return (
+      new Intl.NumberFormat("uz-UZ").format(Number(amount)) +
+      " " +
+      t("finance.soum")
+    );
   };
 
   const formatDate = (dateString: string) => {
@@ -36,7 +42,7 @@ const PriceLogsDetail: React.FC<PriceLogsDetailProps> = ({
             <ArrowPathIcon className="h-5 w-5 rotate-180" />
           </button>
           <h1 className="text-2xl font-bold text-gray-900">
-            {selectedMetal.elementName} - Нарх тарихи
+            {selectedMetal.elementName} - {t("finance.price_history")}
           </h1>
         </div>
       </div>
@@ -45,19 +51,25 @@ const PriceLogsDetail: React.FC<PriceLogsDetailProps> = ({
       <div className="bg-white shadow rounded-lg p-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <h3 className="text-sm font-medium text-gray-500">Жорий нарх</h3>
+            <h3 className="text-sm font-medium text-gray-500">
+              {t("finance.current_price")}
+            </h3>
             <p className="mt-1 text-lg font-semibold text-gray-900">
               {formatCurrency(selectedMetal.currentPrice)}
             </p>
           </div>
           <div>
-            <h3 className="text-sm font-medium text-gray-500">Охирги нарх</h3>
+            <h3 className="text-sm font-medium text-gray-500">
+              {t("finance.previous_price")}
+            </h3>
             <p className="mt-1 text-lg font-semibold text-gray-900">
               {formatCurrency(selectedMetal.previousPrice || 0)}
             </p>
           </div>
           <div>
-            <h3 className="text-sm font-medium text-gray-500">Ўзгариши</h3>
+            <h3 className="text-sm font-medium text-gray-500">
+              {t("finance.change")}
+            </h3>
             <p
               className={`mt-1 text-lg font-semibold ${
                 Number(selectedMetal.changePercent || 0) >= 0
@@ -76,18 +88,18 @@ const PriceLogsDetail: React.FC<PriceLogsDetailProps> = ({
       <div className="bg-white shadow overflow-hidden sm:rounded-lg">
         <div className="px-4 py-5 sm:px-6">
           <h3 className="text-lg leading-6 font-medium text-gray-900">
-            Нарх ўзгариш тарихи
+            {t("finance.price_change_history")}
           </h3>
         </div>
 
         {isLoading ? (
           <div className="flex justify-center items-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <span className="ml-2 text-gray-600">Юкланмоқда...</span>
+            <span className="ml-2 text-gray-600">{t("finance.loading")}</span>
           </div>
         ) : error ? (
           <div className="text-red-600 bg-red-100 p-4 rounded-lg mx-4 mb-4">
-            Хато: {error.message}
+            {t("finance.error")}: {error.message}
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -95,22 +107,22 @@ const PriceLogsDetail: React.FC<PriceLogsDetailProps> = ({
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Эски нарх
+                    {t("finance.old_price")}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Янги нарх
+                    {t("finance.new_price")}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Ўзгариш фоизи
+                    {t("finance.change_percent")}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Сабаб
+                    {t("finance.change_reason")}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Манба
+                    {t("finance.source")}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Санаси
+                    {t("finance.date")}
                   </th>
                 </tr>
               </thead>
@@ -158,7 +170,7 @@ const PriceLogsDetail: React.FC<PriceLogsDetailProps> = ({
 
             {priceLogs.length === 0 && (
               <div className="text-center py-12">
-                <p className="text-gray-500">Ҳеч қандай лог топилмади</p>
+                <p className="text-gray-500">{t("finance.no_logs_found")}</p>
               </div>
             )}
           </div>

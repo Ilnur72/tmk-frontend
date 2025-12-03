@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { X, Plus, Minus } from "lucide-react";
 import axios from "axios";
 import { API_URL } from "../../../config/const";
@@ -45,6 +46,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
   factoryId,
   onSuccess,
 }) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [fetchingData, setFetchingData] = useState(false);
   const [projectData, setProjectData] = useState<ProjectData | null>(null);
@@ -120,7 +122,8 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
       // Set project values
       if (data.project_values) {
-        const totalValue = data.project_values["Лойиҳанинг қиймати"] || "";
+        const totalValue =
+          data.project_values[t("modal.project_total_value_key")] || "";
         setProjectValueTotal(totalValue);
 
         if (data.project_values.child) {
@@ -304,7 +307,8 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
       const projectValuesObj: Record<string, any> = {};
 
       if (projectValueTotal.trim()) {
-        projectValuesObj["Лойиҳанинг қиймати"] = projectValueTotal;
+        projectValuesObj[t("modal.project_total_value_key")] =
+          projectValueTotal;
         if (validProjectValues.length > 0) {
           const childValues = validProjectValues.reduce((acc, value) => {
             acc[value.key] = value.amount;
@@ -329,10 +333,10 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
       onClose();
       onSuccess();
-      toast("Лойиҳа муваффақиятли янгиланди!", { type: "success" });
+      toast(t("modal.project_updated_success"), { type: "success" });
     } catch (error) {
       console.error("Error updating project:", error);
-      toast("Лойиҳани янгилашда хато юз берди!", { type: "error" });
+      toast(t("modal.project_update_error"), { type: "error" });
     } finally {
       setLoading(false);
     }
@@ -345,7 +349,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
       <div className="modal show bg-black/60 transition-[visibility,opacity] w-screen h-screen fixed left-0 top-0 visible opacity-100 z-50 pt-7">
         <div className="w-[70%] max-sm:w-[100%] mx-auto bg-white relative rounded-md shadow-md transition-[margin-top,transform] duration-[0.4s,0.3s] mt-2 max-h-[90vh] overflow-y-auto">
           <div className="p-8 text-center">
-            <div className="text-xl">⏳ Маълумотлар юкланмоқда...</div>
+            <div className="text-xl">⏳ {t("modal.loading_data")}</div>
           </div>
         </div>
       </div>
@@ -358,13 +362,13 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
         <div className="w-[70%] max-sm:w-[100%] mx-auto bg-white relative rounded-md shadow-md transition-[margin-top,transform] duration-[0.4s,0.3s] mt-2 max-h-[90vh] overflow-y-auto">
           <div className="p-8 text-center">
             <div className="text-xl text-red-500">
-              Маълумотларни юклашда хато юз берди
+              {t("modal.error_loading")}
             </div>
             <button
               onClick={onClose}
               className="mt-4 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
             >
-              Ёпиш
+              {t("modal.close")}
             </button>
           </div>
         </div>
@@ -386,7 +390,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
           <div className="p-2 text-center">
             <div className="flex justify-between items-center p-4">
               <h3 className="text-3xl font-medium">
-                Лойиҳа маълумотларини ўзгартириш
+                {t("modal.edit_project")}
               </h3>
               <button
                 type="button"
@@ -406,7 +410,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                     <input
                       required
                       type="text"
-                      placeholder="Лойиҳа номи*"
+                      placeholder={`${t("modal.project_name")}*`}
                       name="name"
                       defaultValue={projectData.name}
                       className="w-full text-sm border border-slate-200 shadow-sm rounded-md p-2.5 placeholder:text-slate-400/90 focus:ring-2 focus:ring-primary focus:border-primary"
@@ -418,7 +422,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                     <input
                       required
                       type="text"
-                      placeholder="Корхона номи*"
+                      placeholder={`${t("modal.enterprise_name")}*`}
                       name="enterprise_name"
                       defaultValue={projectData.enterprise_name}
                       className="w-full text-sm border border-slate-200 shadow-sm rounded-md p-2.5 placeholder:text-slate-400/90 focus:ring-2 focus:ring-primary focus:border-primary"
@@ -430,7 +434,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                     <input
                       required
                       type="text"
-                      placeholder="Лойиҳа мақсади*"
+                      placeholder={`${t("modal.project_goal")}*`}
                       name="project_goal"
                       defaultValue={projectData.project_goal}
                       className="w-full text-sm border border-slate-200 shadow-sm rounded-md p-2.5 placeholder:text-slate-400/90 focus:ring-2 focus:ring-primary focus:border-primary"
@@ -442,7 +446,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                     <input
                       required
                       type="text"
-                      placeholder="Регион *"
+                      placeholder={`${t("modal.region")}*`}
                       name="region"
                       defaultValue={projectData.region}
                       className="w-full text-sm border border-slate-200 shadow-sm rounded-md p-2.5 placeholder:text-slate-400/90 focus:ring-2 focus:ring-primary focus:border-primary"
@@ -452,14 +456,14 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                   {/* Work Percentage */}
                   <div>
                     <label className="block mb-2 text-sm font-medium">
-                      Лойиҳа жараёни, %
+                      {t("modal.work_progress_percent")}
                     </label>
                     <input
                       required
                       type="number"
                       min="0"
                       max="100"
-                      placeholder="Лойиҳа жараёни фоизда"
+                      placeholder={t("modal.work_progress_percent")}
                       defaultValue={projectData.work_persent}
                       name="work_persent"
                       className="w-full text-sm border border-slate-200 shadow-sm rounded-md p-2.5 placeholder:text-slate-400/90 focus:ring-2 focus:ring-primary focus:border-primary"
@@ -469,7 +473,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                   {/* Status */}
                   <div>
                     <label className="block mb-2 text-sm font-medium">
-                      Лойиҳа статуси
+                      {t("modal.project_status")}
                     </label>
                     <select
                       required
@@ -478,17 +482,21 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                       className="w-full border border-slate-200 bg-white p-2.5 text-sm rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
                     >
                       <option value="REGISTRATION">
-                        Расмийлаштириш жараёнида
+                        {t("modal.status_registration")}
                       </option>
-                      <option value="CONSTRUCTION">Қурилиш жараёнида</option>
-                      <option value="STARTED">Ишга тушган</option>
+                      <option value="CONSTRUCTION">
+                        {t("modal.status_construction")}
+                      </option>
+                      <option value="STARTED">
+                        {t("modal.status_started")}
+                      </option>
                     </select>
                   </div>
 
                   {/* Marker Type */}
                   <div className="mt-4">
                     <label className="block mb-2 font-semibold">
-                      Маркер турини танланг:
+                      {t("modal.marker_type_select")}:
                     </label>
                     <div className="flex justify-center gap-8">
                       {[
@@ -539,10 +547,10 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                       }
                     >
                       <div className="text-gray-600">
-                        📷 Лойиҳа расмлари
+                        📷 {t("modal.project_images")}
                         <br />
                         <small className="text-gray-500">
-                          JPG, PNG форматлари, макс 5MB
+                          {t("modal.jpg_png_max_5mb")}
                         </small>
                       </div>
                       <input
@@ -559,7 +567,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                     {(selectedImages.length || existingImages.length) > 0 && (
                       <div className="mt-3">
                         <label className="block mb-2 text-sm text-gray-600">
-                          Расмлар:
+                          {t("modal.project_images")}:
                         </label>
                         <div className="flex flex-wrap gap-2">
                           {/* Existing Images */}
@@ -672,13 +680,13 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                   {/* Custom Fields */}
                   <div className="mt-4">
                     <label className="block text-sm font-medium mb-2">
-                      Қўшимча майдонлар
+                      {t("modal.custom_fields")}
                     </label>
                     {customFields.map((field, index) => (
                       <div key={index} className="flex flex-wrap gap-2 mb-2">
                         <input
                           type="text"
-                          placeholder="Майдон номи (масалан: Иш ўрни)"
+                          placeholder={t("modal.field_name_example")}
                           value={field.key}
                           onChange={(e) =>
                             updateCustomField(index, "key", e.target.value)
@@ -687,7 +695,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                         />
                         <input
                           type="text"
-                          placeholder="Қиймати (масалан: 220та)"
+                          placeholder={t("modal.value_example")}
                           value={field.value}
                           onChange={(e) =>
                             updateCustomField(index, "value", e.target.value)
@@ -709,7 +717,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                       className="mt-2 bg-primary text-white px-4 py-2 rounded hover:opacity-80 text-sm flex items-center gap-2"
                     >
                       <Plus className="w-4 h-4" />
-                      Янги майдон қўшиш
+                      {t("modal.add_new_field")}
                     </button>
                   </div>
                 </div>
@@ -719,12 +727,11 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                   {/* Map */}
                   <div className="mb-4">
                     <label className="block mb-2 font-medium">
-                      🗺️ Лойиҳа жойлашуви{" "}
+                      🗺️ {t("modal.project_location")}{" "}
                       <span className="text-red-500">*</span>
                     </label>
                     <div className="text-sm text-gray-600 mb-2">
-                      <strong>Кўрсатма:</strong> Харитада керакли жойни босинг
-                      ёки маркерни судраб кўчиринг
+                      <strong>{t("modal.map_instruction")}</strong>
                     </div>
                     <MapComponent
                       containerId="create-project-map"
@@ -740,7 +747,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                       <input
                         type="number"
                         step="any"
-                        placeholder="Кенглик"
+                        placeholder={t("modal.latitude")}
                         value={coordinates.lat.toFixed(6)}
                         onChange={(e) =>
                           setCoordinates((prev) => ({
@@ -753,7 +760,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                       <input
                         type="number"
                         step="any"
-                        placeholder="Узунлик"
+                        placeholder={t("modal.longitude")}
                         value={coordinates.lng.toFixed(6)}
                         onChange={(e) =>
                           setCoordinates((prev) => ({
@@ -768,7 +775,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                         onClick={handleLocationSearch}
                         className="bg-primary text-white px-4 py-2 rounded hover:opacity-80 text-sm"
                       >
-                        Кидириш
+                        {t("modal.apply_coordinates")}
                       </button>
                     </div>
                   </div>
@@ -776,25 +783,25 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                   {/* Project Values */}
                   <div className="mt-4">
                     <label className="block text-sm font-medium mb-2">
-                      Лойиҳанинг қиймати
+                      {t("modal.project_value")}
                     </label>
                     <div className="mb-3">
                       <input
                         type="text"
-                        placeholder="Умумий қиймати (масалан: 150 млн доллар)"
+                        placeholder={t("modal.total_project_value")}
                         value={projectValueTotal}
                         onChange={(e) => setProjectValueTotal(e.target.value)}
                         className="w-full p-2 border rounded text-sm focus:ring-2 focus:ring-primary focus:border-primary"
                       />
                     </div>
                     <label className="block text-sm font-medium mb-2">
-                      Лойиҳа қийматларининг бўлимлари
+                      {t("modal.project_value_sections")}
                     </label>
                     {projectValues.map((value, index) => (
                       <div key={index} className="flex flex-wrap gap-2 mb-2">
                         <input
                           type="text"
-                          placeholder="Бўлим номи (масалан: ФРРУ)"
+                          placeholder={t("modal.section_name_example")}
                           value={value.key}
                           onChange={(e) =>
                             updateProjectValue(index, "key", e.target.value)
@@ -803,7 +810,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                         />
                         <input
                           type="text"
-                          placeholder="Миқдори (масалан: 16,5 млн долл)"
+                          placeholder={t("modal.amount_example")}
                           value={value.amount}
                           onChange={(e) =>
                             updateProjectValue(index, "amount", e.target.value)
@@ -825,7 +832,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                       className="mt-2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 text-sm flex items-center gap-2"
                     >
                       <Plus className="w-4 h-4" />
-                      Янги бўлим қўшиш
+                      {t("modal.add_new_section")}
                     </button>
                   </div>
                 </div>
@@ -838,14 +845,14 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                   onClick={onClose}
                   className="mr-3 px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
                 >
-                  Ёпиш
+                  {t("modal.close")}
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
                   className="px-6 py-2 bg-primary text-white rounded-md hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                  {loading ? "⏳ Янгиланмоқда..." : "Янгилаш"}
+                  {loading ? `⏳ ${t("modal.saving")}` : t("modal.save")}
                 </button>
               </div>
             </form>
