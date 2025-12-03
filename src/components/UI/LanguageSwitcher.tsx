@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Globe } from "lucide-react";
 
 const LanguageSwitcher: React.FC = () => {
   const { i18n } = useTranslation();
+  const [isOpen, setIsOpen] = useState(false);
 
   const languages = [
     { code: "uz", name: "Ўзбекча", flag: "🇺🇿" },
@@ -13,14 +14,20 @@ const LanguageSwitcher: React.FC = () => {
 
   const handleLanguageChange = (languageCode: string) => {
     i18n.changeLanguage(languageCode);
+    setIsOpen(false);
   };
 
+  // support full locale strings like 'en-US'
   const currentLanguage =
-    languages.find((lang) => lang.code === i18n.language) || languages[0];
+    languages.find((lang) => i18n.language?.startsWith(lang.code)) ||
+    languages[0];
 
   return (
-    <div className="relative group w-40">
+    <div className="relative w-40">
       <button
+        onClick={() => setIsOpen((s) => !s)}
+        aria-haspopup="menu"
+        aria-expanded={isOpen}
         className="flex w-full items-center space-x-2 px-3 py-2 rounded-lg bg-white dark:bg-darkmode-600 text-gray-700 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-darkmode-500 transition-colors shadow-sm border border-gray-200 dark:border-darkmode-400"
         type="button"
       >
@@ -28,7 +35,9 @@ const LanguageSwitcher: React.FC = () => {
         <span className="text-sm font-medium">{currentLanguage.flag}</span>
         <span className="text-sm hidden sm:inline">{currentLanguage.name}</span>
         <svg
-          className="w-4 h-4 ml-1 transition-transform group-hover:rotate-180"
+          className={`w-4 h-4 ml-1 transition-transform ${
+            isOpen ? "rotate-180" : ""
+          }`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -42,22 +51,26 @@ const LanguageSwitcher: React.FC = () => {
         </svg>
       </button>
 
-      {/* Dropdown */}
-      <div className="absolute w-full bg-white dark:bg-darkmode-600 rounded-lg shadow-lg border border-gray-200 dark:border-darkmode-400 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+      {/* Dropdown: visible on isOpen */}
+      <div
+        className={`absolute w-full bg-white dark:bg-darkmode-600 rounded-lg shadow-lg border border-gray-200 dark:border-darkmode-400 transition-all duration-200 z-50 ${
+          isOpen ? "opacity-100 visible" : "opacity-0 invisible"
+        }`}
+      >
         <div className="py-2">
           {languages.map((language) => (
             <button
               key={language.code}
               onClick={() => handleLanguageChange(language.code)}
               className={`w-full text-left px-2 py-2 text-sm hover:bg-gray-100 dark:hover:bg-darkmode-500 flex items-center space-x-2 transition-colors ${
-                i18n.language === language.code
+                i18n.language?.startsWith(language.code)
                   ? "bg-blue-50 dark:bg-darkmode-500 text-blue-600 dark:text-blue-400"
                   : "text-gray-700 dark:text-gray-400"
               }`}
             >
               <span className="text-lg">{language.flag}</span>
               <span className="font-medium">{language.name}</span>
-              {i18n.language === language.code && (
+              {i18n.language?.startsWith(language.code) && (
                 <svg
                   className="w-4 h-4 ml-auto text-blue-600 dark:text-blue-400"
                   fill="currentColor"

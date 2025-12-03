@@ -84,7 +84,7 @@ const Auth: React.FC = () => {
           toast.error(err?.response?.data?.message || "Google auth failed");
         });
     }
-  }, []);
+  }, [navigate]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -167,7 +167,7 @@ const Auth: React.FC = () => {
             >
               👤 {t("sign_in")}
             </button>
-            <span>or</span>
+            <span>{t("or")}</span>
             <button
               className={!isLogin ? "tab active" : "tab"}
               onClick={() => setIsLogin(false)}
@@ -267,7 +267,7 @@ const Auth: React.FC = () => {
                     padding: 0,
                   }}
                 >
-                  🔒 Forgot password?
+                  🔒 {t("forgot_password")}
                 </button>
               </div>
             )}

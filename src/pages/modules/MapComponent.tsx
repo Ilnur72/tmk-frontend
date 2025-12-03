@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 
@@ -59,7 +60,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
       const btn = document.createElement("button");
       btn.className = "maplibregl-ctrl-icon";
       btn.type = "button";
-      btn.title = "Toggle Satellite";
+      btn.title = t("map.toggle_satellite");
       btn.innerHTML = "🛰️";
       btn.style.fontSize = "16px";
       btn.onclick = () => {
@@ -129,6 +130,8 @@ const MapComponent: React.FC<MapComponentProps> = ({
     // eslint-disable-next-line
   }, []);
 
+  const { t } = useTranslation();
+
   // Manual coordinate input sync
   useEffect(() => {
     if (map.current && selectedLocation) {
@@ -163,11 +166,11 @@ const MapComponent: React.FC<MapComponentProps> = ({
       {/* Manual coordinates input */}
       <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
         <div style={{ flex: 1 }}>
-          <label>Latitude</label>
+          <label>{t("map.latitude")}</label>
           <input
             type="number"
             step="0.000001"
-            placeholder="41.2995"
+            placeholder={t("map.latitude_placeholder")}
             value={selectedLocation ? selectedLocation.lat : ""}
             onChange={(e) => {
               const lat = parseFloat(e.target.value);
@@ -185,11 +188,11 @@ const MapComponent: React.FC<MapComponentProps> = ({
           />
         </div>
         <div style={{ flex: 1 }}>
-          <label>Longitude</label>
+          <label>{t("map.longitude")}</label>
           <input
             type="number"
             step="0.000001"
-            placeholder="69.2401"
+            placeholder={t("map.longitude_placeholder")}
             value={selectedLocation ? selectedLocation.lng : ""}
             onChange={(e) => {
               const lng = parseFloat(e.target.value);

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { applicationsAPI, Application } from "./services/applicationsAPI";
 import api from "./services/api";
 import { useModulesAuth } from "./hooks/useModulesAuth";
@@ -52,6 +53,7 @@ const Dashboard: React.FC = () => {
   const [filterBy, setFilterBy] = useState<string>("listing");
   const [loading, setLoading] = useState(true);
   const { token, isAuthenticated } = useModulesAuth();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -66,7 +68,7 @@ const Dashboard: React.FC = () => {
               headers: { Authorization: `Bearer ${token}` },
             });
             console.log(resp);
-            
+
             if (resp.data) {
               localStorage.setItem(
                 "modules_partner_data",
@@ -120,18 +122,18 @@ const Dashboard: React.FC = () => {
   }, []);
 
   const periods = [
-    "Last 24 hours",
-    "Last 7 days",
-    "Last 30 days",
-    "Last 6 months",
-    "Last 12 months",
+    t("dashboard.periods.last24"),
+    t("dashboard.periods.last7"),
+    t("dashboard.periods.last30"),
+    t("dashboard.periods.last6"),
+    t("dashboard.periods.last12"),
   ];
 
   if (loading) {
     return (
       <div className="dashboard-container">
         <div className="loading-state">
-          <h2>Loading Dashboard...</h2>
+          <h2>{t("dashboard.loading")}</h2>
           <div className="loading-spinner"></div>
         </div>
       </div>
@@ -143,7 +145,7 @@ const Dashboard: React.FC = () => {
       {/* Header */}
       <div className="dashboard-header">
         <div className="header-left">
-          <h1>Hello, {userName}!</h1>
+          <h1>{t("dashboard.greeting", { name: userName })}</h1>
         </div>
         <div className="header-right">
           <select
@@ -151,9 +153,9 @@ const Dashboard: React.FC = () => {
             value={filterBy}
             onChange={(e) => setFilterBy(e.target.value)}
           >
-            <option value="listing">Filter by listing</option>
-            <option value="category">Filter by category</option>
-            <option value="status">Filter by status</option>
+            <option value="listing">{t("dashboard.filter.listing")}</option>
+            <option value="category">{t("dashboard.filter.category")}</option>
+            <option value="status">{t("dashboard.filter.status")}</option>
           </select>
         </div>
       </div>
@@ -162,37 +164,39 @@ const Dashboard: React.FC = () => {
       <div className="stats-grid">
         <div className="stat-card published">
           <div className="stat-number">{stats.publishedListings}</div>
-          <div className="stat-label">Published (Approved)</div>
+          <div className="stat-label">{t("dashboard.stats.published")}</div>
           <div className="stat-icon">✅</div>
         </div>
 
         <div className="stat-card pending">
           <div className="stat-number">{stats.pendingListings}</div>
-          <div className="stat-label">Pending</div>
+          <div className="stat-label">{t("dashboard.stats.pending")}</div>
           <div className="stat-icon">⏳</div>
         </div>
 
         <div className="stat-card under-review">
           <div className="stat-number">{stats.underReviewListings}</div>
-          <div className="stat-label">Under Review</div>
+          <div className="stat-label">{t("dashboard.stats.under_review")}</div>
           <div className="stat-icon">👀</div>
         </div>
 
         <div className="stat-card rejected">
           <div className="stat-number">{stats.rejectedListings}</div>
-          <div className="stat-label">Rejected</div>
+          <div className="stat-label">{t("dashboard.stats.rejected")}</div>
           <div className="stat-icon">❌</div>
         </div>
 
         <div className="stat-card revision">
           <div className="stat-number">{stats.revisionRequiredListings}</div>
-          <div className="stat-label">Needs Revision</div>
+          <div className="stat-label">
+            {t("dashboard.stats.needs_revision")}
+          </div>
           <div className="stat-icon">�</div>
         </div>
 
         <div className="stat-card visits">
           <div className="stat-number">{stats.visitsThisWeek}</div>
-          <div className="stat-label">Visits this week</div>
+          <div className="stat-label">{t("dashboard.stats.visits_week")}</div>
           <div className="stat-icon">👥</div>
         </div>
       </div>
@@ -202,20 +206,20 @@ const Dashboard: React.FC = () => {
         <div className="analytics-card views-card">
           <div className="card-header">
             <div className="card-icon">👁️</div>
-            <h3>Views</h3>
+            <h3>{t("dashboard.analytics.views")}</h3>
           </div>
           <div className="analytics-stats">
             <div className="stat-item">
               <div className="stat-value">{stats.viewsLast24h}</div>
-              <div className="stat-period">Last 24 hours</div>
+              <div className="stat-period">{t("dashboard.periods.last24")}</div>
             </div>
             <div className="stat-item">
               <div className="stat-value">{stats.viewsLast7d}</div>
-              <div className="stat-period">Last 7 days</div>
+              <div className="stat-period">{t("dashboard.periods.last7")}</div>
             </div>
             <div className="stat-item">
               <div className="stat-value">{stats.viewsLast30d}</div>
-              <div className="stat-period">Last 30 days</div>
+              <div className="stat-period">{t("dashboard.periods.last30")}</div>
             </div>
           </div>
         </div>
@@ -223,7 +227,7 @@ const Dashboard: React.FC = () => {
         <div className="analytics-card visits-card">
           <div className="card-header">
             <div className="card-icon">📊</div>
-            <h3>Visits</h3>
+            <h3>{t("dashboard.analytics.visits")}</h3>
           </div>
           <div className="visits-periods">
             {periods.map((period) => (
@@ -255,20 +259,20 @@ const Dashboard: React.FC = () => {
         <div className="unique-views-card">
           <div className="card-header">
             <div className="card-icon">👁️</div>
-            <h3>Unique views</h3>
+            <h3>{t("dashboard.analytics.unique_views")}</h3>
           </div>
           <div className="analytics-stats">
             <div className="stat-item">
               <div className="stat-value">{stats.uniqueViewsLast24h}</div>
-              <div className="stat-period">Last 24 hours</div>
+              <div className="stat-period">{t("dashboard.periods.last24")}</div>
             </div>
             <div className="stat-item">
               <div className="stat-value">{stats.uniqueViewsLast7d}</div>
-              <div className="stat-period">Last 7 days</div>
+              <div className="stat-period">{t("dashboard.periods.last7")}</div>
             </div>
             <div className="stat-item">
               <div className="stat-value">{stats.uniqueViewsLast30d}</div>
-              <div className="stat-period">Last 30 days</div>
+              <div className="stat-period">{t("dashboard.periods.last30")}</div>
             </div>
           </div>
         </div>
@@ -282,13 +286,13 @@ const Dashboard: React.FC = () => {
             (window.location.href = "/partner-portal/applications")
           }
         >
-          + Create New Listing
+          {t("dashboard.actions.create_new")}
         </button>
         <button
           className="btn-secondary"
           onClick={() => (window.location.href = "/listings")}
         >
-          📋 Manage Listings
+          {t("dashboard.actions.manage")}
         </button>
       </div>
     </div>

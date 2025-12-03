@@ -1,5 +1,7 @@
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import MapComponent from "../Factory/components/MapComponent";
+import LanguageSwitcher from "../../components/UI/LanguageSwitcher";
 import "./ListingForm.css";
 import {
   applicationsAPI,
@@ -30,28 +32,29 @@ interface ListingFormData {
 }
 
 const categories = [
-  "Automation & Control",
-  "Control Systems",
-  "Sensors & Instrumentation",
-  "Catering & Camp Services",
-  "Accommodation & Food",
-  "Facilities Management",
-  "Construction & Civil Works",
-  "Fabrication",
-  "Structural & Earthworks",
-  "Environmental Services",
-  "Monitoring & Compliance",
-  "Rehabilitation",
-  "Explosives & Blasting",
-  "Explosives & Accessories",
-  "Finance & Insurance",
-  "Capital Equipment Financing",
-  "Insurance",
-  "Geology & Exploration",
+  "automation_control",
+  "control_systems",
+  "sensors_instrumentation",
+  "catering_camp",
+  "accommodation_food",
+  "facilities_management",
+  "construction_civil",
+  "fabrication",
+  "structural_earthworks",
+  "environmental_services",
+  "monitoring_compliance",
+  "rehabilitation",
+  "explosives_blasting",
+  "explosives_accessories",
+  "finance_insurance",
+  "capital_equipment_financing",
+  "insurance",
+  "geology_exploration",
 ];
 
 const ListingForm: React.FC = () => {
-  const [activeStep, setActiveStep] = useState<string>("General");
+  const { t } = useTranslation();
+  const [activeStepIndex, setActiveStepIndex] = useState<number>(0);
   // Removed currentStep, mapContainer, map refs (handled in MapComponent)
   const [coordinates, setCoordinates] = useState<{ lat: number; lng: number }>({
     lat: 41.2995,
@@ -72,7 +75,12 @@ const ListingForm: React.FC = () => {
     coordinates: null,
   });
 
-  const steps = ["General", "Images", "Contact Information", "Location"];
+  const steps = [
+    t("listing.steps.general"),
+    t("listing.steps.images"),
+    t("listing.steps.contact"),
+    t("listing.steps.location"),
+  ];
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -118,14 +126,12 @@ const ListingForm: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!token) {
-      alert("You must be logged in to submit an application");
+      alert(t("listing.errors.login_required"));
       return;
     }
 
     if (!formData.title || !formData.description || !formData.location) {
-      alert(
-        "Please fill in all required fields: Title, Description, and Location"
-      );
+      alert(t("listing.errors.required_fields"));
       return;
     }
 
@@ -176,9 +182,7 @@ const ListingForm: React.FC = () => {
         }
       }
 
-      alert(
-        "🎉 Application submitted successfully! You will be redirected to dashboard."
-      );
+      alert(t("listing.submitted_success"));
 
       // Redirect to dashboard or applications list
       window.location.href = "/partner-portal/dashboard";
@@ -186,9 +190,14 @@ const ListingForm: React.FC = () => {
       console.error("❌ Application submission failed:", error);
 
       if (error.response?.data?.message) {
-        alert("Error: " + error.response.data.message);
+        alert(
+          t("listing.submit_failed") +
+            (error.response?.data?.message
+              ? ": " + error.response.data.message
+              : "")
+        );
       } else {
-        alert("Failed to submit application. Please try again.");
+        alert(t("listing.submit_failed_try"));
       }
     } finally {
       setIsSubmitting(false);
@@ -196,61 +205,80 @@ const ListingForm: React.FC = () => {
   };
 
   const renderStepContent = () => {
-    switch (activeStep) {
-      case "General":
+    switch (activeStepIndex) {
+      case 0:
         return (
           <div className="step-content">
             <div className="form-group">
-              <label htmlFor="title">Title</label>
+              <label htmlFor="title">{t("listing.fields.title")}</label>
               <input
                 type="text"
                 id="title"
                 name="title"
                 value={formData.title}
                 onChange={handleInputChange}
-                placeholder="Enter listing title"
+                placeholder={t("listing.placeholders.title")}
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="tagline">Tagline</label>
+              <label htmlFor="tagline">{t("listing.fields.tagline")}</label>
               <input
                 type="text"
                 id="tagline"
                 name="tagline"
                 value={formData.tagline}
                 onChange={handleInputChange}
-                placeholder="Enter tagline"
+                placeholder={t("listing.placeholders.tagline")}
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="description">Description</label>
+              <label htmlFor="description">
+                {t("listing.fields.description")}
+              </label>
               <div className="editor-toolbar">
-                <button type="button">B</button>
-                <button type="button">I</button>
-                <button type="button">•</button>
-                <button type="button">1.</button>
-                <button type="button">🔗</button>
+                <button type="button" aria-label={t("listing.editor.bold")}>
+                  B
+                </button>
+                <button type="button" aria-label={t("listing.editor.italic")}>
+                  I
+                </button>
+                <button
+                  type="button"
+                  aria-label={t("listing.editor.bullet_list")}
+                >
+                  •
+                </button>
+                <button
+                  type="button"
+                  aria-label={t("listing.editor.ordered_list")}
+                >
+                  1.
+                </button>
+                <button type="button" aria-label={t("listing.editor.link")}>
+                  🔗
+                </button>
               </div>
               <textarea
                 id="description"
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
-                placeholder="Enter description"
+                placeholder={t("listing.placeholders.description")}
                 rows={8}
               />
             </div>
           </div>
         );
 
-      case "Images":
+      case 1:
         return (
           <div className="step-content">
             <div className="form-group">
               <label>
-                Cover Image <span className="optional">(optional)</span>
+                {t("listing.fields.cover_image")}{" "}
+                <span className="optional">{t("optional")}</span>
               </label>
               <div className="file-upload-area">
                 <input
@@ -262,12 +290,13 @@ const ListingForm: React.FC = () => {
                   <span>📁</span>
                 </div>
               </div>
-              <p className="file-info">Maximum file size: 512 MB.</p>
+              <p className="file-info">{t("listing.file_info_max")}</p>
             </div>
 
             <div className="form-group">
               <label>
-                Gallery Images <span className="optional">(optional)</span>
+                {t("listing.fields.gallery_images")}{" "}
+                <span className="optional">{t("optional")}</span>
               </label>
               <div className="file-upload-area">
                 <input
@@ -280,29 +309,32 @@ const ListingForm: React.FC = () => {
                   <span>📁</span>
                 </div>
               </div>
-              <p className="file-info">Maximum file size: 512 MB.</p>
+              <p className="file-info">{t("listing.file_info_max")}</p>
             </div>
           </div>
         );
 
-      case "Contact Information":
+      case 2:
         return (
           <div className="step-content">
             <div className="form-group">
-              <label htmlFor="contactEmail">Contact Email</label>
+              <label htmlFor="contactEmail">
+                {t("listing.fields.contact_email")}
+              </label>
               <input
                 type="email"
                 id="contactEmail"
                 name="contactEmail"
                 value={formData.contactEmail}
                 onChange={handleInputChange}
-                placeholder="Enter contact email"
+                placeholder={t("listing.placeholders.contact_email")}
               />
             </div>
 
             <div className="form-group">
               <label htmlFor="phoneNumber">
-                Phone Number <span className="optional">(optional)</span>
+                {t("listing.fields.phone_number")}{" "}
+                <span className="optional">{t("optional")}</span>
               </label>
               <input
                 type="tel"
@@ -310,21 +342,21 @@ const ListingForm: React.FC = () => {
                 name="phoneNumber"
                 value={formData.phoneNumber}
                 onChange={handleInputChange}
-                placeholder="Enter phone number"
+                placeholder={t("listing.placeholders.phone_number")}
               />
             </div>
 
             <div className="form-group">
-              <label>Category</label>
+              <label>{t("listing.fields.category")}</label>
               <div className="categories-grid">
-                {categories.map((category, index) => (
+                {categories.map((categoryKey, index) => (
                   <label key={index} className="category-checkbox">
                     <input
                       type="checkbox"
-                      checked={formData.categories.includes(category)}
-                      onChange={() => handleCategoryChange(category)}
+                      checked={formData.categories.includes(categoryKey)}
+                      onChange={() => handleCategoryChange(categoryKey)}
                     />
-                    {category}
+                    {t(`listing.categories.${categoryKey}`)}
                   </label>
                 ))}
               </div>
@@ -332,11 +364,11 @@ const ListingForm: React.FC = () => {
           </div>
         );
 
-      case "Location":
+      case 3:
         return (
           <div className="step-content">
             <div className="form-group">
-              <label htmlFor="region">Country/Region</label>
+              <label htmlFor="region">{t("listing.fields.region")}</label>
               <select
                 id="region"
                 name="region"
@@ -345,7 +377,7 @@ const ListingForm: React.FC = () => {
                   setFormData((prev) => ({ ...prev, region: e.target.value }))
                 }
               >
-                <option value="">Select a country/region</option>
+                <option value="">{t("listing.select_country")}</option>
                 {countries
                   .sort((a, b) => a.name.common.localeCompare(b.name.common))
                   .map((country) => (
@@ -362,14 +394,14 @@ const ListingForm: React.FC = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="location">Location</label>
+              <label htmlFor="location">{t("listing.fields.location")}</label>
               <input
                 type="text"
                 id="location"
                 name="location"
                 value={formData.location}
                 onChange={handleInputChange}
-                placeholder='e.g. "London"'
+                placeholder={t("listing.placeholders.location_example")}
               />
             </div>
 
@@ -378,7 +410,13 @@ const ListingForm: React.FC = () => {
               type="create"
               latitude={coordinates.lat}
               longitude={coordinates.lng}
-              onCoordinatesChange={({ lat, lng }: { lat: number; lng: number }) => {
+              onCoordinatesChange={({
+                lat,
+                lng,
+              }: {
+                lat: number;
+                lng: number;
+              }) => {
                 setCoordinates({ lat, lng });
                 setFormData((prev) => ({
                   ...prev,
@@ -389,10 +427,14 @@ const ListingForm: React.FC = () => {
             />
             <div className="selected-location">
               <p>
-                <strong>Tanlangan joylashuv:</strong>
+                <strong>{t("listing.selected_location")}</strong>
               </p>
-              <p>Lat: {coordinates.lat.toFixed(6)}</p>
-              <p>Lng: {coordinates.lng.toFixed(6)}</p>
+              <p>
+                {t("listing.lat")} {coordinates.lat.toFixed(6)}
+              </p>
+              <p>
+                {t("listing.lng")} {coordinates.lng.toFixed(6)}
+              </p>
             </div>
           </div>
         );
@@ -404,7 +446,7 @@ const ListingForm: React.FC = () => {
 
   return (
     <div className="listing-form-container">
-      <div className="p-2">
+      <div className="p-2 flex justify-between items-center ">
         <button
           type="button"
           onClick={() => (window.location.href = "/partner-portal/dashboard")}
@@ -420,11 +462,15 @@ const ListingForm: React.FC = () => {
             gap: "6px",
           }}
         >
-          ← Back to Dashboard
+          ← {t("listing.back_to_dashboard")}
         </button>
+
+        <div>
+          <LanguageSwitcher />
+        </div>
       </div>
       <div className="listing-form-header">
-        <h1>Your listing details</h1>
+        <h1>{t("listing.header")}</h1>
       </div>
 
       <div className="listing-form-content">
@@ -432,38 +478,40 @@ const ListingForm: React.FC = () => {
           <ul className="steps-list">
             {steps.map((step, index) => (
               <li
-                key={step}
-                className={`step-item ${activeStep === step ? "active" : ""}`}
-                onClick={() => setActiveStep(step)}
+                key={`${index}-${step}`}
+                className={`step-item ${
+                  activeStepIndex === index ? "active" : ""
+                }`}
+                onClick={() => setActiveStepIndex(index)}
               >
                 <span className="step-icon">
-                  {step === "General" && "📝"}
-                  {step === "Images" && "📷"}
-                  {step === "Contact Information" && "📞"}
-                  {step === "Location" && "📍"}
+                  {index === 0 && "📝"}
+                  {index === 1 && "📷"}
+                  {index === 2 && "📞"}
+                  {index === 3 && "📍"}
                 </span>
                 {step}
               </li>
             ))}
           </ul>
 
-          <div className="language-selector">🇬🇧 English ▼</div>
+          
         </div>
 
         <div className="main-content">
           <div className="step-header">
             <span className="step-icon">
-              {activeStep === "General" && "📝"}
-              {activeStep === "Images" && "📷"}
-              {activeStep === "Contact Information" && "📞"}
-              {activeStep === "Location" && "📍"}
+              {activeStepIndex === 0 && "📝"}
+              {activeStepIndex === 1 && "📷"}
+              {activeStepIndex === 2 && "📞"}
+              {activeStepIndex === 3 && "📍"}
             </span>
-            <h2>{activeStep}</h2>
+            <h2>{steps[activeStepIndex]}</h2>
           </div>
 
           {renderStepContent()}
 
-          {activeStep === "Location" && (
+          {activeStepIndex === 3 && (
             <button
               type="button"
               className="submit-btn"
@@ -474,7 +522,9 @@ const ListingForm: React.FC = () => {
                 cursor: isSubmitting ? "not-allowed" : "pointer",
               }}
             >
-              {isSubmitting ? "⏳ Submitting..." : "🚀 Submit listing"}
+              {isSubmitting
+                ? t("listing.submitting")
+                : t("listing.submit_button")}
             </button>
           )}
         </div>

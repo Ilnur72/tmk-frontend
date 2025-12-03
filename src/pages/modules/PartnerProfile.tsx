@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import "./PartnerProfile.css";
 import { authAPI } from "./services/api";
 
@@ -20,6 +21,7 @@ const PartnerProfile: React.FC = () => {
   const [partner, setPartner] = useState<Partner | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -111,7 +113,7 @@ const PartnerProfile: React.FC = () => {
       <div className="profile-container">
         <div className="profile-loading">
           <div className="loading-spinner"></div>
-          <p>Profil yuklanmoqda...</p>
+          <p>{t("partner.loading")}</p>
         </div>
       </div>
     );
@@ -121,13 +123,13 @@ const PartnerProfile: React.FC = () => {
     return (
       <div className="profile-container">
         <div className="profile-error">
-          <h2>Xatolik</h2>
-          <p>{error || "Profil topilmadi"}</p>
+          <h2>{t("partner.error_title")}</h2>
+          <p>{error || t("partner.not_found")}</p>
           <button
             onClick={() => window.location.reload()}
             className="retry-btn"
           >
-            Qaytadan urinish
+            {t("partner.retry")}
           </button>
         </div>
       </div>
@@ -160,50 +162,50 @@ const PartnerProfile: React.FC = () => {
           <p className="profile-email">{partner.email}</p>
           <span className={`status-badge status-${partner.status}`}>
             {partner.status === "active"
-              ? "Faol"
+              ? t("partner.status.active")
               : partner.status === "inactive"
-              ? "Nofaol"
-              : "Kutilmoqda"}
+              ? t("partner.status.inactive")
+              : t("partner.status.pending")}
           </span>
         </div>
 
         <div className="profile-actions">
           <button onClick={handleLogout} className="logout-btn">
-            Chiqish
+            {t("partner.logout")}
           </button>
         </div>
       </div>
 
       <div className="profile-details">
         <div className="details-section">
-          <h3>Shaxsiy ma'lumotlar</h3>
+          <h3>{t("partner.personal_info")}</h3>
           <div className="details-grid">
             <div className="detail-item">
-              <label>Ism</label>
-              <span>{partner.firstName || "Ko'rsatilmagan"}</span>
+              <label>{t("partner.first_name")}</label>
+              <span>{partner.firstName || t("partner.not_specified")}</span>
             </div>
             <div className="detail-item">
-              <label>Familiya</label>
-              <span>{partner.lastName || "Ko'rsatilmagan"}</span>
+              <label>{t("partner.last_name")}</label>
+              <span>{partner.lastName || t("partner.not_specified")}</span>
             </div>
             <div className="detail-item">
-              <label>Email</label>
+              <label>{t("partner.email")}</label>
               <span>{partner.email}</span>
             </div>
             <div className="detail-item">
-              <label>Telefon</label>
-              <span>{partner.phone || "Ko'rsatilmagan"}</span>
+              <label>{t("partner.phone")}</label>
+              <span>{partner.phone || t("partner.not_specified")}</span>
             </div>
             <div className="detail-item">
-              <label>Kompaniya</label>
-              <span>{partner.company || "Ko'rsatilmagan"}</span>
+              <label>{t("partner.company")}</label>
+              <span>{partner.company || t("partner.not_specified")}</span>
             </div>
             <div className="detail-item">
-              <label>Ro'yxatdan o'tgan sana</label>
+              <label>{t("partner.registered_at")}</label>
               <span>
                 {partner.createdAt
                   ? new Date(partner.createdAt).toLocaleDateString("uz-UZ")
-                  : "Noma'lum"}
+                  : t("partner.unknown")}
               </span>
             </div>
           </div>

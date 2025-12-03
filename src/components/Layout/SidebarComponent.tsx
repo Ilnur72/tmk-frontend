@@ -19,23 +19,27 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../../contexts/AuthContext";
 
 const allMenuItems = [
-  { href: "/", icon: Home, title: "Лойиҳалар ҳаритаси" },
-  { href: "/factory", icon: Briefcase, title: "Инвестиция лойиҳалари" },
-  { href: "/production", icon: GitPullRequest, title: "Ишлаб чиқариш" },
-  { href: "/sales", icon: BarChart, title: "Сотув кўрсаткичлари" },
-  { href: "/finance", icon: BarChart2, title: "Молиявий кўрсаткичлар" },
-  { href: "/employers", icon: Users, title: "Ходимлар" },
-  { href: "/techniques", icon: Codepen, title: "Техникалар" },
-  { href: "/partners", icon: MapPin, title: "Ҳамкорлар" },
-  { href: "/applications", icon: GitPullRequest, title: "Аризалар" },
+  { href: "/", icon: Home, title: "sidebar.map" },
+  { href: "/factory", icon: Briefcase, title: "sidebar.factory" },
+  { href: "/production", icon: GitPullRequest, title: "sidebar.production" },
+  { href: "/sales", icon: BarChart, title: "sidebar.sales" },
+  { href: "/finance", icon: BarChart2, title: "sidebar.finance" },
+  { href: "/employers", icon: Users, title: "sidebar.employee" },
+  { href: "/techniques", icon: Codepen, title: "sidebar.techniques" },
+  { href: "/partners", icon: MapPin, title: "sidebar.partners" },
+  {
+    href: "/applications",
+    icon: GitPullRequest,
+    title: "sidebar.applications",
+  },
   {
     href: "/setting",
     icon: Settings,
-    title: "Параметр",
+    title: "sidebar.setting",
     id: "setting-menu-item",
     roles: ["admin", "editor"], // Only admin and editor can see settings
   },
-  { href: "/cameras", icon: Camera, title: "Камералар" },
+  { href: "/cameras", icon: Camera, title: "sidebar.cameras" },
 ];
 
 const Sidebar = () => {
@@ -79,12 +83,17 @@ const Sidebar = () => {
       <div className="mobile-menu group top-0 inset-x-0 fixed bg-primary backdrop-blur-sm z-[60] border-b border-white/[0.08] md:hidden">
         <div className="flex h-[45px] items-center px-3 sm:px-8">
           <a className="mr-auto flex" href="/">
-            <img className="w-16" src="/image/logo-full-w.png" alt="TMK" />
+            <img
+              className="w-16"
+              src="/image/logo-full-w.png"
+              alt={t("sidebar.logo_alt")}
+            />
           </a>
           <button
             className="mobile-menu-toggler p-1"
             onClick={toggleMobileMenu}
             type="button"
+            aria-label={t("sidebar.menu_toggle")}
           >
             <Menu className="h-8 w-8 text-white" />
           </button>
@@ -105,6 +114,7 @@ const Sidebar = () => {
                 isMobileMenuOpen ? "visible opacity-100" : "invisible opacity-0"
               }`}
               type="button"
+              aria-label={t("sidebar.close_menu")}
             >
               <X className="h-8 w-8 text-white" />
             </button>
@@ -183,7 +193,11 @@ const Sidebar = () => {
       {/* Desktop Sidebar */}
       <nav className="side-nav hidden w-[80px] overflow-x-hidden  pr-5 md:block xl:w-[230px]">
         <a className="flex items-center pt-4 pl-5 intro-x" href="/">
-          <img className="w-42" src="/image/logo-full-w.png" alt="TMK" />
+          <img
+            className="w-42"
+            src="/image/logo-full-w.png"
+            alt={t("sidebar.logo_alt")}
+          />
         </a>
         <div className="my-3 side-nav__divider"></div>
         <ul>
@@ -205,7 +219,7 @@ const Sidebar = () => {
                   <div className="side-menu__icon">
                     <Icon className={`stroke-1.5 w-5 h-5`} />
                   </div>
-                  <div className="side-menu__title">{item.title}</div>
+                  <div className="side-menu__title">{t(item.title)}</div>
                 </NavLink>
               </li>
             );
@@ -215,7 +229,7 @@ const Sidebar = () => {
               <div className={`side-menu__icon `}>
                 <LogOut className={`stroke-1.5 w-5 h-5 rotate-180`} />
               </div>
-              <div className={`side-menu__title`}>Тизимдан чиқиш</div>
+              <div className={`side-menu__title`}>{t("sidebar.logout")}</div>
             </div>
           </li>
         </ul>

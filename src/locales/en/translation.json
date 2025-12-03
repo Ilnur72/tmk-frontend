@@ -119,19 +119,30 @@
     "error_occurred": "An error occurred!"
   },
   "sidebar": {
+    "map": "Map",
     "dashboard": "Dashboard",
-    "employee": "Employees",
-    "vehicle_tracking": "Vehicle Tracking",
     "factory": "Factory",
-    "finance": "Finance",
-    "applications": "Applications",
-    "camera": "Cameras",
-    "partners": "Partners",
     "production": "Production",
     "sales": "Sales",
+    "finance": "Finance",
+    "employee": "Employees",
+    "vehicle_tracking": "Vehicle Tracking",
+    "applications": "Applications",
+    "cameras": "Cameras",
+    "partners": "Partners",
     "setting": "Settings",
     "techniques": "Techniques",
-    "logout": "Logout"
+    "logout": "Logout",
+    "logo_alt": "TMK logo",
+    "menu_toggle": "Open mobile menu",
+    "close_menu": "Close mobile menu"
+  },
+  "map": {
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "latitude_placeholder": "41.2995",
+    "longitude_placeholder": "69.2401",
+    "toggle_satellite": "Toggle Satellite"
   },
   "auth": {
     "login": "Login",
@@ -140,13 +151,55 @@
     "remember_me": "Remember Me",
     "forgot_password": "Forgot Password?",
     "sign_in": "Sign In",
-    "invalid_credentials": "Invalid username or password"
+    "sign_up": "Sign Up",
+    "invalid_credentials": "Invalid username or password",
+    "account": "Account",
+    "you_must_be_logged_in": "You must be logged in to access this section.",
+    "first_name": "First name",
+    "last_name": "Last name",
+    "email": "Email",
+    "or_connect_with": "or connect with",
+    "google_signin": "Continue with Google",
+    "english": "English",
+    "russian": "Русский",
+    "uzbek": "O'zbek"
   },
   "dashboard": {
     "title": "TMK Management System",
     "welcome": "Welcome",
     "statistics": "Statistics",
-    "recent_activities": "Recent Activities"
+    "recent_activities": "Recent Activities",
+    "loading": "Loading Dashboard...",
+    "greeting": "Hello, {{name}}!",
+    "filter": {
+      "listing": "Filter by listing",
+      "category": "Filter by category",
+      "status": "Filter by status"
+    },
+    "stats": {
+      "published": "Published (Approved)",
+      "pending": "Pending",
+      "under_review": "Under Review",
+      "rejected": "Rejected",
+      "needs_revision": "Needs Revision",
+      "visits_week": "Visits this week"
+    },
+    "analytics": {
+      "views": "Views",
+      "visits": "Visits",
+      "unique_views": "Unique views"
+    },
+    "periods": {
+      "last24": "Last 24 hours",
+      "last7": "Last 7 days",
+      "last30": "Last 30 days",
+      "last6": "Last 6 months",
+      "last12": "Last 12 months"
+    },
+    "actions": {
+      "create_new": "+ Create New Listing",
+      "manage": "📋 Manage Listings"
+    }
   },
   "employee": {
     "title": "Employees",
@@ -170,6 +223,7 @@
     "settings": "Settings",
     "logout": "Logout"
   },
+  "optional": "(optional)",
   "factory": {
     "title": "Factory",
     "overview": "Overview",
@@ -358,6 +412,27 @@
     "no_partners_found": "No partners found",
     "no_matching_partners": "No partners match the search criteria"
   },
+  "partner": {
+    "loading": "Loading profile...",
+    "error_title": "Error",
+    "not_found": "Profile not found",
+    "retry": "Retry",
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "pending": "Pending"
+    },
+    "logout": "Logout",
+    "personal_info": "Personal Information",
+    "first_name": "First Name",
+    "last_name": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "company": "Company",
+    "registered_at": "Registered At",
+    "unknown": "Unknown",
+    "not_specified": "Not specified"
+  },
   "production": {
     "title": "Production",
     "under_development": "Production module is under development..."
@@ -438,6 +513,77 @@
   },
   "total_projects": "Total Projects",
   "in_registration": "In Registration",
+  "listing": {
+    "steps": {
+      "general": "General",
+      "images": "Images",
+      "contact": "Contact Information",
+      "location": "Location"
+    },
+    "errors": {
+      "login_required": "You must be logged in to submit an application",
+      "required_fields": "Please fill in all required fields: Title, Description, and Location"
+    },
+    "submitted_success": "🎉 Application submitted successfully! You will be redirected to dashboard.",
+    "submit_failed": "Failed to submit application",
+    "submit_failed_try": "Failed to submit application. Please try again.",
+    "fields": {
+      "title": "Title",
+      "tagline": "Tagline",
+      "description": "Description",
+      "cover_image": "Cover Image",
+      "gallery_images": "Gallery Images",
+      "contact_email": "Contact Email",
+      "phone_number": "Phone Number",
+      "category": "Category",
+      "region": "Country/Region"
+    },
+    "placeholders": {
+      "title": "Enter listing title",
+      "tagline": "Enter tagline",
+      "contact_email": "Enter contact email",
+      "phone_number": "Enter phone number",
+      "location_example": "e.g. \"London\"",
+      "description": "Enter description"
+    },
+    "editor": {
+      "bold": "Bold",
+      "italic": "Italic",
+      "bullet_list": "Bullet list",
+      "ordered_list": "Ordered list",
+      "link": "Insert link"
+    },
+    "file_info_max": "Maximum file size: 512 MB.",
+    "categories": {
+      "automation_control": "Automation & Control",
+      "control_systems": "Control Systems",
+      "sensors_instrumentation": "Sensors & Instrumentation",
+      "catering_camp": "Catering & Camp Services",
+      "accommodation_food": "Accommodation & Food",
+      "facilities_management": "Facilities Management",
+      "construction_civil": "Construction & Civil Works",
+      "fabrication": "Fabrication",
+      "structural_earthworks": "Structural & Earthworks",
+      "environmental_services": "Environmental Services",
+      "monitoring_compliance": "Monitoring & Compliance",
+      "rehabilitation": "Rehabilitation",
+      "explosives_blasting": "Explosives & Blasting",
+      "explosives_accessories": "Explosives & Accessories",
+      "finance_insurance": "Finance & Insurance",
+      "capital_equipment_financing": "Capital Equipment Financing",
+      "insurance": "Insurance",
+      "geology_exploration": "Geology & Exploration"
+    },
+    "select_country": "Select a country/region",
+    "back_to_dashboard": "Back to Dashboard",
+    "header": "Your listing details",
+    "language_selector": "🇬🇧 English ▼",
+    "selected_location": "Selected location:",
+    "lat": "Lat:",
+    "lng": "Lng:",
+    "submit_button": "🚀 Submit listing",
+    "submitting": "⏳ Submitting..."
+  },
   "in_construction": "In Construction",
   "launched": "Launched",
   "add_project": "Add Project",
