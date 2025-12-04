@@ -4,6 +4,7 @@ import { applicationsAPI, Application } from "./services/applicationsAPI";
 import api from "./services/api";
 import { useModulesAuth } from "./hooks/useModulesAuth";
 import "./Dashboard.css";
+import LanguageSwitcher from "../../components/UI/LanguageSwitcher";
 
 interface DashboardStats {
   publishedListings: number;
@@ -147,7 +148,8 @@ const Dashboard: React.FC = () => {
         <div className="header-left">
           <h1>{t("dashboard.greeting", { name: userName })}</h1>
         </div>
-        <div className="header-right">
+        <div className="header-right flex gap-2">
+        <LanguageSwitcher />
           <select
             className="filter-dropdown"
             value={filterBy}
