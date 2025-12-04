@@ -592,6 +592,13 @@
   "manage_parameters": "Управление параметрами",
   "comment": "Комментарий",
   "modal": {
+    "region": "Регион",
+    "custom_fields": "Пользовательские поля",
+    "project_images": "Изображения проекта",
+    "enterprise_name": "Название предприятия",
+    "project_goal": "Цель проекта",
+    "coordinates": "Координаты",
+    "confirm_delete": "Вы уверены, что хотите удалить проект \"{{name}}\"?",
     "create_project": "Создать проект",
     "edit_project": "Редактировать проект",
     "parameter_update": "Обновить параметр",

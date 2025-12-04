@@ -76,8 +76,7 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
               {t("modal.delete_confirm")}
             </div>
             <div className="text-gray-600 mb-6">
-              {t("modal.confirm_delete")}{" "}
-              <span className="font-medium">{factory.name}</span>?
+              {t("modal.confirm_delete", { name: factory.name })}
             </div>
 
             <div className="flex justify-center space-x-3">

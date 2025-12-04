@@ -592,6 +592,13 @@
   "manage_parameters": "Параметрларни бошқариш",
   "comment": "Изоҳ",
   "modal": {
+    "region": "Ҳудуд",
+    "custom_fields": "Қўшимча майдонлар",
+    "project_images": "Лойиҳа расмлари",
+    "enterprise_name": "Корхона номи",
+    "project_goal": "Лойиҳа мақсади",
+    "coordinates": "Координаталар",
+    "confirm_delete": "Сиз ҳақиқатан ҳам лойиҳани \"{{name}}\" ўчиришга ишоняпсизми?",
     "create_project": "Лойиҳа яратиш",
     "edit_project": "Лойиҳани таҳрирлаш",
     "parameter_update": "Параметр янгилаш",
