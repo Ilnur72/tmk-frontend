@@ -536,6 +536,7 @@
       "contact_email": "Contact Email",
       "phone_number": "Phone Number",
       "category": "Category",
+      "location": "Location",
       "region": "Country/Region"
     },
     "placeholders": {

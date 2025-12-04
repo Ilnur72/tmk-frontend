@@ -536,6 +536,7 @@
       "contact_email": "Алоқа электрон почта",
       "phone_number": "Телефон рақами",
       "category": "Категория",
+      "location": "Манзил",
       "region": "Давлат/Ҳудуд"
     },
     "placeholders": {
