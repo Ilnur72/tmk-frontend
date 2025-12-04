@@ -195,11 +195,11 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
                     <div className="ml-3">
                       <div className="text-sm font-medium text-gray-900">
                         {application.partner?.companyName ||
-                          t("applications.unknown")}
+                          t("applications.status_labels.unknown")}
                       </div>
                       <div className="text-sm text-gray-500">
                         {application.partner?.contactPerson ||
-                          t("applications.unknown")}
+                          t("applications.status_labels.unknown")}
                       </div>
                     </div>
                   </div>
