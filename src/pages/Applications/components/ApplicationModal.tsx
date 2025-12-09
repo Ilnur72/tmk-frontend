@@ -617,14 +617,20 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
                 {isLoading ? (
                   <div className="flex items-center">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    {t("applications.modal.saving")}
+                    {t("ui.loading", {
+                      defaultValue: t("applications.modal.saving"),
+                    })}
                   </div>
                 ) : (
                   <>
                     <Save className="h-4 w-4 mr-2" />
                     {mode === "create"
-                      ? t("applications.modal.create_button")
-                      : t("applications.modal.save_button")}
+                      ? t("ui.add", {
+                          defaultValue: t("applications.modal.create_button"),
+                        })
+                      : t("ui.save", {
+                          defaultValue: t("applications.modal.save_button"),
+                        })}
                   </>
                 )}
               </button>
@@ -633,7 +639,9 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
                 onClick={onClose}
                 className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-i sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
               >
-                {t("applications.modal.close_button")}
+                {t("ui.close", {
+                  defaultValue: t("applications.modal.close_button"),
+                })}
               </button>
             </div>
           )}
@@ -645,7 +653,9 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
                 onClick={onClose}
                 className="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-i sm:w-auto sm:text-sm"
               >
-                {t("applications.modal.close_button")}
+                {t("ui.close", {
+                  defaultValue: t("applications.modal.close_button"),
+                })}
               </button>
             </div>
           )}

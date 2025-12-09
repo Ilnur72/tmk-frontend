@@ -73,10 +73,15 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
             </div>
 
             <div className="text-xl font-semibold text-gray-900 mb-2">
-              {t("modal.delete_confirm")}
+              {t("ui.confirm_delete", {
+                defaultValue: t("modal.delete_confirm"),
+              })}
             </div>
             <div className="text-gray-600 mb-6">
-              {t("modal.confirm_delete", { name: factory.name })}
+              {t("ui.confirm_delete", {
+                defaultValue: t("modal.confirm_delete", { name: factory.name }),
+                name: factory.name,
+              })}
             </div>
 
             <div className="flex justify-center space-x-3">
@@ -85,7 +90,7 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
                 onClick={onClose}
                 className="rounded-md border border-gray-300 bg-white px-6 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
               >
-                {t("cancel")}
+                {t("ui.cancel", { defaultValue: t("modal.close") })}
               </button>
               <button
                 type="button"
@@ -93,7 +98,11 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
                 disabled={loading}
                 className="rounded-md bg-red-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
               >
-                {loading ? `⏳ ${t("modal.deleting")}` : t("modal.delete")}
+                {loading
+                  ? `⏳ ${t("ui.loading", {
+                      defaultValue: t("modal.deleting"),
+                    })}`
+                  : t("ui.delete", { defaultValue: t("modal.delete") })}
               </button>
             </div>
           </div>

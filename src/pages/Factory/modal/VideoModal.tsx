@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { CameraType, PTZCommand } from "../types/factory";
@@ -17,7 +17,7 @@ export default function VideoModal({
   camera,
 }: VideoModalProps) {
   const { t } = useTranslation();
-  const [isLoading, setIsLoading] = useState(true);
+  // removed unused isLoading state
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -34,7 +34,6 @@ export default function VideoModal({
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
-      setIsLoading(true);
     } else {
       document.body.style.overflow = "auto";
     }
@@ -84,6 +83,9 @@ export default function VideoModal({
               className="text-white hover:text-gray-200 transition-colors"
             >
               <X className="w-6 h-6" />
+              <span className="sr-only">
+                {t("ui.close", { defaultValue: t("modal.close") })}
+              </span>
             </button>
           </div>
 
@@ -92,13 +94,15 @@ export default function VideoModal({
             {/* Video Area */}
             <div className="flex-1 bg-black flex items-center justify-center min-h-[300px] lg:min-h-[400px] relative">
               <iframe
+                title={`${camera.brand || "Camera"} ${
+                  camera.model || "Stream"
+                } - ${t("camera.camera_view")}`}
                 src={streamUrl}
                 width="100%"
                 height="100%"
                 frameBorder="0"
                 allowFullScreen
                 className="w-full h-full"
-                onLoad={() => setIsLoading(false)}
               />
             </div>
 

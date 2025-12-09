@@ -142,7 +142,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
       setIsLoading(true);
-
+      console.log(email, password);
+      
       const response = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: {
@@ -151,7 +152,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         },
         body: JSON.stringify({ email, password }),
       });
-
+      
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         console.error("Login failed:", errorData);

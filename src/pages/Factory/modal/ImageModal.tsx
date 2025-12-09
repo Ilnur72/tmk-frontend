@@ -17,19 +17,19 @@ const ImageModal: React.FC<ImageModalProps> = ({
   currentIndex,
   onIndexChange,
 }) => {
-  const showPrevImage = () => {
+  const showPrevImage = React.useCallback(() => {
     if (images.length > 1) {
       const newIndex = (currentIndex - 1 + images.length) % images.length;
       onIndexChange(newIndex);
     }
-  };
+  }, [images.length, currentIndex, onIndexChange]);
 
-  const showNextImage = () => {
+  const showNextImage = React.useCallback(() => {
     if (images.length > 1) {
       const newIndex = (currentIndex + 1) % images.length;
       onIndexChange(newIndex);
     }
-  };
+  }, [images.length, currentIndex, onIndexChange]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -50,7 +50,14 @@ const ImageModal: React.FC<ImageModalProps> = ({
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, currentIndex, images.length]);
+  }, [
+    isOpen,
+    onClose,
+    showPrevImage,
+    showNextImage,
+    currentIndex,
+    images.length,
+  ]);
 
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
@@ -69,8 +76,10 @@ const ImageModal: React.FC<ImageModalProps> = ({
       <button
         className="image-modal-close absolute top-4 right-9 text-white text-4xl font-bold cursor-pointer transition-colors hover:text-gray-300 z-[100002]"
         onClick={onClose}
+        aria-label="Close image viewer"
       >
         <X size={32} />
+        <span className="sr-only">Close</span>
       </button>
 
       {images.length > 1 && (
@@ -94,7 +103,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
       <img
         className="image-modal-content block m-auto max-w-[90%] max-h-[90%] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[100001]"
         src={`${API_URL}/mnt/tmkupload/factory-images/${images[currentIndex]}`}
-        alt={`Image ${currentIndex + 1}`}
+        alt={""}
       />
     </div>
   );

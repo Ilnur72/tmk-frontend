@@ -1,24 +1,26 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 import "react-toastify/dist/ReactToastify.css";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login, logout } = useAuth(); // logout ni ham qo‘shdik
-  const navigate = useNavigate();
+  const { login } = useAuth();
+  const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
+      console.log("Attempting to log in with:", email);
+
       const success = await login(email, password);
       if (success) {
-        navigate("/");
+        // navigate("/");
         toast.success("Тизимга муваффақиятли кирдингиз 🚀");
       } else {
         toast.error("Нотўғри электрон почта ёки пароль ❌");
@@ -45,9 +47,9 @@ const Login: React.FC = () => {
                   alt="Logo"
                 />
                 <div className="-intro-x mt-10 text-4xl font-medium leading-tight text-white">
-                Har bir maʼdan
-                <br />
-                boʻlagini qadrlaymiz!
+                  Har bir maʼdan
+                  <br />
+                  boʻlagini qadrlaymiz!
                 </div>
                 <div className="-intro-x mt-5 text-lg text-white text-opacity-70 dark:text-slate-2  00">
                   Tahliliy monitoring tizimi
@@ -104,12 +106,12 @@ const Login: React.FC = () => {
                       disabled={loading}
                       className="transition duration-200 border shadow-sm inline-flex items-center justify-center rounded-md font-medium cursor-pointer focus:ring-4 focus:ring-primary focus:ring-opacity-20 dark:focus:ring-slate-700 disabled:opacity-70 disabled:cursor-not-allowed bg-primary border-primary text-white w-full px-4 py-3 xl:mr-3 xl:w-32"
                     >
-                      {loading ? "Кутинг..." : "Кириш"}
+                      {loading
+                        ? t("ui.loading", { defaultValue: "Кутинг..." })
+                        : t("sign_in", { defaultValue: "Кириш" })}
                     </button>
                   </div>
                 </form>
-
-               
               </div>
             </div>
             {/* END: Login Form */}

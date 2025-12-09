@@ -24,13 +24,8 @@ const HistoryModal: React.FC<HistoryModalProps> = ({
   const { t } = useTranslation();
   const [historyData, setHistoryData] = useState<HistoryFile[]>([]);
 
-  useEffect(() => {
-    if (isOpen && factoryParamId) {
-      fetchHistory();
-    }
-  }, [isOpen, factoryParamId]);
-
-  const fetchHistory = async () => {
+  const fetchHistory = React.useCallback(async () => {
+    if (!factoryParamId) return;
     if (!factoryParamId) return;
 
     try {
@@ -41,7 +36,13 @@ const HistoryModal: React.FC<HistoryModalProps> = ({
     } catch (error) {
       console.error("Error fetching parameter history:", error);
     }
-  };
+  }, [factoryParamId]);
+
+  useEffect(() => {
+    if (isOpen && factoryParamId) {
+      fetchHistory();
+    }
+  }, [isOpen, factoryParamId, fetchHistory]);
 
   if (!isOpen || !factoryParamId) return null;
 
@@ -110,7 +111,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({
               onClick={onClose}
               className="transition duration-200 border shadow-sm inline-flex items-center justify-center py-2 px-3 rounded-md font-medium cursor-pointer border-secondary text-gray-500 hover:bg-gray-100 dark:border-darkmode-100/40"
             >
-              {t("modal.close")}
+              {t("ui.close", { defaultValue: t("modal.close") })}
             </button>
           </div>
         </div>

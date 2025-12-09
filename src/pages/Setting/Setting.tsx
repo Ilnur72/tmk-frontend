@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { showToast } from "../../utils/toast";
 import axios from "axios";
 import LanguageSwitcher from "../../components/UI/LanguageSwitcher";
+import TranslationsManager from "./TranslationsManager";
 
 interface Parameter {
   id: number;
@@ -295,8 +296,8 @@ const Setting: React.FC = () => {
   return (
     <div className="md:max-w-auto min-h-screen min-w-0 max-w-full flex-1 rounded-[30px] bg-slate-100 max-sm:pt-6">
       <div className="flex items-center space-x-4">
-          <LanguageSwitcher />
-        </div>
+        <LanguageSwitcher />
+      </div>
       {/* Parameters Section */}
       <div className="bg-white rounded-lg shadow p-3 overflow-x-auto mt-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-4 gap-3">
@@ -379,6 +380,10 @@ const Setting: React.FC = () => {
             </tbody>
           </table>
         </div>
+      </div>
+      {/* Translations manager (admin) */}
+      <div className="mt-6">
+        <TranslationsManager />
       </div>
 
       {/* Cameras Section */}
@@ -583,14 +588,16 @@ const Setting: React.FC = () => {
                     onClick={() => setIsCreateParamModalOpen(false)}
                     className="px-4 py-2 rounded border text-gray-600 hover:bg-gray-100"
                   >
-                    {t("setting.cancel")}
+                    {t("ui.cancel", { defaultValue: t("setting.cancel") })}
                   </button>
                   <button
                     type="submit"
                     disabled={loading}
                     className="px-4 py-2 rounded bg-primary text-white hover:opacity-80 disabled:opacity-50"
                   >
-                    {loading ? t("setting.saving") : t("setting.save")}
+                    {loading
+                      ? t("ui.loading", { defaultValue: t("setting.saving") })
+                      : t("ui.save", { defaultValue: t("setting.save") })}
                   </button>
                 </div>
               </form>
@@ -660,14 +667,16 @@ const Setting: React.FC = () => {
                     onClick={() => setIsEditParamModalOpen(false)}
                     className="px-4 py-2 rounded border text-gray-600 hover:bg-gray-100"
                   >
-                    {t("setting.cancel")}
+                    {t("ui.cancel", { defaultValue: t("setting.cancel") })}
                   </button>
                   <button
                     type="submit"
                     disabled={loading}
                     className="px-4 py-2 rounded bg-primary text-white hover:opacity-80 disabled:opacity-50"
                   >
-                    {loading ? t("setting.saving") : t("setting.save")}
+                    {loading
+                      ? t("ui.loading", { defaultValue: t("setting.saving") })
+                      : t("ui.save", { defaultValue: t("setting.save") })}
                   </button>
                 </div>
               </form>
@@ -857,14 +866,16 @@ const Setting: React.FC = () => {
                     onClick={() => setIsCameraModalOpen(false)}
                     className="px-4 py-2 rounded border text-gray-600 hover:bg-gray-100"
                   >
-                    {t("setting.cancel")}
+                    {t("ui.cancel", { defaultValue: t("setting.cancel") })}
                   </button>
                   <button
                     type="submit"
                     disabled={loading}
                     className="px-4 py-2 rounded bg-primary text-white hover:opacity-80 disabled:opacity-50"
                   >
-                    {loading ? t("setting.saving") : t("setting.save")}
+                    {loading
+                      ? t("ui.loading", { defaultValue: t("setting.saving") })
+                      : t("ui.save", { defaultValue: t("setting.save") })}
                   </button>
                 </div>
               </form>
@@ -1031,14 +1042,16 @@ const Setting: React.FC = () => {
                     onClick={() => setIsEditCameraModalOpen(false)}
                     className="px-4 py-2 rounded border text-gray-600 hover:bg-gray-100"
                   >
-                    {t("setting.cancel")}
+                    {t("ui.cancel", { defaultValue: t("setting.cancel") })}
                   </button>
                   <button
                     type="submit"
                     disabled={loading}
                     className="px-4 py-2 rounded bg-primary text-white hover:opacity-80 disabled:opacity-50"
                   >
-                    {loading ? t("setting.saving") : t("setting.save")}
+                    {loading
+                      ? t("ui.loading", { defaultValue: t("setting.saving") })
+                      : t("ui.save", { defaultValue: t("setting.save") })}
                   </button>
                 </div>
               </form>
@@ -1064,14 +1077,16 @@ const Setting: React.FC = () => {
                 onClick={() => setIsDeleteModalOpen(false)}
                 className="px-4 py-2 rounded border text-gray-600 hover:bg-gray-100"
               >
-                {t("setting.cancel")}
+                {t("ui.cancel", { defaultValue: t("setting.cancel") })}
               </button>
               <button
                 onClick={handleDelete}
                 disabled={loading}
                 className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
               >
-                {loading ? t("setting.saving") : t("setting.confirm")}
+                {loading
+                  ? t("ui.loading", { defaultValue: t("setting.saving") })
+                  : t("ui.delete", { defaultValue: t("setting.confirm") })}
               </button>
             </div>
           </div>

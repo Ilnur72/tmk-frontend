@@ -583,7 +583,7 @@ const PriceChartModal: React.FC<PriceChartModalProps> = ({
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  {t("finance.close")}
+                  {t("ui.close", { defaultValue: t("finance.close") })}
                 </motion.button>
               </motion.div>
             </motion.div>

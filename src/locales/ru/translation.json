@@ -1,4 +1,17 @@
 {
+  "account": "Аккаунт",
+  "you_must_be_logged_in": "Вы должны войти в систему",
+  "sign_in": "Войти",
+  "sign_up": "Регистрация",
+  "or": "или",
+  "email": "Email",
+  "password": "Пароль",
+  "first_name": "Имя",
+  "last_name": "Фамилия",
+  "forgot_password": "Забыли пароль",
+  "or_connect_with": "Или подключиться через",
+  "google_signin": "Войти через Google",
+  "privacy_policy": "Регистрируясь, вы соглашаетесь с нашей политикой конфиденциальности",
   "finance": {
     "currency": "Валюта",
     "cancel": "Отмена",
@@ -86,6 +99,18 @@
     "refresh": "Обновить",
     "unknown_error": "Неизвестная ошибка",
     "confirm_delete": "Вы уверены, что хотите удалить элемент \"{{name}}\"?"
+  },
+  "ui": {
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "loading": "Загрузка...",
+    "close": "Закрыть",
+    "delete": "Удалить",
+    "edit": "Редактировать",
+    "search": "Поиск...",
+    "add": "Добавить",
+    "refresh": "Обновить",
+    "confirm_delete": "Вы уверены, что хотите удалить {{name}}?"
   },
   "vehicle_tracking": {
     "title": "Отслеживание транспорта",

@@ -1,4 +1,17 @@
 {
+  "account": "Account",
+  "you_must_be_logged_in": "You must be logged in",
+  "sign_in": "Sign In",
+  "sign_up": "Sign Up",
+  "or": "or",
+  "email": "Email",
+  "password": "Password",
+  "first_name": "First Name",
+  "last_name": "Last Name",
+  "forgot_password": "Forgot Password",
+  "or_connect_with": "Or connect with",
+  "google_signin": "Google Sign In",
+  "privacy_policy": "By signing up, you agree to our privacy policy",
   "finance": {
     "change_reason_placeholder": "Enter reason for price change...",
     "cancel": "Cancel",
@@ -86,6 +99,18 @@
     "refresh": "Refresh",
     "unknown_error": "Unknown error",
     "confirm_delete": "Are you sure you want to delete the \"{{name}}\" element?"
+  },
+  "ui": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "close": "Close",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search...",
+    "add": "Add",
+    "refresh": "Refresh",
+    "confirm_delete": "Are you sure you want to delete {{name}}?"
   },
   "vehicle_tracking": {
     "title": "Vehicle Tracking",

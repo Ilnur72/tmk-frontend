@@ -5,7 +5,6 @@ import axios from "axios";
 import { API_URL } from "../../../config/const";
 import MapComponent from "../components/MapComponent";
 import { toast } from "react-toastify";
-import ImageGallery from "./ImageGallery";
 import ImageViewer from "react-simple-image-viewer";
 
 interface EditProjectModalProps {
@@ -55,29 +54,23 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
   const [customFields, setCustomFields] = useState<CustomField[]>([
     { key: "", value: "" },
   ]);
-  const [projectValues, setProjectValues] = useState<ProjectValue[]>([
-    { key: "", amount: "" },
-  ]);
-  const [projectValueTotal, setProjectValueTotal] = useState("");
-  const [coordinates, setCoordinates] = useState({
-    lat: 41.2995,
-    lng: 69.2401,
-  });
-  const [currentImage, setCurrentImage] = useState(0);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [previewImages, setPreviewImages] = useState<string[]>([]);
   const [deletedImages, setDeletedImages] = useState<string[]>([]);
   const [markerIcon, setMarkerIcon] = useState("factory");
+  const [coordinates, setCoordinates] = useState<{ lat: number; lng: number }>({
+    lat: 41.2995,
+    lng: 69.2401,
+  });
+  const [projectValues, setProjectValues] = useState<ProjectValue[]>([
+    { key: "", amount: "" },
+  ]);
+  const [projectValueTotal, setProjectValueTotal] = useState<string>("");
+  const [currentImage, setCurrentImage] = useState<number>(0);
   const mapRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
 
-  useEffect(() => {
-    if (isOpen && factoryId) {
-      fetchProjectData();
-    }
-  }, [isOpen, factoryId]);
-
-  const fetchProjectData = async () => {
+  const fetchProjectData = React.useCallback(async () => {
     if (!factoryId) return;
 
     setFetchingData(true);
@@ -143,7 +136,13 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
     } finally {
       setFetchingData(false);
     }
-  };
+  }, [factoryId, t]);
+
+  useEffect(() => {
+    if (isOpen && factoryId) {
+      fetchProjectData();
+    }
+  }, [isOpen, factoryId, fetchProjectData]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -368,7 +367,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
               onClick={onClose}
               className="mt-4 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
             >
-              {t("modal.close")}
+              {t("ui.close", { defaultValue: t("modal.close") })}
             </button>
           </div>
         </div>
@@ -845,14 +844,18 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                   onClick={onClose}
                   className="mr-3 px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
                 >
-                  {t("modal.close")}
+                  {t("ui.close", { defaultValue: t("modal.close") })}
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
                   className="px-6 py-2 bg-primary text-white rounded-md hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                  {loading ? `⏳ ${t("modal.saving")}` : t("modal.save")}
+                  {loading
+                    ? `⏳ ${t("ui.loading", {
+                        defaultValue: t("modal.saving"),
+                      })}`
+                    : t("ui.save", { defaultValue: t("modal.save") })}
                 </button>
               </div>
             </form>

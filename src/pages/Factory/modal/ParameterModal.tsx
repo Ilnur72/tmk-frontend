@@ -25,13 +25,7 @@ const ParameterModal: React.FC<ParameterModalProps> = ({
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (isOpen && parameter) {
-      loadParameterData();
-    }
-  }, [isOpen, parameter]);
-
-  const loadParameterData = async () => {
+  const loadParameterData = React.useCallback(async () => {
     if (!parameter) return;
 
     try {
@@ -63,7 +57,13 @@ const ParameterModal: React.FC<ParameterModalProps> = ({
     } catch (error) {
       console.error("Error loading parameter data:", error);
     }
-  };
+  }, [parameter]);
+
+  useEffect(() => {
+    if (isOpen && parameter) {
+      loadParameterData();
+    }
+  }, [isOpen, parameter, loadParameterData]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -293,7 +293,7 @@ const ParameterModal: React.FC<ParameterModalProps> = ({
                 onClick={onClose}
                 className="rounded-md border border-gray-300 bg-white px-6 py-2.5 text-sm font-medium text-gray-500 hover:bg-gray-100"
               >
-                {t("cancel")}
+                {t("ui.cancel", { defaultValue: t("modal.close") })}
               </button>
               <button
                 type="submit"
@@ -301,7 +301,9 @@ const ParameterModal: React.FC<ParameterModalProps> = ({
                 className="rounded-md px-6 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none"
                 style={{ backgroundColor: "#00a0c6" }}
               >
-                {loading ? `⏳ ${t("modal.saving")}` : t("modal.save")}
+                {loading
+                  ? `⏳ ${t("ui.loading", { defaultValue: t("modal.saving") })}`
+                  : t("ui.save", { defaultValue: t("modal.save") })}
               </button>
             </div>
           </form>

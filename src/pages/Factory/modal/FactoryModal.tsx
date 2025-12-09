@@ -176,6 +176,9 @@ export default function FactoryDetailsModal({
               className="text-white/70 hover:text-white hover:bg-white/10 transition-colors p-2 rounded-lg"
             >
               <X className="w-6 h-6" />
+              <span className="sr-only">
+                {t("ui.close", { defaultValue: t("modal.close") })}
+              </span>
             </button>
           </div>
 
@@ -206,7 +209,9 @@ export default function FactoryDetailsModal({
                         >
                           <img
                             src={`${API_URL}/mnt/tmkupload/factory-images/${img}`}
-                            alt={`Factory image ${index + 1}`}
+                            alt={t("factory.details.image_alt", {
+                              defaultValue: `Factory image ${index + 1}`,
+                            })}
                             className="w-64 h-48 object-cover rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
                           />
                           <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 rounded-lg flex items-center justify-center">

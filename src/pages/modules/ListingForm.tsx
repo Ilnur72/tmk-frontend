@@ -494,8 +494,6 @@ const ListingForm: React.FC = () => {
               </li>
             ))}
           </ul>
-
-          
         </div>
 
         <div className="main-content">
@@ -523,8 +521,8 @@ const ListingForm: React.FC = () => {
               }}
             >
               {isSubmitting
-                ? t("listing.submitting")
-                : t("listing.submit_button")}
+                ? t("ui.loading", { defaultValue: t("listing.submitting") })
+                : t("ui.save", { defaultValue: t("listing.submit_button") })}
             </button>
           )}
         </div>

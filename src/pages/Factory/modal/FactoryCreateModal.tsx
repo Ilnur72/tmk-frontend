@@ -616,14 +616,18 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                   onClick={onClose}
                   className="mr-3 px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
                 >
-                  {t("modal.close")}
+                  {t("ui.close", { defaultValue: t("modal.close") })}
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
                   className="px-6 py-2 bg-primary text-white rounded-md hover:bg-opacity-80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                  {loading ? `⏳ ${t("modal.saving")}` : t("modal.save")}
+                  {loading
+                    ? `⏳ ${t("ui.loading", {
+                        defaultValue: t("modal.saving"),
+                      })}`
+                    : t("ui.save", { defaultValue: t("modal.save") })}
                 </button>
               </div>
             </form>

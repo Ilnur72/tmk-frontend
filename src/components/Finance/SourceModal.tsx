@@ -60,7 +60,7 @@ const SourceModal: React.FC<SourceModalProps> = ({
               <form onSubmit={onSubmit}>
                 <div className="px-6 py-4">
                   <h3 className="text-lg font-medium text-gray-900 mb-4">
-                    {t("finance.add_new_source")}
+                    {t("ui.add", { defaultValue: t("finance.add_new_source") })}
                   </h3>
 
                   <div className="space-y-4">
@@ -120,7 +120,7 @@ const SourceModal: React.FC<SourceModalProps> = ({
                     onClick={onClose}
                     className="px-4 py-2 bg-white border rounded-md"
                   >
-                    {t("finance.cancel")}
+                    {t("ui.cancel", { defaultValue: t("finance.cancel") })}
                   </button>
 
                   <button
@@ -128,7 +128,9 @@ const SourceModal: React.FC<SourceModalProps> = ({
                     disabled={isLoading}
                     className="px-4 py-2 bg-blue-600 text-white rounded-md disabled:opacity-50"
                   >
-                    {isLoading ? t("finance.loading") : t("finance.save")}
+                    {isLoading
+                      ? t("ui.loading", { defaultValue: t("finance.loading") })
+                      : t("ui.save", { defaultValue: t("finance.save") })}
                   </button>
                 </div>
               </form>

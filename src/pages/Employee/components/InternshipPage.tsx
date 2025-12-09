@@ -22,7 +22,9 @@ interface InternshipData {
 // API Service
 const apiService = {
   async getInternshipData(): Promise<InternshipData[]> {
-    const response = await axios.get("http://84.54.118.39:8444/1c/intership");
+    const response = await axios.get("/employers/internship");
+    console.log(response.data);
+    
     return response.data;
   },
 };

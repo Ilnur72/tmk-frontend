@@ -161,14 +161,16 @@ const PriceUpdateModal: React.FC<PriceUpdateModalProps> = ({
                         onClick={onClose}
                         className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                       >
-                        {t("finance.cancel")}
+                        {t("ui.cancel", { defaultValue: t("finance.cancel") })}
                       </button>
                       <button
                         type="submit"
                         disabled={isLoading}
                         className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                       >
-                        {isLoading ? t("finance.saving") : t("finance.save")}
+                        {isLoading 
+                          ? t("ui.loading", { defaultValue: t("finance.saving") })
+                          : t("ui.save", { defaultValue: t("finance.save") })}
                       </button>
                     </div>
                   </form>

@@ -23,8 +23,29 @@ const Auth: React.FC = () => {
     email: "",
     password: "",
   });
+  const [, forceUpdate] = useState({});
 
   const navigate = useNavigate();
+
+  // Language change handler with force update
+  const handleLanguageChange = (lang: string) => {
+    i18n.changeLanguage(lang);
+    forceUpdate({}); // Force re-render
+  };
+
+  // Ensure i18n is ready before rendering language buttons
+  useEffect(() => {
+    console.log("i18n isInitialized:", i18n.isInitialized);
+    console.log("Current language:", i18n.language);
+    console.log("Available languages:", i18n.languages);
+
+    if (!i18n.isInitialized) {
+      i18n.on("initialized", () => {
+        console.log("i18n initialized!");
+      });
+    }
+  }, [i18n]);
+
   // Google OAuth callback code ni handle qilish
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -297,21 +318,59 @@ const Auth: React.FC = () => {
             </div>
           </form>
 
-          <div className="language-selector">
+          <div className="language-selector" key="language-selector">
             <button
-              onClick={() => i18n.changeLanguage("en")}
-              style={{ marginRight: 8 }}
+              type="button"
+              onClick={() => handleLanguageChange("en")}
+              className={`lang-btn ${i18n.language === "en" ? "active" : ""}`}
+              style={{
+                marginRight: 8,
+                backgroundColor:
+                  i18n.language === "en" ? "#007bff" : "transparent",
+                color: i18n.language === "en" ? "white" : "#333",
+                padding: "8px 12px",
+                border: "1px solid #007bff",
+                borderRadius: "6px",
+                cursor: "pointer",
+                fontWeight: i18n.language === "en" ? "bold" : "normal",
+              }}
             >
-              {t("english")}
+              🇺🇸 English
             </button>
             <button
-              onClick={() => i18n.changeLanguage("ru")}
-              style={{ marginRight: 8 }}
+              type="button"
+              onClick={() => handleLanguageChange("ru")}
+              className={`lang-btn ${i18n.language === "ru" ? "active" : ""}`}
+              style={{
+                marginRight: 8,
+                backgroundColor:
+                  i18n.language === "ru" ? "#007bff" : "transparent",
+                color: i18n.language === "ru" ? "white" : "#333",
+                padding: "8px 12px",
+                border: "1px solid #007bff",
+                borderRadius: "6px",
+                cursor: "pointer",
+                fontWeight: i18n.language === "ru" ? "bold" : "normal",
+              }}
             >
-              {t("russian")}
+              🇷🇺 Русский
             </button>
-            <button onClick={() => i18n.changeLanguage("uz")}>
-              {t("uzbek")}
+            <button
+              type="button"
+              onClick={() => handleLanguageChange("uz")}
+              className={`lang-btn ${i18n.language === "uz" ? "active" : ""}`}
+              style={{
+                backgroundColor:
+                  i18n.language === "uz" ? "#007bff" : "transparent",
+                color: i18n.language === "uz" ? "white" : "#333",
+                padding: "8px 12px",
+                border: "1px solid #007bff",
+                borderRadius: "6px",
+                cursor: "pointer",
+                fontWeight: i18n.language === "uz" ? "bold" : "normal",
+              }}
+            >
+              🇺🇿 O'zbek
             </button>
           </div>
         </div>

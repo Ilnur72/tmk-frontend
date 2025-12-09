@@ -28,13 +28,7 @@ const ParameterControlModal: React.FC<ParameterControlModalProps> = ({
   const [params, setParams] = useState<ParamItem[]>([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (isOpen && factoryId) {
-      fetchParams();
-    }
-  }, [isOpen, factoryId]);
-
-  const fetchParams = async () => {
+  const fetchParams = React.useCallback(async () => {
     if (!factoryId) return;
     setLoading(true);
     try {
@@ -45,7 +39,13 @@ const ParameterControlModal: React.FC<ParameterControlModalProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [factoryId]);
+
+  useEffect(() => {
+    if (isOpen && factoryId) {
+      fetchParams();
+    }
+  }, [isOpen, factoryId, fetchParams]);
 
   const toggleParam = (id: number) => {
     setParams((prev) =>
@@ -92,7 +92,9 @@ const ParameterControlModal: React.FC<ParameterControlModalProps> = ({
           className="flex flex-col max-h-[65vh] overflow-y-auto p-4"
         >
           {loading ? (
-            <p className="text-center text-gray-500">{t("modal.loading")}</p>
+            <p className="text-center text-gray-500">
+              {t("ui.loading", { defaultValue: t("modal.loading") })}
+            </p>
           ) : (
             params.map((item) => (
               <label
@@ -126,14 +128,14 @@ const ParameterControlModal: React.FC<ParameterControlModalProps> = ({
             onClick={onClose}
             className="border border-gray-300 bg-white px-6 py-2.5 text-sm font-medium text-gray-500 rounded-md hover:bg-gray-100"
           >
-            {t("modal.close")}
+            {t("ui.close", { defaultValue: t("modal.close") })}
           </button>
           <button
             type="button"
             onClick={handleSave}
             className="bg-[#00a0c6] text-white px-6 py-2.5 rounded-md hover:bg-[#008fb0]"
           >
-            {t("modal.save")}
+            {t("ui.save", { defaultValue: t("modal.save") })}
           </button>
         </div>
       </div>

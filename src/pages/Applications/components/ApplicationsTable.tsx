@@ -385,7 +385,9 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
                           className="flex items-center px-4 py-2 text-sm text-red-700 hover:bg-red-50 w-full text-left"
                         >
                           <Trash2 className="h-4 w-4 mr-2" />
-                          {t("applications.delete")}
+                          {t("ui.delete", {
+                            defaultValue: t("applications.delete"),
+                          })}
                         </button>
                       </div>
                     </div>
@@ -457,7 +459,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
                   }}
                   className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
                 >
-                  {t("applications.save")}
+                  {t("ui.save", { defaultValue: t("applications.save") })}
                 </button>
                 <button
                   type="button"
@@ -470,7 +472,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
                   }
                   className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                 >
-                  {t("applications.cancel")}
+                  {t("ui.cancel", { defaultValue: t("applications.cancel") })}
                 </button>
               </div>
             </div>

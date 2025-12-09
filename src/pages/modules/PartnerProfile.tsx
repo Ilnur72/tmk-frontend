@@ -141,7 +141,11 @@ const PartnerProfile: React.FC = () => {
       <div className="profile-header">
         <div className="profile-avatar">
           {partner.avatar ? (
-            <img src={partner.avatar} alt="Avatar" className="avatar-img" />
+            <img
+              src={partner.avatar}
+              alt={t("partner.avatar_alt", { defaultValue: "Avatar" })}
+              className="avatar-img"
+            />
           ) : (
             <div className="avatar-placeholder">
               {(

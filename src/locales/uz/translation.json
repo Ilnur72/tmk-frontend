@@ -1,4 +1,17 @@
 {
+  "account": "Hisob",
+  "you_must_be_logged_in": "Tizimga kirishingiz kerak",
+  "sign_in": "Kirish",
+  "sign_up": "Ro'yxatdan o'tish",
+  "or": "yoki",
+  "email": "Email",
+  "password": "Parol",
+  "first_name": "Ism",
+  "last_name": "Familiya",
+  "forgot_password": "Parolni unutdingizmi",
+  "or_connect_with": "Yoki bog'lanish orqali",
+  "google_signin": "Google orqali kirish",
+  "privacy_policy": "Ro'yxatdan o'tish orqali siz maxfiylik siyosatimizga rozilik bildirasiz",
   "finance": {
     "currency": "Валюта",
     "cancel": "Бекор қилиш",
@@ -86,6 +99,18 @@
     "refresh": "Янгилаш",
     "unknown_error": "Номаълум хато",
     "confirm_delete": "\"{{name}}\" элементини ўчиришга ишонғингиз комилми?"
+  },
+  "ui": {
+    "save": "Сақлаш",
+    "cancel": "Бекор қилиш",
+    "loading": "Юкланмоқда...",
+    "close": "Ёпиш",
+    "delete": "Ўчириш",
+    "edit": "Таҳрирлаш",
+    "search": "Қидириш...",
+    "add": "Қўшиш",
+    "refresh": "Янгилаш",
+    "confirm_delete": "Сиз ҳақиқатан ҳам {{name}} ни ўчиришга ишоняпсизми?"
   },
   "vehicle_tracking": {
     "title": "Транспорт кузатув",
@@ -574,12 +599,12 @@
     },
     "select_country": "Давлат/Ҳудудни танланг",
     "back_to_dashboard": "Бошқарув панелга қайтиш",
-    "header": "Эълон малумотлари",
+    "header": "Ариза малумотлари",
     "language_selector": "🇬🇧 English ▼",
     "selected_location": "Танланган жойлашув:",
     "lat": "Кенглик:",
     "lng": "Узунлик:",
-    "submit_button": "🚀 Эълон юбориш",
+    "submit_button": "🚀 Ариза юбориш",
     "submitting": "⏳ Юборилмоқда..."
   },
   "in_construction": "Қурилиш жараёнида",
