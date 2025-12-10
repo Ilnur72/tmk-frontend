@@ -294,7 +294,7 @@ const Setting: React.FC = () => {
   }
 
   return (
-    <div className="md:max-w-auto min-h-screen min-w-0 max-w-full flex-1 rounded-[30px] bg-slate-100 max-sm:pt-6">
+    <div className="md:max-w-auto min-h-screen min-w-0 max-w-full flex-1 rounded-[30px] bg-slate-100 max-sm:pt-16">
       <div className="flex items-center space-x-4">
         <LanguageSwitcher />
       </div>

@@ -398,21 +398,21 @@ const FactoryMap: React.FC = () => {
           <div
             id="map"
             ref={mapContainer}
-            className="maplibregl-map max-md:my-2 rounded max-md:w-full max-md:fixed rounded-[30px]"
+            className="maplibregl-map max-md:my-2 max-md:w-full max-md:fixed rounded-[30px]"
           >
             <div
               id="left"
               className={`sidebar  left ${sidebarCollapsed ? "collapsed" : ""}`}
               style={{
                 position: "absolute",
-                top: 0,
+                top: window.innerWidth <= 768 ? "45px" : 0,
                 left: sidebarCollapsed ? -300 : 0,
                 width: "300px",
-                height: "100%",
+                height: window.innerWidth <= 768 ? "calc(100% - 80px)" : "100%",
                 backgroundColor: "rgba(255, 255, 255, 0.95)",
                 backdropFilter: "blur(10px)",
-                transition: "left 0.3s ease",
-                zIndex: 1000,
+                transition: "left 0.3s ease, top 0.3s ease, height 0.3s ease",
+                zIndex: 1,
                 borderRadius: "0 20px 20px 0",
                 boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
               }}
@@ -434,7 +434,7 @@ const FactoryMap: React.FC = () => {
               className="sidebar-toggle factory-map rounded-rect left"
               style={{
                 position: "absolute",
-                top: "50%",
+                top: window.innerWidth <= 768 ? "calc(50% + 40px)" : "50%",
                 left: sidebarCollapsed ? "10px" : "310px",
                 width: "40px",
                 height: "60px",
@@ -447,8 +447,8 @@ const FactoryMap: React.FC = () => {
                 fontSize: "1.5em",
                 transform: "translateY(-50%)",
                 boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)",
-                transition: "left 0.3s ease",
-                zIndex: 1001,
+                transition: "left 0.3s ease, top 0.3s ease",
+                zIndex: 1,
               }}
               onClick={toggleSidebar}
             >

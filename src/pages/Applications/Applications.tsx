@@ -184,7 +184,7 @@ const Applications: React.FC = () => {
 
   if (error) {
     return (
-      <div className="p-6">
+      <div className="p-6 max-md:pt-[50px]">
         <div className="bg-red-50 border border-red-200 rounded-md p-4">
           <div className="flex">
             <div className="ml-3">
@@ -211,7 +211,7 @@ const Applications: React.FC = () => {
 
   return (
     <div
-      className="p-6 flex flex-col"
+      className="p-6 flex flex-col max-md:pt-[50px]"
       style={{ minHeight: "calc(100vh - 120px)" }}
     >
       <div className="sm:flex sm:items-center sm:justify-between flex-shrink-0">

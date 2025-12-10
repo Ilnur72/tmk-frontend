@@ -79,7 +79,7 @@ const Partners: React.FC = () => {
   ).length;
 
   return (
-    <div className="p-6">
+    <div className="p-6 max-md:pt-[50px]">
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center justify-between">
