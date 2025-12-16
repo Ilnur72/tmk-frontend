@@ -5,6 +5,48 @@
 /* MapLibre GL CSS */
 @import "maplibre-gl/dist/maplibre-gl.css";
 
+/* Custom Toast Styles */
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  min-width: 300px;
+  max-width: 500px;
+  padding: 16px 20px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 500;
+  font-size: 14px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  z-index: 10000;
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+}
+
+.toast.show {
+  transform: translateX(0);
+}
+
+.toast.success {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  border-left: 4px solid #15803d;
+}
+
+.toast.error {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  border-left: 4px solid #b91c1c;
+}
+
+.toast.warning {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border-left: 4px solid #b45309;
+}
+
+.toast.info {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  border-left: 4px solid #1d4ed8;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",

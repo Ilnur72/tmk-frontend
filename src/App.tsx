@@ -24,6 +24,11 @@ import LanguagePage from "./pages/Employee/components/LanguagePage";
 import Finance from "./pages/Finance/Finance";
 import Partners from "./pages/Partners/Partners";
 import Applications from "./pages/Applications/Applications";
+import Energy from "./pages/Energy";
+
+// Energy Systems - mustaqil tizimlar
+import MeterOperators from "./pages/MeterOperators";
+import EnergyManagement from "./pages/EnergyManagement";
 
 // Modules imports - alohida module
 import ModuleAuth from "./pages/modules/Auth";
@@ -108,6 +113,7 @@ const AppRoutes: React.FC = () => {
           <Route path="/finance" element={<Finance />} />
           <Route path="/partners" element={<Partners />} />
           <Route path="/applications" element={<Applications />} />
+          <Route path="/energy" element={<Energy />} />
         </>
       )}
 
@@ -179,6 +185,10 @@ const App: React.FC = () => {
               path="/partner-portal/*"
               element={<PartnersModuleRoutes />}
             />
+
+            {/* Energy Systems - alohida mustaqil tizimlar */}
+            <Route path="/meter-operators" element={<MeterOperators />} />
+            <Route path="/energy-management" element={<EnergyManagement />} />
 
             {/* Asosiy tizim - himoyalangan routes */}
             <Route

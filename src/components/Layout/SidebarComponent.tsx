@@ -33,6 +33,11 @@ const allMenuItems = [
     title: "sidebar.applications",
   },
   {
+    href: "/energy",
+    icon: BarChart,
+    title: "sidebar.energy",
+  },
+  {
     href: "/setting",
     icon: Settings,
     title: "sidebar.setting",

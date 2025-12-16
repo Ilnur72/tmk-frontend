@@ -1,6 +1,7 @@
 // Re-export all types
 export * from "./partner";
 export * from "./application";
+export * from "./energy";
 
 export interface Factory {
   id: number;
