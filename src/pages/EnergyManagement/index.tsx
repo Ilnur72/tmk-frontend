@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import WorkshopsManagement from "./components/WorkshopsManagement";
 import MetersManagement from "./components/MetersManagement";
 import ReadingsManagement from "./components/ReadingsManagement";
@@ -6,18 +6,68 @@ import OperatorsManagement from "./components/OperatorsManagement";
 import AdminLogin from "./components/AdminLogin";
 import { User } from "../../types/energy";
 
+// JWT token decode utility
+const decodeToken = (token: string) => {
+  try {
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map(function (c) {
+          return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+        })
+        .join("")
+    );
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    console.error("Token decode error:", error);
+    return null;
+  }
+};
+
 const EnergyManagement: React.FC = () => {
   // const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("workshops");
-  const [factoryId] = useState(83); // Using existing factory ID
+  const [factoryId, setFactoryId] = useState<number | null>(null);
   const [adminData, setAdminData] = useState<User | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(
     !!localStorage.getItem("energyManagementAuthToken")
   );
 
+  // Token dan factory_id ni olish
+  useEffect(() => {
+    const token = localStorage.getItem("energyManagementAuthToken");
+    if (token) {
+      const decoded = decodeToken(token);
+      console.log("🔍 Decoded token:", decoded);
+
+      if (decoded && decoded.factory_id) {
+        setFactoryId(decoded.factory_id);
+        console.log("✅ Factory ID from token:", decoded.factory_id);
+      } else if (decoded && decoded.factoryId) {
+        setFactoryId(decoded.factoryId);
+        console.log("✅ Factory ID from token (alt):", decoded.factoryId);
+      } else {
+        console.warn("⚠️ Factory ID not found in token");
+      }
+    }
+  }, [isLoggedIn]);
+
   const handleLogin = (userData: User) => {
     setAdminData(userData);
     setIsLoggedIn(true);
+
+    // Login dan keyin factory_id ni tokendan olish
+    setTimeout(() => {
+      const token = localStorage.getItem("energyManagementAuthToken");
+      if (token) {
+        const decoded = decodeToken(token);
+        if (decoded && (decoded.factory_id || decoded.factoryId)) {
+          setFactoryId(decoded.factory_id || decoded.factoryId);
+        }
+      }
+    }, 100);
   };
 
   const handleLogout = () => {
@@ -40,6 +90,21 @@ const EnergyManagement: React.FC = () => {
   ];
 
   const renderTabContent = () => {
+    // Agar factory ID tokendan olinmagan bo'lsa, loading ko'rsatamiz
+    if (!factoryId) {
+      return (
+        <div className="flex items-center justify-center min-h-96">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              Factory ma'lumotlari yuklanmoqda...
+            </h3>
+            <p className="text-gray-500">Tokendan factory ID olinmoqda</p>
+          </div>
+        </div>
+      );
+    }
+
     switch (activeTab) {
       case "workshops":
         return <WorkshopsManagement factoryId={factoryId} />;
@@ -58,31 +123,33 @@ const EnergyManagement: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
-        <div className="px-6 py-4 max-md:px-4 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 max-md:text-2xl">
-              Energy Management System
-            </h1>
-            <p className="mt-2 text-gray-600 max-md:text-sm">
-              Manage workshops, meters, readings, and operators for energy
-              monitoring
-            </p>
-          </div>
-          <div className="flex items-center space-x-4">
-            {adminData && (
-              <div className="text-right">
-                <p className="font-medium text-gray-900">
-                  {adminData.first_name} {adminData.last_name}
-                </p>
-                <p className="text-sm text-gray-500">Administrator</p>
-              </div>
-            )}
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Logout
-            </button>
+        <div className="px-6 py-4 max-md:px-4">
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 max-md:text-2xl">
+                Energy Management System
+              </h1>
+              <p className="mt-2 text-gray-600 max-md:text-sm">
+                Manage workshops, meters, readings, and operators for energy
+                monitoring
+              </p>
+            </div>
+            <div className="flex items-center space-x-4">
+              {adminData && (
+                <div className="text-right">
+                  <p className="font-medium text-gray-900">
+                    {adminData.first_name} {adminData.last_name}
+                  </p>
+                  <p className="text-sm text-gray-500">Administrator</p>
+                </div>
+              )}
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       </div>

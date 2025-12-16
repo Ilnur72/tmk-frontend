@@ -4,17 +4,25 @@ import { energyService } from "../../services/energyService";
 import { EnergyDashboardData } from "../../types/energy";
 import { toast } from "../../utils/toast";
 
-const EnergyDashboard: React.FC = () => {
+interface EnergyDashboardProps {
+  factoryId?: number;
+}
+
+const EnergyDashboard: React.FC<EnergyDashboardProps> = ({ factoryId }) => {
   const { t } = useTranslation();
   const [dashboardData, setDashboardData] =
     useState<EnergyDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [factoryId] = useState(83); // Using existing factory ID from database (83-161)
   const [activeTab, setActiveTab] = useState<
     "all" | "electricity" | "gas" | "water"
   >("all");
 
   const fetchDashboardData = useCallback(async () => {
+    if (!factoryId) {
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       const data = await energyService.getDashboardData(factoryId);
