@@ -12,8 +12,9 @@ import {
   PaginationParams,
   PaginatedResponse,
 } from "../types/energy";
+import { API_URL } from "../config/const";
 
-const BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8085";
+const BASE_URL = API_URL || "http://localhost:8085";
 
 // Axios instance with auth header
 const apiClient = axios.create({
