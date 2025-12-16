@@ -13,9 +13,9 @@ import {
   PaginationParams,
   PaginatedResponse,
 } from "../../../types/energy";
+import { API_URL } from "../../../config/const";
 
-const BASE_URL = process.env.REACT_APP_API_BASE_URL || "https://tmk.bgs.uz";
-
+const BASE_URL = API_URL;
 // Separate axios instance for energy management
 const energyManagementClient = axios.create({
   baseURL: BASE_URL,
