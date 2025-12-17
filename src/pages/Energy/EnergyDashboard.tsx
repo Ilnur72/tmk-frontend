@@ -26,7 +26,6 @@ const EnergyDashboard: React.FC<EnergyDashboardProps> = ({ factoryId }) => {
     try {
       setLoading(true);
       const data = await energyService.getDashboardData(factoryId);
-      console.log(data);
 
       setDashboardData(data);
     } catch (error: any) {

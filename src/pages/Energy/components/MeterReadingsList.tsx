@@ -70,7 +70,6 @@ const MeterReadingsList: React.FC<MeterReadingsListProps> = ({
             );
             allReadings = [...allReadings, ...meterReadings.data];
           } catch (error) {
-            console.log(`No readings found for meter ${meter.id}`);
           }
         }
 

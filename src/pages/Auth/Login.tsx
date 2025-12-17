@@ -16,7 +16,6 @@ const Login: React.FC = () => {
     setLoading(true);
 
     try {
-      console.log("Attempting to log in with:", email);
 
       const success = await login(email, password);
       if (success) {

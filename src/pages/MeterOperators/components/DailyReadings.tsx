@@ -37,7 +37,15 @@ const DailyReadings: React.FC<DailyReadingsProps> = ({ operatorData }) => {
       setReadings(initialReadings);
     } catch (error: any) {
       console.error("Error fetching meters:", error);
-      toast.error("Failed to load your meters");
+      if (error?.response?.status === 401) {
+        toast.error("Ваша сессия истекла. Пожалуйста, войдите снова");
+        // Token tozalash va login sahifasiga yo'naltirish
+        localStorage.removeItem("meterOperatorAuthToken");
+        localStorage.removeItem("meterOperatorToken");
+        window.location.reload();
+      } else {
+        toast.error("Failed to load your meters");
+      }
     } finally {
       setLoading(false);
     }
@@ -127,11 +135,9 @@ const DailyReadings: React.FC<DailyReadingsProps> = ({ operatorData }) => {
     <div className="p-6">
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Daily Meter Readings
+          {t("meter_operators.readings.title")}
         </h2>
-        <p className="text-gray-600">
-          Submit today's readings for your assigned meters
-        </p>
+        <p className="text-gray-600">{t("meter_operators.subtitle")}</p>
       </div>
 
       {/* Meter Type Tabs */}
@@ -141,28 +147,28 @@ const DailyReadings: React.FC<DailyReadingsProps> = ({ operatorData }) => {
             {[
               {
                 key: "all",
-                label: "Barcha schetchiklar",
+                label: t("energy_management.readings.filters.all"),
                 icon: "📊",
                 count: meters.length,
               },
               {
                 key: "electricity",
-                label: "Elektr energiya",
+                label: t("energy_management.meters.types.electricity"),
                 icon: "⚡",
                 count: meters.filter((m) => m.meter_type === "electricity")
                   .length,
               },
               {
-                key: "gas",
-                label: "Gaz",
-                icon: "🔥",
-                count: meters.filter((m) => m.meter_type === "gas").length,
-              },
-              {
                 key: "water",
-                label: "Suv",
+                label: t("energy_management.meters.types.water"),
                 icon: "💧",
                 count: meters.filter((m) => m.meter_type === "water").length,
+              },
+              {
+                key: "gas",
+                label: t("energy_management.meters.types.gas"),
+                icon: "🔥",
+                count: meters.filter((m) => m.meter_type === "gas").length,
               },
             ].map((tab) => (
               <button
@@ -195,10 +201,10 @@ const DailyReadings: React.FC<DailyReadingsProps> = ({ operatorData }) => {
         <div className="text-center py-12">
           <Clock className="mx-auto h-12 w-12 text-gray-400" />
           <h3 className="mt-2 text-sm font-medium text-gray-900">
-            No meters assigned
+            {t("meter_operators.meters.no_meters")}
           </h3>
           <p className="mt-1 text-sm text-gray-500">
-            You don't have any meters assigned to you yet.
+            {t("meter_operators.meters.no_meters")}
           </p>
         </div>
       ) : (
@@ -227,13 +233,17 @@ const DailyReadings: React.FC<DailyReadingsProps> = ({ operatorData }) => {
               </div>
 
               <div className="mb-4">
-                <p className="text-sm text-gray-500 mb-1">Workshop</p>
+                <p className="text-sm text-gray-500 mb-1">
+                  {t("meter_operators.meters.location")}
+                </p>
                 <p className="font-medium">{meter.workshop?.name || "N/A"}</p>
               </div>
 
               {meter.latest_reading && (
                 <div className="mb-4 p-3 bg-gray-50 rounded-md">
-                  <p className="text-sm text-gray-500 mb-1">Last Reading</p>
+                  <p className="text-sm text-gray-500 mb-1">
+                    {t("meter_operators.meters.last_reading")}
+                  </p>
                   <p className="font-medium">
                     {meter.latest_reading.current_reading}
                   </p>
@@ -248,7 +258,7 @@ const DailyReadings: React.FC<DailyReadingsProps> = ({ operatorData }) => {
               <div className="space-y-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Current Reading
+                    {t("meter_operators.readings.current_reading")}
                   </label>
                   <input
                     type="number"
@@ -259,7 +269,7 @@ const DailyReadings: React.FC<DailyReadingsProps> = ({ operatorData }) => {
                       handleReadingChange(meter.id, e.target.value)
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Enter reading..."
+                    placeholder={t("meter_operators.readings.current_reading")}
                   />
                 </div>
 
@@ -273,7 +283,7 @@ const DailyReadings: React.FC<DailyReadingsProps> = ({ operatorData }) => {
                   ) : (
                     <>
                       <Save className="h-4 w-4 mr-2" />
-                      Submit Reading
+                      {t("meter_operators.readings.save_reading")}
                     </>
                   )}
                 </button>

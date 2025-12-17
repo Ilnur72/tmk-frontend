@@ -68,8 +68,6 @@ const Dashboard: React.FC = () => {
             const resp = await api.get(`/partners/auth/profile`, {
               headers: { Authorization: `Bearer ${token}` },
             });
-            console.log(resp);
-
             if (resp.data) {
               localStorage.setItem(
                 "modules_partner_data",

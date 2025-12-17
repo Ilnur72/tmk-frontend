@@ -138,8 +138,6 @@ const ListingForm: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      console.log("📤 Submitting application data:", formData);
-
       // Create application data
       const applicationData: CreateApplicationData = {
         title: formData.title,
@@ -155,8 +153,6 @@ const ListingForm: React.FC = () => {
       // Submit application
       const createdApplication = await applicationsAPI.create(applicationData);
 
-      console.log("✅ Application created successfully:", createdApplication);
-
       // Handle file uploads if there are any
       if (formData.coverImage) {
         try {
@@ -164,7 +160,6 @@ const ListingForm: React.FC = () => {
             createdApplication.id!,
             formData.coverImage
           );
-          console.log("✅ Cover image uploaded");
         } catch (error) {
           console.error("❌ Cover image upload failed:", error);
         }
@@ -176,7 +171,6 @@ const ListingForm: React.FC = () => {
             createdApplication.id!,
             formData.galleryImages
           );
-          console.log("✅ Gallery images uploaded");
         } catch (error) {
           console.error("❌ Gallery images upload failed:", error);
         }

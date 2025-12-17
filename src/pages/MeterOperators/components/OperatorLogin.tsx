@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { meterOperatorService } from "../services/meterOperatorService";
 import { toast } from "react-toastify";
 import { User as UserIcon, Lock, LogIn } from "lucide-react";
@@ -9,7 +10,7 @@ interface OperatorLoginProps {
 }
 
 const OperatorLogin: React.FC<OperatorLoginProps> = ({ onLogin }) => {
-  // const { t } = useTranslation();
+  const { t } = useTranslation();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -18,7 +19,7 @@ const OperatorLogin: React.FC<OperatorLoginProps> = ({ onLogin }) => {
     e.preventDefault();
 
     if (!username || !password) {
-      toast.error("Barcha maydonlarni to'ldiring");
+      toast.error(t("meter_operators.readings.required_fields"));
       return;
     }
 
@@ -26,16 +27,16 @@ const OperatorLogin: React.FC<OperatorLoginProps> = ({ onLogin }) => {
       setIsLoading(true);
       const result = await meterOperatorService.login(username, password);
 
-      toast.success("Muvaffaqiyatli kirildi!");
+      toast.success(t("meter_operators.readings.reading_saved"));
       onLogin(result);
     } catch (error: any) {
       console.error("Login error:", error);
       if (error?.response?.status === 401) {
-        toast.error("Login yoki parol noto'g'ri!");
+        toast.error(t("meter_operators.login.invalid_credentials"));
       } else if (error?.response?.data?.message) {
         toast.error(error.response.data.message);
       } else {
-        toast.error("Serverga ulanishda xatolik. Qaytadan urinib ko'ring.");
+        toast.error(t("meter_operators.login.login_failed"));
       }
     } finally {
       setIsLoading(false);
@@ -50,10 +51,10 @@ const OperatorLogin: React.FC<OperatorLoginProps> = ({ onLogin }) => {
             <LogIn className="h-6 w-6 text-blue-600" />
           </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Meter Operator Login
+            {t("meter_operators.login.title")}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Sign in to record meter readings
+            {t("meter_operators.login.subtitle")}
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -70,14 +71,14 @@ const OperatorLogin: React.FC<OperatorLoginProps> = ({ onLogin }) => {
                 autoComplete="username"
                 required
                 className="relative block w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10"
-                placeholder="Username (e.g., operator1.нурликонлитийкони@tmk.uz)"
+                placeholder={t("meter_operators.login.email")}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
             </div>
             <div className="relative">
               <label htmlFor="password" className="sr-only">
-                Password
+                {t("meter_operators.login.password")}
               </label>
               <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
               <input
@@ -87,7 +88,7 @@ const OperatorLogin: React.FC<OperatorLoginProps> = ({ onLogin }) => {
                 autoComplete="current-password"
                 required
                 className="relative block w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10"
-                placeholder="Password"
+                placeholder={t("meter_operators.login.password")}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -105,7 +106,7 @@ const OperatorLogin: React.FC<OperatorLoginProps> = ({ onLogin }) => {
               ) : (
                 <>
                   <LogIn className="h-5 w-5 mr-2" />
-                  Sign in
+                  {t("meter_operators.login.login_button")}
                 </>
               )}
             </button>

@@ -36,7 +36,16 @@ const MyReadingsHistory: React.FC<MyReadingsHistoryProps> = ({
       setReadings(data.data);
     } catch (error: any) {
       console.error("Error fetching readings:", error);
-      toast.error("Failed to load reading history");
+      if (error?.response?.status === 401) {
+        toast.error("Ваша сессия истекла. Пожалуйста, войдите снова");
+        // Token noto'g'ri, tozalash kerak
+        localStorage.removeItem("meterOperatorAuthToken");
+        localStorage.removeItem("meterOperatorToken");
+        // Sahifani reload qilib login sahifasiga yo'naltirish
+        window.location.reload();
+      } else {
+        toast.error("Failed to load reading history");
+      }
     } finally {
       setLoading(false);
     }

@@ -23,8 +23,18 @@ const meterOperatorClient = axios.create({
 meterOperatorClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("meterOperatorAuthToken");
+    console.log("Request interceptor - Token:", token ? "EXISTS" : "NOT_FOUND");
+    console.log("Request URL:", config.url);
+    console.log("Request method:", config.method);
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+      console.log(
+        "Authorization header set:",
+        `Bearer ${token.substring(0, 20)}...`
+      );
+    } else {
+      console.warn("No token found in localStorage!");
     }
     return config;
   },
@@ -42,10 +52,10 @@ meterOperatorClient.interceptors.response.use(
     // Handle authentication errors
     if (error.response?.status === 401) {
       console.warn("Meter operator authentication failed - clearing token");
-      localStorage.removeItem("meterOperatorAuthToken");
+      // localStorage.removeItem("meterOperatorAuthToken");
 
       // Redirect to login page by reloading
-      window.location.reload();
+      // window.location.reload();
     }
 
     return Promise.reject(error);
@@ -56,11 +66,15 @@ class MeterOperatorService {
   // ===== AUTHENTICATION =====
 
   // POST /energy/login - Meter operator login with JWT
-  async login(username: string, password: string): Promise<User> {
+  async login(email: string, password: string): Promise<User> {
+    console.log("Login attempt with email:", email);
+
     const response = await axios.post(`${BASE_URL}/energy/login`, {
-      username,
+      email,
       password,
     });
+
+    console.log("Login response:", response.data);
 
     // Store JWT access token
     if (response.data.access_token) {
@@ -68,6 +82,12 @@ class MeterOperatorService {
         "meterOperatorAuthToken",
         response.data.access_token
       );
+      console.log(
+        "Token saved to localStorage:",
+        response.data.access_token.substring(0, 20) + "..."
+      );
+    } else {
+      console.error("No access_token in response!");
     }
 
     // Return operator data
@@ -90,7 +110,7 @@ class MeterOperatorService {
     return response.data;
   }
 
-  // GET /energy/meter-operators/my-readings with pagination
+  // Backend da GET my-readings API si yo'q, shuning uchun readings endpoint dan foydalanish
   async getMyReadings(
     params?: PaginationParams
   ): Promise<PaginatedResponse<MeterReading>> {
@@ -98,8 +118,9 @@ class MeterOperatorService {
     if (params?.page) queryParams.append("page", params.page.toString());
     if (params?.limit) queryParams.append("limit", params.limit.toString());
 
+    // Umumiy readings API dan foydalanish
     const response = await meterOperatorClient.get(
-      `/energy/meter-operators/my-readings?${queryParams.toString()}`
+      `/energy/readings?${queryParams.toString()}`
     );
 
     // If backend doesn't support pagination format, create fallback
@@ -130,13 +151,7 @@ class MeterOperatorService {
     return response.data;
   }
 
-  // GET /energy/meter-operators/profile
-  async getMyProfile(): Promise<User> {
-    const response = await meterOperatorClient.get(
-      "/energy/meter-operators/profile"
-    );
-    return response.data;
-  }
+  // Profile API mavjud emas, shuning uchun localStorage dan foydalanish
 
   // ===== TEST CONNECTION =====
   async testConnection(): Promise<any> {

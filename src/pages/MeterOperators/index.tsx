@@ -1,21 +1,58 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import OperatorLogin from "./components/OperatorLogin";
 import DailyReadings from "./components/DailyReadings";
 import MyReadingsHistory from "./components/MyReadingsHistory";
+import LanguageSwitcher from "../../components/UI/LanguageSwitcher";
+import { meterOperatorService } from "./services/meterOperatorService";
 import { User } from "../../types/energy";
 
 const MeterOperators: React.FC = () => {
+  const { t } = useTranslation();
   const [operatorData, setOperatorData] = useState<User | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(
     !!localStorage.getItem("meterOperatorAuthToken")
   );
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("daily-readings");
 
+  // Operator ma'lumotlarini yuklash
+  useEffect(() => {
+    const loadOperatorData = () => {
+      const token = localStorage.getItem("meterOperatorAuthToken");
+      const operatorId = localStorage.getItem("meterOperatorToken");
+
+      if (!token) {
+        setIsLoggedIn(false);
+        setLoading(false);
+        return;
+      }
+
+      // Token bor bo'lsa, localStorage dan ma'lumot olish
+      if (operatorId) {
+        setOperatorData({ id: parseInt(operatorId) } as User);
+        console.log("Operator data loaded from localStorage, ID:", operatorId);
+      }
+
+      setLoading(false);
+    };
+
+    if (isLoggedIn) {
+      loadOperatorData();
+    } else {
+      setLoading(false);
+    }
+  }, [isLoggedIn]);
+
   const handleLogin = (userData: User) => {
+    console.log("Login successful with user data:", userData);
     setOperatorData(userData);
     setIsLoggedIn(true);
-    // Token is already stored by the service during login
-    localStorage.setItem("meterOperatorToken", userData.id?.toString() || "");
+    // Token service tomonidan allaqachon saqlangan
+    // User ID ni ham saqlaymiz
+    if (userData.id) {
+      localStorage.setItem("meterOperatorToken", userData.id.toString());
+    }
   };
 
   const handleLogout = () => {
@@ -25,6 +62,18 @@ const MeterOperators: React.FC = () => {
     setIsLoggedIn(false);
   };
 
+  // Loading holati
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   // If not logged in, show login form
   if (!isLoggedIn) {
     return <OperatorLogin onLogin={handleLogin} />;
@@ -32,8 +81,16 @@ const MeterOperators: React.FC = () => {
 
   // Operator-specific tabs
   const tabs = [
-    { id: "daily-readings", name: "Daily Readings", icon: "📝" },
-    { id: "my-history", name: "My Readings History", icon: "📋" },
+    {
+      id: "daily-readings",
+      name: t("meter_operators.readings.title"),
+      icon: "📝",
+    },
+    {
+      id: "my-history",
+      name: t("meter_operators.readings_history.title"),
+      icon: "📋",
+    },
   ];
 
   const renderTabContent = () => {
@@ -54,13 +111,14 @@ const MeterOperators: React.FC = () => {
         <div className="px-6 py-4 max-md:px-4 flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 max-md:text-2xl">
-              Meter Operators System
+              {t("meter_operators.title")}
             </h1>
             <p className="mt-2 text-gray-600 max-md:text-sm">
-              Submit daily meter readings and track your submissions
+              {t("meter_operators.subtitle")}
             </p>
           </div>
           <div className="flex items-center space-x-4">
+            <LanguageSwitcher />
             {operatorData && (
               <div className="text-right">
                 <p className="font-medium text-gray-900">
@@ -73,7 +131,7 @@ const MeterOperators: React.FC = () => {
               onClick={handleLogout}
               className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
-              Logout
+              {t("meter_operators.common.logout")}
             </button>
           </div>
         </div>

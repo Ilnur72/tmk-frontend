@@ -22,9 +22,7 @@ interface InternshipData {
 // API Service
 const apiService = {
   async getInternshipData(): Promise<InternshipData[]> {
-    const response = await axios.get("/employers/internship");
-    console.log(response.data);
-    
+    const response = await axios.get("/employers/internship");    
     return response.data;
   },
 };

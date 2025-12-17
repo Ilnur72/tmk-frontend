@@ -39,7 +39,6 @@ const PartnerProfile: React.FC = () => {
           // localStorage da partner ma'lumotlari mavjud
           const partnerData = JSON.parse(savedPartnerData);
           setPartner(partnerData);
-          console.log("Partner ma'lumotlari localStorage dan yuklandi");
         } else if (savedUserData && authToken) {
           // localStorage da user ma'lumotlari mavjud - Partner formatiga o'zgartirish
           const userData = JSON.parse(savedUserData);
@@ -56,12 +55,10 @@ const PartnerProfile: React.FC = () => {
             createdAt: new Date().toISOString(),
           };
           setPartner(partnerData);
-          console.log("User ma'lumotlari Partner formatida o'zgartirildi");
         } else {
           // localStorage da ma'lumot yo'q - backend dan olish
           const profileData = await authAPI.getProfile();
           setPartner(profileData);
-          console.log("Profile ma'lumotlari backend dan yuklandi");
         }
       } catch (err: any) {
         console.error("Profile fetch error:", err);
@@ -100,9 +97,6 @@ const PartnerProfile: React.FC = () => {
       localStorage.removeItem("modules_partner_data");
       localStorage.removeItem("modules_user_data");
       localStorage.removeItem("partner_id");
-
-      console.log("localStorage tozalandi");
-
       // Auth sahifasiga redirect
       window.location.href = `/auth`;
     }

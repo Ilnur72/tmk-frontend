@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import WorkshopsManagement from "./components/WorkshopsManagement";
 import MetersManagement from "./components/MetersManagement";
 import ReadingsManagement from "./components/ReadingsManagement";
 import OperatorsManagement from "./components/OperatorsManagement";
 import AdminLogin from "./components/AdminLogin";
+import LanguageSwitcher from "../../components/UI/LanguageSwitcher";
 import { User } from "../../types/energy";
 
 // JWT token decode utility
@@ -27,7 +29,7 @@ const decodeToken = (token: string) => {
 };
 
 const EnergyManagement: React.FC = () => {
-  // const { t } = useTranslation();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("workshops");
   const [factoryId, setFactoryId] = useState<number | null>(null);
   const [adminData, setAdminData] = useState<User | null>(null);
@@ -40,14 +42,11 @@ const EnergyManagement: React.FC = () => {
     const token = localStorage.getItem("energyManagementAuthToken");
     if (token) {
       const decoded = decodeToken(token);
-      console.log("🔍 Decoded token:", decoded);
 
       if (decoded && decoded.factory_id) {
         setFactoryId(decoded.factory_id);
-        console.log("✅ Factory ID from token:", decoded.factory_id);
       } else if (decoded && decoded.factoryId) {
         setFactoryId(decoded.factoryId);
-        console.log("✅ Factory ID from token (alt):", decoded.factoryId);
       } else {
         console.warn("⚠️ Factory ID not found in token");
       }
@@ -83,10 +82,26 @@ const EnergyManagement: React.FC = () => {
 
   // Management tabs for admins
   const tabs = [
-    { id: "workshops", name: "Workshops Management", icon: "🏭" },
-    { id: "meters", name: "Meters Management", icon: "⚡" },
-    { id: "readings", name: "Readings Management", icon: "📋" },
-    { id: "operators", name: "Operators Management", icon: "👥" },
+    {
+      id: "workshops",
+      name: t("energy_management.navigation.workshops"),
+      icon: "🏭",
+    },
+    {
+      id: "meters",
+      name: t("energy_management.navigation.meters"),
+      icon: "⚡",
+    },
+    {
+      id: "readings",
+      name: t("energy_management.navigation.readings"),
+      icon: "📊",
+    },
+    {
+      id: "operators",
+      name: t("energy_management.navigation.operators"),
+      icon: "👥",
+    },
   ];
 
   const renderTabContent = () => {
@@ -127,27 +142,29 @@ const EnergyManagement: React.FC = () => {
           <div className="flex justify-between items-start mb-4">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 max-md:text-2xl">
-                Energy Management System
+                {t("energy_management.title")}
               </h1>
               <p className="mt-2 text-gray-600 max-md:text-sm">
-                Manage workshops, meters, readings, and operators for energy
-                monitoring
+                {t("energy_management.subtitle")}
               </p>
             </div>
             <div className="flex items-center space-x-4">
+              <LanguageSwitcher />
               {adminData && (
                 <div className="text-right">
                   <p className="font-medium text-gray-900">
                     {adminData.first_name} {adminData.last_name}
                   </p>
-                  <p className="text-sm text-gray-500">Administrator</p>
+                  <p className="text-sm text-gray-500">
+                    {t("energy_management.common.status")}
+                  </p>
                 </div>
               )}
               <button
                 onClick={handleLogout}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
-                Logout
+                {t("energy_management.common.logout")}
               </button>
             </div>
           </div>

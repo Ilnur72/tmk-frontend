@@ -135,9 +135,6 @@ export const applicationAPI = {
     location: string;
     coordinates?: { lat: number; lng: number };
   }) => {
-    // Debug logging
-    console.log("API submitApplication called with:", applicationData);
-
     // Validation
     if (!applicationData.title || applicationData.title.trim() === "") {
       throw new Error("Title is required");
@@ -187,13 +184,6 @@ export const applicationAPI = {
       });
     }
 
-    // Debug FormData contents
-    console.log("FormData entries:");
-    const entries = Array.from(formData.entries());
-    entries.forEach(([key, value]) => {
-      console.log(key, value);
-    });
-
     const response = await api.post("/partners/applications", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -214,15 +204,6 @@ export const applicationAPI = {
     location: string;
     coordinates?: { lat: number; lng: number };
   }) => {
-    console.log("JSON submitApplication called with:", applicationData);
-
-    // LocalStorage tokenlarini tekshirish
-    console.log("LocalStorage tokens check:");
-    console.log("- auth_token:", localStorage.getItem("auth_token"));
-    console.log("- access_token:", localStorage.getItem("access_token"));
-    console.log("- partner_data:", localStorage.getItem("partner_data"));
-    console.log("- user_data:", localStorage.getItem("user_data"));
-
     const response = await api.post("/partners/applications", {
       title: applicationData.title.trim(),
       tagline: applicationData.tagline?.trim() || null,

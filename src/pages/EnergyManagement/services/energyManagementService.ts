@@ -36,7 +36,6 @@ energyManagementClient.interceptors.request.use(
     return config;
   },
   (error) => {
-    console.error("❌ Request error:", error);
     return Promise.reject(error);
   }
 );
@@ -49,7 +48,6 @@ energyManagementClient.interceptors.response.use(
   (error) => {
     // Only remove token on actual authentication errors, not on missing endpoints
     if (error.response?.status === 401) {
-      console.warn("Authentication failed - clearing token");
       localStorage.removeItem("energyManagementAuthToken");
 
       // Redirect to login page by reloading the page
@@ -93,12 +91,6 @@ class EnergyManagementService {
       // Return operator/admin data
       return response.data.operator;
     } catch (error: any) {
-      console.error("❌ Login failed:", {
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        data: error.response?.data,
-        message: error.message,
-      });
       throw error;
     }
   }
@@ -234,14 +226,26 @@ class EnergyManagementService {
     return response.data;
   }
 
-  // GET /energy/readings/unverified
-  async getUnverifiedReadings(factoryId?: number): Promise<MeterReading[]> {
-    const params = factoryId ? { factoryId: factoryId.toString() } : {};
-    const response = await energyManagementClient.get(
-      "/energy/readings/unverified",
-      { params }
-    );
-    return response.data;
+  // GET verified readings - using main API with filter
+  async getVerifiedReadings(
+    factoryId: number,
+    params?: { page?: number; limit?: number; meterId?: number }
+  ): Promise<PaginatedResponse<MeterReading>> {
+    return this.getAllReadings(factoryId, {
+      ...params,
+      verified: true,
+    });
+  }
+
+  // GET unverified readings - using main API with filter
+  async getUnverifiedReadings(
+    factoryId: number,
+    params?: { page?: number; limit?: number; meterId?: number }
+  ): Promise<PaginatedResponse<MeterReading>> {
+    return this.getAllReadings(factoryId, {
+      ...params,
+      verified: false,
+    });
   }
 
   // POST /energy/readings/:readingId/verify
@@ -289,35 +293,65 @@ class EnergyManagementService {
     }
   }
 
-  // GET /energy/readings - Get all readings for factory
+  // GET /energy/readings - Get all readings for factory with filters
   async getAllReadings(
-    factoryId: number
+    factoryId: number,
+    filters?: {
+      verified?: boolean;
+      meterId?: number;
+      page?: number;
+      limit?: number;
+    }
   ): Promise<PaginatedResponse<MeterReading>> {
     try {
-      // Try multiple endpoints to get all readings
-      let response;
-      try {
-        // First try: get all readings with factoryId parameter
-        response = await energyManagementClient.get("/energy/readings", {
-          params: { factoryId: factoryId.toString() },
-        });
-      } catch (error1: any) {
-        try {
-          // Second try: get all readings without parameters
-          response = await energyManagementClient.get("/energy/readings");
-        } catch (error2: any) {
-          // Third try: fallback to unverified endpoint
-          console.warn("Falling back to unverified readings endpoint");
-          response = await energyManagementClient.get(
-            "/energy/readings/unverified",
-            {
-              params: { factoryId: factoryId.toString() },
-            }
-          );
-        }
+      const params: any = {
+        factoryId: factoryId.toString(),
+      };
+
+      // Add filters if provided
+      if (filters?.verified !== undefined) {
+        params.verified = filters.verified.toString();
+      }
+      if (filters?.meterId) {
+        params.meterId = filters.meterId.toString();
+      }
+      if (filters?.page) {
+        params.page = filters.page.toString();
+      }
+      if (filters?.limit) {
+        params.limit = filters.limit.toString();
       }
 
-      // If backend doesn't support pagination format, create fallback
+      const response = await energyManagementClient.get("/energy/readings", {
+        params,
+      });
+
+      // Check for new API format: {data, total, page, limit, filters}
+      if (
+        response.data &&
+        typeof response.data === "object" &&
+        response.data.data
+      ) {
+        return {
+          data: response.data.data,
+          pagination: {
+            current_page: response.data.page || 1,
+            total_pages: Math.ceil(
+              (response.data.total || 0) / (response.data.limit || 20)
+            ),
+            total_items: response.data.total || 0,
+            items_per_page: response.data.limit || 20,
+            has_next:
+              (response.data.page || 1) <
+              Math.ceil(
+                (response.data.total || 0) / (response.data.limit || 20)
+              ),
+            has_prev: (response.data.page || 1) > 1,
+          },
+        };
+      }
+
+      // Fallback: if backend returns array format
       if (Array.isArray(response.data)) {
         return {
           data: response.data,
@@ -333,31 +367,45 @@ class EnergyManagementService {
       }
 
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       // Fallback: get all meters and their readings
-      const meters = await this.getAllMeters(factoryId);
-      let allReadings: MeterReading[] = [];
+      try {
+        const meters = await this.getAllMeters(factoryId);
+        let allReadings: MeterReading[] = [];
 
-      for (const meter of meters) {
-        try {
-          const meterReadings = await this.getMeterReadings(meter.id);
-          allReadings = [...allReadings, ...meterReadings.data];
-        } catch (error) {
-          // Skip meters without readings
+        for (const meter of meters) {
+          try {
+            const meterReadings = await this.getMeterReadings(meter.id);
+            allReadings = [...allReadings, ...meterReadings.data];
+          } catch (error) {
+            // Skip meters without readings
+          }
         }
-      }
 
-      return {
-        data: allReadings,
-        pagination: {
-          current_page: 1,
-          total_pages: 1,
-          total_items: allReadings.length,
-          items_per_page: allReadings.length,
-          has_next: false,
-          has_prev: false,
-        },
-      };
+        return {
+          data: allReadings,
+          pagination: {
+            current_page: 1,
+            total_pages: 1,
+            total_items: allReadings.length,
+            items_per_page: allReadings.length,
+            has_next: false,
+            has_prev: false,
+          },
+        };
+      } catch (fallbackError) {
+        return {
+          data: [],
+          pagination: {
+            current_page: 1,
+            total_pages: 0,
+            total_items: 0,
+            items_per_page: 20,
+            has_next: false,
+            has_prev: false,
+          },
+        };
+      }
     }
   }
 
@@ -415,13 +463,7 @@ class EnergyManagementService {
 
   // Debug current state
   debugAuthState(): void {
-    const token = this.getCurrentToken();
-    console.log("🔍 Auth Debug Info:", {
-      isAuthenticated: this.isAuthenticated(),
-      hasToken: !!token,
-      tokenPreview: token ? token.substring(0, 50) + "..." : null,
-      baseURL: BASE_URL,
-    });
+    // Debug logs removed for production
   }
 }
 

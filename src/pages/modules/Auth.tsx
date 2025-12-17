@@ -35,10 +35,6 @@ const Auth: React.FC = () => {
 
   // Ensure i18n is ready before rendering language buttons
   useEffect(() => {
-    console.log("i18n isInitialized:", i18n.isInitialized);
-    console.log("Current language:", i18n.language);
-    console.log("Available languages:", i18n.languages);
-
     if (!i18n.isInitialized) {
       i18n.on("initialized", () => {
         console.log("i18n initialized!");
@@ -138,9 +134,6 @@ const Auth: React.FC = () => {
         }
         navigate("/partner-portal/dashboard");
       } else {
-        // Register
-        console.log("Registering with data:", formData);
-
         const resp = await api.post("/partners/auth/register", {
           firstName: formData.firstName,
           lastName: formData.lastName,

@@ -125,10 +125,6 @@ const Finance: React.FC = () => {
     return acc;
   }, {});
 
-  // Debug
-  console.log("Elements map:", elementsMap);
-  console.log("First metal price:", metalPrices[0]);
-
   // Elementlarni guruhlash (har bir element uchun manbalar bo'yicha)
   const groupedElements = metalPrices.reduce(
     (acc: any, item: any, index: number) => {
@@ -215,7 +211,6 @@ const Finance: React.FC = () => {
     sourceData: any
   ) => {
     const sourceObj = sources.find((s) => s.name === sourceName);
-    console.log(item);
     setEditingPriceItem({
       id: sourceData.id,
       elementName: item.elementName,

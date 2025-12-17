@@ -66,19 +66,14 @@ const MeterReadingsList: React.FC<MeterReadingsListProps> = ({
       const metersData = await energyManagementService.getAllMeters(factoryId);
       setMeters(metersData);
 
-      // Fetch readings with pagination
+      // Fetch readings with pagination and filters
       const readingsResponse = await energyManagementService.getAllReadings(
-        factoryId
-      );
-
-      console.log("📊 Readings data:", readingsResponse.data);
-      console.log(
-        "🔍 Verified readings count:",
-        readingsResponse.data.filter((r) => r.is_verified).length
-      );
-      console.log(
-        "❌ Unverified readings count:",
-        readingsResponse.data.filter((r) => !r.is_verified).length
+        factoryId,
+        {
+          page: currentPage,
+          limit: itemsPerPage,
+          // Add other filters if needed
+        }
       );
 
       setReadings(readingsResponse.data);
@@ -111,7 +106,6 @@ const MeterReadingsList: React.FC<MeterReadingsListProps> = ({
       toast.success("Reading verified successfully");
       fetchData();
     } catch (error: any) {
-      console.error("Error verifying reading:", error);
       toast.error("Failed to verify reading");
     }
   };
@@ -123,7 +117,6 @@ const MeterReadingsList: React.FC<MeterReadingsListProps> = ({
       fetchData();
       setDeleteConfirm(null);
     } catch (error: any) {
-      console.error("Error deleting reading:", error);
       toast.error("Failed to delete reading");
     }
   };

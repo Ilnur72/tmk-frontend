@@ -76,15 +76,8 @@ const MetalTable: React.FC<MetalTableProps> = ({
       </div>
     );
   }
-  console.log("MetalTable - metalPrices:", metalPrices);
   // Manbalar ro'yxatini olish
   const sourceNames = sources.map((s) => s.name);
-
-  // Debug: ma'lumotlarni tekshirish (development uchun)
-  if (process.env.NODE_ENV === "development") {
-    console.log("MetalTable - metalPrices:", metalPrices);
-    console.log("MetalTable - sources:", sources);
-  }
 
   return (
     <div className="bg-white shadow overflow-hidden sm:rounded-lg">
@@ -124,16 +117,7 @@ const MetalTable: React.FC<MetalTableProps> = ({
                   {item.elementName}
                 </td>
                 {sourceNames.map((sourceName) => {
-                  const sourceData = item.sources[sourceName];
-
-                  // Debug: har bir source ma'lumotini tekshirish (development uchun)
-                  if (process.env.NODE_ENV === "development" && sourceData) {
-                    console.log(
-                      `Source ${sourceName} for ${item.elementName}:`,
-                      sourceData
-                    );
-                  }
-
+                  const sourceData = item.sources[sourceName]
                   return (
                     <td
                       key={sourceName}

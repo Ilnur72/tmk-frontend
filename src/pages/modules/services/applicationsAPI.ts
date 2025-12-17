@@ -67,9 +67,7 @@ export const applicationsAPI = {
 
   // O'z arizalarimni ko'rish
   getMyApplications: async (): Promise<Application[]> => {
-    const response = await api.get("/applications/my");
-    console.log(response.data);
-    
+    const response = await api.get("/applications/my");    
     return response.data;
   },
 

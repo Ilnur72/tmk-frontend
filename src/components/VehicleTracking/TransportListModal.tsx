@@ -64,7 +64,6 @@ const addDemoDrivers = (vehicles: VehicleWithDriver[]): VehicleWithDriver[] => {
 
   return vehicles.map((vehicle, index) => {
     if (index === 0 && !vehicle.driver) {
-      console.log("📝 Adding demo driver to first vehicle for testing");
       return { ...vehicle, driver: demoDriver };
     }
     return vehicle;
@@ -115,7 +114,6 @@ const TransportListModal: React.FC<TransportListModalProps> = ({
   };
 
   const handleSave = (vehicleId: number) => {
-    console.log("💾 Saving driver data for vehicle:", vehicleId, driverData);
     if (onUpdateVehicle) {
       onUpdateVehicle(vehicleId, driverData);
     }

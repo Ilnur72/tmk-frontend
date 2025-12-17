@@ -81,11 +81,6 @@ const PriceChartModal: React.FC<PriceChartModalProps> = ({
 
   useEffect(() => {
     if (element) {
-      // Debug: manba nomlarini tekshirish
-      console.log("PriceChartModal - sourceType:", sourceType);
-      console.log("PriceChartModal - sources:", sources);
-      console.log("PriceChartModal - element:", element);
-
       const generateMonthlyData = () => {
         const daysInMonth = new Date(selectedYear, selectedMonth, 0).getDate();
         const data = [];
