@@ -16,7 +16,7 @@ import { toast } from "../../../utils/toast";
 import MeterModal from "../../Energy/components/MeterModal";
 
 interface MetersListProps {
-  factoryId: number;
+  factoryId?: number | null;
 }
 
 const MetersList: React.FC<MetersListProps> = ({ factoryId }) => {
@@ -43,10 +43,22 @@ const MetersList: React.FC<MetersListProps> = ({ factoryId }) => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [metersData, workshopsData] = await Promise.all([
-        energyService.getMetersByFactory(factoryId),
-        energyService.getWorkshopsByFactory(factoryId),
-      ]);
+      let metersData, workshopsData;
+
+      if (factoryId) {
+        // Admin or specific factory access
+        [metersData, workshopsData] = await Promise.all([
+          energyService.getMetersByFactory(factoryId),
+          energyService.getWorkshopsByFactory(factoryId),
+        ]);
+      } else {
+        // Admin access - get all data
+        [metersData, workshopsData] = await Promise.all([
+          energyService.getAllMeters(),
+          energyService.getAllWorkshops(),
+        ]);
+      }
+
       setMeters(metersData);
       setWorkshops(workshopsData);
     } catch (error: any) {
@@ -146,7 +158,17 @@ const MetersList: React.FC<MetersListProps> = ({ factoryId }) => {
         </div>
         <button
           onClick={handleCreate}
-          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          disabled={!factoryId}
+          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+            factoryId
+              ? "bg-blue-600 text-white hover:bg-blue-700"
+              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+          }`}
+          title={
+            !factoryId
+              ? "Please select a specific factory to create meters"
+              : ""
+          }
         >
           <Plus className="w-4 h-4" />
           <span>{t("energy.meter.create")}</span>
@@ -319,7 +341,7 @@ const MetersList: React.FC<MetersListProps> = ({ factoryId }) => {
                   <span>{t("energy.meter.latest_reading")}:</span>
                   <span className="font-medium">
                     {meter.latest_reading
-                      ? `${meter.latest_reading.current_reading} ${
+                      ? `${meter.latest_reading} ${
                           meter.meter_type === "electricity" ? "kWh" : "m³"
                         }`
                       : "-"}
@@ -366,7 +388,7 @@ const MetersList: React.FC<MetersListProps> = ({ factoryId }) => {
       )}
 
       {/* Meter Modal */}
-      {isModalOpen && (
+      {isModalOpen && factoryId && (
         <MeterModal
           meter={editingMeter}
           factoryId={factoryId}

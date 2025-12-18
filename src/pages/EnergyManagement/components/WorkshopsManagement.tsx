@@ -7,7 +7,7 @@ import { toast } from "../../../utils/toast";
 import WorkshopModal from "../../Energy/components/WorkshopModal";
 
 interface WorkshopsListProps {
-  factoryId: number;
+  factoryId?: number | null;
 }
 
 const WorkshopsList: React.FC<WorkshopsListProps> = ({ factoryId }) => {
@@ -27,7 +27,16 @@ const WorkshopsList: React.FC<WorkshopsListProps> = ({ factoryId }) => {
   const fetchWorkshops = async () => {
     try {
       setLoading(true);
-      const data = await energyService.getWorkshopsByFactory(factoryId);
+      let data;
+
+      if (factoryId) {
+        // Admin or specific factory access
+        data = await energyService.getWorkshopsByFactory(factoryId);
+      } else {
+        // Admin access - get all workshops
+        data = await energyService.getAllWorkshops();
+      }
+
       setWorkshops(data);
     } catch (error: any) {
       console.error("Error fetching workshops:", error);
@@ -103,7 +112,17 @@ const WorkshopsList: React.FC<WorkshopsListProps> = ({ factoryId }) => {
         </div>
         <button
           onClick={handleCreate}
-          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          disabled={!factoryId}
+          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+            factoryId
+              ? "bg-blue-600 text-white hover:bg-blue-700"
+              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+          }`}
+          title={
+            !factoryId
+              ? "Please select a specific factory to create workshops"
+              : ""
+          }
         >
           <Plus className="w-4 h-4" />
           <span>{t("energy.workshop.create")}</span>
@@ -216,7 +235,7 @@ const WorkshopsList: React.FC<WorkshopsListProps> = ({ factoryId }) => {
       )}
 
       {/* Workshop Modal */}
-      {isModalOpen && (
+      {isModalOpen && factoryId && (
         <WorkshopModal
           workshop={editingWorkshop}
           factoryId={factoryId}

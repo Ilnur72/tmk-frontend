@@ -271,22 +271,31 @@ class EnergyManagementService {
   }
 
   // GET /energy/meters - Get all meters for factory (using existing endpoint)
-  async getAllMeters(factoryId: number): Promise<Meter[]> {
+  async getAllMeters(factoryId?: number | null): Promise<Meter[]> {
     try {
-      // Try factory-specific endpoint first
-      const response = await energyManagementClient.get(
-        `/energy/meters/factory/${factoryId}`
-      );
-      return response.data;
+      if (factoryId) {
+        // Factory-specific request
+        const response = await energyManagementClient.get(
+          `/energy/meters/factory/${factoryId}`
+        );
+        return response.data;
+      } else {
+        // Admin access - get all meters
+        const response = await energyManagementClient.get("/energy/meters");
+        return response.data;
+      }
     } catch (error) {
       // Fallback to general meters endpoint and filter by factory
       try {
         const response = await energyManagementClient.get("/energy/meters");
         const allMeters = response.data;
         // Filter by factory_id if needed
-        return Array.isArray(allMeters)
-          ? allMeters.filter((meter) => meter.factory_id === factoryId)
-          : [];
+        if (factoryId) {
+          return Array.isArray(allMeters)
+            ? allMeters.filter((meter) => meter.factory_id === factoryId)
+            : [];
+        }
+        return Array.isArray(allMeters) ? allMeters : [];
       } catch (fallbackError) {
         return [];
       }
@@ -295,7 +304,7 @@ class EnergyManagementService {
 
   // GET /energy/readings - Get all readings for factory with filters
   async getAllReadings(
-    factoryId: number,
+    factoryId?: number | null,
     filters?: {
       verified?: boolean;
       meterId?: number;
@@ -304,9 +313,12 @@ class EnergyManagementService {
     }
   ): Promise<PaginatedResponse<MeterReading>> {
     try {
-      const params: any = {
-        factoryId: factoryId.toString(),
-      };
+      const params: any = {};
+
+      // Add factoryId filter only if provided (admin access may not need it)
+      if (factoryId) {
+        params.factoryId = factoryId.toString();
+      }
 
       // Add filters if provided
       if (filters?.verified !== undefined) {

@@ -317,7 +317,7 @@ const MetersList: React.FC<MetersListProps> = ({ factoryId }) => {
                   <span>{t("energy.meter.latest_reading")}:</span>
                   <span className="font-medium">
                     {meter.latest_reading
-                      ? `${meter.latest_reading.current_reading} ${
+                      ? `${meter.latest_reading} ${
                           meter.meter_type === "electricity" ? "kWh" : "m³"
                         }`
                       : "-"}

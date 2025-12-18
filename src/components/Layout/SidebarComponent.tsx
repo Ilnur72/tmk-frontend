@@ -19,7 +19,8 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../../contexts/AuthContext";
 
 const allMenuItems = [
-  { href: "/", icon: Home, title: "sidebar.map" },
+  { href: "/dashboard", icon: Home, title: "sidebar.dashboard" },
+  { href: "/factory-map", icon: MapPin, title: "sidebar.map" },
   { href: "/factory", icon: Briefcase, title: "sidebar.factory" },
   { href: "/production", icon: GitPullRequest, title: "sidebar.production" },
   { href: "/sales", icon: BarChart, title: "sidebar.sales" },
@@ -56,9 +57,12 @@ const Sidebar = () => {
   // Filter menu items based on user role
   const menuItems = useMemo(() => {
     if (role === "viewer") {
-      // Viewer can only see factory and map
+      // Viewer can only see dashboard, factory and map
       return allMenuItems.filter(
-        (item) => item.href === "/" || item.href === "/factory"
+        (item) =>
+          item.href === "/dashboard" ||
+          item.href === "/factory-map" ||
+          item.href === "/factory"
       );
     }
 

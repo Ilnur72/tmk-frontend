@@ -270,7 +270,7 @@ class EnergyService {
   }
 
   // GET /energy/meter-operators
-  async getMeterOperators(factoryId?: number): Promise<MeterOperator[]> {
+  async getMeterOperators(factoryId?: number | null): Promise<MeterOperator[]> {
     const params = factoryId ? { factoryId: factoryId.toString() } : {};
     const response = await apiClient.get("/energy/meter-operators", { params });
     return response.data;

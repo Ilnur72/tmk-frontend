@@ -5,7 +5,7 @@ import { MeterOperator } from "../../../types/energy";
 import { toast } from "../../../utils/toast";
 
 interface OperatorsManagementProps {
-  factoryId: number;
+  factoryId?: number | null;
 }
 
 const OperatorsManagement: React.FC<OperatorsManagementProps> = ({

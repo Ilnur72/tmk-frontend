@@ -27,24 +27,30 @@ const DailyReadings: React.FC<DailyReadingsProps> = ({ operatorData }) => {
     try {
       setLoading(true);
       const data = await meterOperatorService.getMyMeters();
+      console.log("Meters ma'lumotlari:", data); // Debug
       setMeters(data);
 
       // Initialize readings state
       const initialReadings: { [key: number]: string } = {};
       data.forEach((meter) => {
+        console.log(`Meter ${meter.id}:`, {
+          last_reading_value: meter.last_reading_value,
+          last_reading_date: meter.last_reading_date,
+          latest_reading: meter.latest_reading,
+        }); // Debug
         initialReadings[meter.id] = "";
       });
       setReadings(initialReadings);
     } catch (error: any) {
       console.error("Error fetching meters:", error);
       if (error?.response?.status === 401) {
-        toast.error("Ваша сессия истекла. Пожалуйста, войдите снова");
+        toast.error(t("meter_operators.readings.session_expired"));
         // Token tozalash va login sahifasiga yo'naltirish
         localStorage.removeItem("meterOperatorAuthToken");
         localStorage.removeItem("meterOperatorToken");
         window.location.reload();
       } else {
-        toast.error("Failed to load your meters");
+        toast.error(t("meter_operators.readings.load_meters_failed"));
       }
     } finally {
       setLoading(false);
@@ -74,12 +80,12 @@ const DailyReadings: React.FC<DailyReadingsProps> = ({ operatorData }) => {
   const filteredMeters = meters.filter((meter) => {
     return activeTab === "all" || meter.meter_type === activeTab;
   });
-
+  console.log("Filtered Meters:", filteredMeters);
   const handleSubmitReading = async (meterId: number) => {
     const readingValue = readings[meterId];
 
     if (!readingValue || parseFloat(readingValue) <= 0) {
-      toast.error("Please enter a valid reading");
+      toast.error(t("meter_operators.readings.enter_valid_reading"));
       return;
     }
 
@@ -94,7 +100,7 @@ const DailyReadings: React.FC<DailyReadingsProps> = ({ operatorData }) => {
           : "Reading submitted by operator",
       });
 
-      toast.success("Reading submitted successfully");
+      toast.success(t("meter_operators.readings.reading_submit_success"));
       setReadings((prev) => ({
         ...prev,
         [meterId]: "",
@@ -104,7 +110,7 @@ const DailyReadings: React.FC<DailyReadingsProps> = ({ operatorData }) => {
       fetchOperatorMeters();
     } catch (error: any) {
       console.error("Error submitting reading:", error);
-      toast.error("Failed to submit reading");
+      toast.error(t("meter_operators.readings.reading_submit_failed"));
     } finally {
       setSubmitting(false);
     }
@@ -239,27 +245,27 @@ const DailyReadings: React.FC<DailyReadingsProps> = ({ operatorData }) => {
                 <p className="font-medium">{meter.workshop?.name || "N/A"}</p>
               </div>
 
-              {meter.latest_reading && (
-                <div className="mb-4 p-3 bg-gray-50 rounded-md">
-                  <p className="text-sm text-gray-500 mb-1">
-                    {t("meter_operators.meters.last_reading")}
-                  </p>
-                  <p className="font-medium">
-                    {meter.latest_reading.current_reading}
-                  </p>
-                  <p className="text-xs text-gray-400">
-                    {new Date(
-                      meter.latest_reading.reading_date
-                    ).toLocaleDateString()}
-                  </p>
-                </div>
-              )}
-
               <div className="space-y-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t("meter_operators.readings.current_reading")}
-                  </label>
+                  <div className="flex justify-between items-center mb-1">
+                    <label className="block text-sm font-medium text-gray-700">
+                      {t("meter_operators.readings.current_reading")}
+                    </label>
+                    <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                      {`${t("meter_operators.readings.last_reading")}: ${
+                        meter.latest_reading ||
+                        meter.last_reading_value ||
+                        t("meter_operators.readings.no_last_reading")
+                      }`}
+                      {meter.last_reading_date && (
+                        <p className="text-xs text-gray-400">
+                          {new Date(
+                            meter.last_reading_date
+                          ).toLocaleDateString()}
+                        </p>
+                      )}
+                    </span>
+                  </div>
                   <input
                     type="number"
                     step="0.01"

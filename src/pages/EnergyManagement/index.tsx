@@ -37,7 +37,7 @@ const EnergyManagement: React.FC = () => {
     !!localStorage.getItem("energyManagementAuthToken")
   );
 
-  // Token dan factory_id ni olish
+  // Token dan factory_id ni olish (admin uchun optional)
   useEffect(() => {
     const token = localStorage.getItem("energyManagementAuthToken");
     if (token) {
@@ -48,7 +48,9 @@ const EnergyManagement: React.FC = () => {
       } else if (decoded && decoded.factoryId) {
         setFactoryId(decoded.factoryId);
       } else {
-        console.warn("⚠️ Factory ID not found in token");
+        // Admin uchun factory ID bo'lmasligi mumkin - bu normal
+        console.info("ℹ️ Admin mode: No factory ID required");
+        setFactoryId(null); // Admin uchun null qo'yamiz
       }
     }
   }, [isLoggedIn]);
@@ -57,13 +59,16 @@ const EnergyManagement: React.FC = () => {
     setAdminData(userData);
     setIsLoggedIn(true);
 
-    // Login dan keyin factory_id ni tokendan olish
+    // Login dan keyin factory_id ni tokendan olish (admin uchun optional)
     setTimeout(() => {
       const token = localStorage.getItem("energyManagementAuthToken");
       if (token) {
         const decoded = decodeToken(token);
         if (decoded && (decoded.factory_id || decoded.factoryId)) {
           setFactoryId(decoded.factory_id || decoded.factoryId);
+        } else {
+          // Admin uchun factory ID bo'lmasligi mumkin
+          setFactoryId(null);
         }
       }
     }, 100);
@@ -105,21 +110,7 @@ const EnergyManagement: React.FC = () => {
   ];
 
   const renderTabContent = () => {
-    // Agar factory ID tokendan olinmagan bo'lsa, loading ko'rsatamiz
-    if (!factoryId) {
-      return (
-        <div className="flex items-center justify-center min-h-96">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              Factory ma'lumotlari yuklanmoqda...
-            </h3>
-            <p className="text-gray-500">Tokendan factory ID olinmoqda</p>
-          </div>
-        </div>
-      );
-    }
-
+    // Admin uchun factory ID optional - barchashini ko'ra oladi
     switch (activeTab) {
       case "workshops":
         return <WorkshopsManagement factoryId={factoryId} />;

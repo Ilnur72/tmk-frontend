@@ -262,7 +262,7 @@ const MeterReadingModal: React.FC<MeterReadingModalProps> = ({
                 {getSelectedMeter()?.latest_reading && (
                   <p className="text-sm text-gray-600">
                     <strong>Latest Reading:</strong>{" "}
-                    {getSelectedMeter()!.latest_reading?.current_reading?.toLocaleString() ||
+                    {getSelectedMeter()!.latest_reading?.toLocaleString() ||
                       "0"}{" "}
                     {getUnit()}
                   </p>

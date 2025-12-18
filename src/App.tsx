@@ -25,6 +25,7 @@ import Finance from "./pages/Finance/Finance";
 import Partners from "./pages/Partners/Partners";
 import Applications from "./pages/Applications/Applications";
 import Energy from "./pages/Energy";
+import Dashboard from "./pages/Dashboard";
 
 // Energy Systems - mustaqil tizimlar
 import MeterOperators from "./pages/MeterOperators";
@@ -48,7 +49,7 @@ const LoginRoute: React.FC = () => {
     );
   }
 
-  return isAuthenticated ? <Navigate to="/factory" /> : <Login />;
+  return isAuthenticated ? <Navigate to="/dashboard" /> : <Login />;
 };
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
@@ -87,8 +88,10 @@ const AppRoutes: React.FC = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<FactoryMap />} />
+      <Route path="/" element={<Dashboard />} />
+      <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/factory" element={<Factory />} />
+      <Route path="/factory-map" element={<FactoryMap />} />
       {/* Setting page only for admin and editor */}
       <Route
         path="/setting"
@@ -117,9 +120,9 @@ const AppRoutes: React.FC = () => {
         </>
       )}
 
-      {/* Viewer can only access factory pages */}
+      {/* Viewer can only access dashboard and factory pages */}
       {role === "viewer" && (
-        <Route path="*" element={<Navigate to="/factory" />} />
+        <Route path="*" element={<Navigate to="/dashboard" />} />
       )}
     </Routes>
   );

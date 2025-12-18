@@ -10,14 +10,15 @@ import {
   Clock,
 } from "lucide-react";
 import { energyManagementService } from "../services/energyManagementService";
-import { MeterReading, Meter } from "../../../types/energy";
+import { MeterReading, Meter, Factory } from "../../../types/energy";
 import { toast } from "../../../utils/toast";
+import axios from "axios";
 import MeterReadingModal from "../../Energy/components/MeterReadingModal";
 import BulkReadingModal from "../../Energy/components/BulkReadingModal";
 import Pagination from "../../../components/UI/Pagination";
 
 interface MeterReadingsListProps {
-  factoryId: number;
+  factoryId?: number | null;
   operatorId?: number;
 }
 
@@ -27,11 +28,14 @@ const MeterReadingsList: React.FC<MeterReadingsListProps> = ({
 }) => {
   const { t } = useTranslation();
   const [readings, setReadings] = useState<MeterReading[]>([]);
+  const [allReadings, setAllReadings] = useState<MeterReading[]>([]); // Store all readings for counts
   const [meters, setMeters] = useState<Meter[]>([]);
+  const [factories, setFactories] = useState<Factory[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterMeter, setFilterMeter] = useState<string>("all");
   const [filterVerified, setFilterVerified] = useState<string>("all");
+  const [filterFactory, setFilterFactory] = useState<string>("all");
   const [activeTab, setActiveTab] = useState<
     "all" | "electricity" | "gas" | "water"
   >("all");
@@ -51,40 +55,155 @@ const MeterReadingsList: React.FC<MeterReadingsListProps> = ({
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [factoryId, operatorId, currentPage, itemsPerPage]);
+  }, [
+    factoryId,
+    operatorId,
+    itemsPerPage,
+    searchTerm,
+    filterMeter,
+    filterVerified,
+    filterFactory,
+    activeTab,
+  ]);
 
-  // Reset to first page when filters change
+  // Reset to first page when filters change (not when page changes)
   useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, filterMeter, filterVerified, activeTab]);
+    if (currentPage !== 1) {
+      setCurrentPage(1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchTerm, filterMeter, filterVerified, filterFactory, activeTab]);
+
+  const fetchFactories = async (): Promise<Factory[]> => {
+    try {
+      const response = await axios.get("/factory/marker");
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching factories:", error);
+      return [];
+    }
+  };
 
   const fetchData = async () => {
     try {
       setLoading(true);
 
-      // Fetch meters first
-      const metersData = await energyManagementService.getAllMeters(factoryId);
+      // Fetch meters and factories
+      const [metersData, factoriesData] = await Promise.all([
+        energyManagementService.getAllMeters(factoryId),
+        fetchFactories(),
+      ]);
       setMeters(metersData);
+      setFactories(factoriesData);
 
-      // Fetch readings with pagination and filters
-      const readingsResponse = await energyManagementService.getAllReadings(
-        factoryId,
-        {
-          page: currentPage,
-          limit: itemsPerPage,
-          // Add other filters if needed
+      // Prepare filters for server-side filtering (only supported filters)
+      const serverFilters: any = {};
+
+      // Add meter filter (supported by backend)
+      if (filterMeter !== "all") {
+        serverFilters.meterId = parseInt(filterMeter);
+      }
+
+      // Add verified filter (supported by backend)
+      if (filterVerified === "verified") {
+        serverFilters.verified = true;
+      } else if (filterVerified === "unverified") {
+        serverFilters.verified = false;
+      }
+
+      // Get all readings by fetching multiple pages if needed
+      // This is because server doesn't support search, operatorId, and meter type filters
+      let allReadingsData: MeterReading[] = [];
+      let currentPageForFetch = 1;
+      let hasMoreData = true;
+
+      while (hasMoreData) {
+        const readingsResponse = await energyManagementService.getAllReadings(
+          factoryId,
+          {
+            ...serverFilters,
+            limit: 100, // Fetch in batches of 100
+            page: currentPageForFetch,
+          }
+        );
+
+        allReadingsData = [...allReadingsData, ...readingsResponse.data];
+
+        // Check if there are more pages
+        hasMoreData = readingsResponse.pagination.has_next;
+        currentPageForFetch++;
+
+        // Safety check to prevent infinite loops
+        if (currentPageForFetch > 100) {
+          console.warn(
+            "Too many pages, stopping fetch to prevent infinite loop"
+          );
+          break;
         }
-      );
+      }
 
-      setReadings(readingsResponse.data);
-      setTotalPages(readingsResponse.pagination.total_pages);
-      setTotalItems(readingsResponse.pagination.total_items);
+      // Apply client-side filters for unsupported server filters
+      if (
+        searchTerm ||
+        operatorId ||
+        activeTab !== "all" ||
+        filterFactory !== "all"
+      ) {
+        allReadingsData = allReadingsData.filter((reading) => {
+          const meterName = getMeterName(reading.meter_id);
+          const meterType = getMeterType(reading.meter_id);
+
+          // Search filter (client-side)
+          const matchesSearch =
+            !searchTerm ||
+            meterName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            reading.current_reading?.toString().includes(searchTerm);
+
+          // Operator filter (client-side)
+          const matchesOperator =
+            !operatorId || reading.operator?.id === operatorId;
+
+          // Meter type filter (client-side)
+          const matchesTab = activeTab === "all" || meterType === activeTab;
+
+          // Factory filter (client-side)
+          const meter = meters.find((m) => m.id === reading.meter_id);
+          const matchesFactory =
+            filterFactory === "all" ||
+            (meter && meter.factory_id.toString() === filterFactory);
+
+          return (
+            matchesSearch && matchesOperator && matchesTab && matchesFactory
+          );
+        });
+      }
+
+      // Store filtered data and pagination info
+      const totalFilteredItems = allReadingsData.length;
+      const totalFilteredPages = Math.ceil(totalFilteredItems / itemsPerPage);
+
+      // Store all filtered data for pagination
+      setAllReadings(allReadingsData);
+      setTotalPages(totalFilteredPages);
+      setTotalItems(totalFilteredItems);
     } catch (error: any) {
       toast.error("Failed to load readings data");
     } finally {
       setLoading(false);
     }
   };
+
+  // Separate effect for pagination to avoid infinite loops
+  useEffect(() => {
+    if (allReadings.length > 0) {
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const paginatedReadings = allReadings.slice(
+        startIndex,
+        startIndex + itemsPerPage
+      );
+      setReadings(paginatedReadings);
+    }
+  }, [allReadings, currentPage, itemsPerPage]);
 
   const handleCreate = () => {
     setEditingReading(null);
@@ -155,44 +274,16 @@ const MeterReadingsList: React.FC<MeterReadingsListProps> = ({
     return meter_type === "electricity" ? "kWh" : "m³";
   };
 
-  // Filter readings based on search and filters
-  const allFilteredReadings = readings.filter((reading) => {
-    const meterName = getMeterName(reading.meter_id);
-    const meterType = getMeterType(reading.meter_id);
-    const matchesSearch =
-      meterName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      reading.current_reading?.toString().includes(searchTerm);
-    const matchesMeter =
-      filterMeter === "all" || reading.meter_id.toString() === filterMeter;
-    const matchesVerified =
-      filterVerified === "all" ||
-      (filterVerified === "verified" && reading.is_verified) ||
-      (filterVerified === "unverified" && !reading.is_verified);
-    const matchesOperator = !operatorId || reading.operator?.id === operatorId;
-    const matchesTab = activeTab === "all" || meterType === activeTab;
+  // Use server-side filtered and paginated readings directly
+  const filteredReadings = readings;
 
-    return (
-      matchesSearch &&
-      matchesMeter &&
-      matchesVerified &&
-      matchesOperator &&
-      matchesTab
-    );
-  });
-
-  // Client-side pagination for filtered results
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const filteredReadings = allFilteredReadings.slice(startIndex, endIndex);
-
-  // Update pagination info for filtered results
+  // Use server pagination info
   const filteredPagination = {
     current_page: currentPage,
-    total_pages: Math.ceil(allFilteredReadings.length / itemsPerPage),
-    total_items: allFilteredReadings.length,
+    total_pages: totalPages,
+    total_items: totalItems,
     items_per_page: itemsPerPage,
-    has_next:
-      currentPage < Math.ceil(allFilteredReadings.length / itemsPerPage),
+    has_next: currentPage < totalPages,
     has_prev: currentPage > 1,
   };
 
@@ -213,7 +304,7 @@ const MeterReadingsList: React.FC<MeterReadingsListProps> = ({
             {t("energy.reading.list")}
           </h1>
           <p className="text-gray-600 mt-1">
-            {t("energy.reading.total")}: {readings.length}
+            {t("energy.reading.total")}: {totalItems}
           </p>
         </div>
         <div className="flex space-x-2">
@@ -246,13 +337,13 @@ const MeterReadingsList: React.FC<MeterReadingsListProps> = ({
                 key: "all",
                 label: "Barcha o'qishlar",
                 icon: "📊",
-                count: readings.length,
+                count: allReadings.length,
               },
               {
                 key: "electricity",
                 label: "Elektr energiya",
                 icon: "⚡",
-                count: readings.filter(
+                count: allReadings.filter(
                   (r) => getMeterType(r.meter_id) === "electricity"
                 ).length,
               },
@@ -260,7 +351,7 @@ const MeterReadingsList: React.FC<MeterReadingsListProps> = ({
                 key: "gas",
                 label: "Gaz",
                 icon: "🔥",
-                count: readings.filter(
+                count: allReadings.filter(
                   (r) => getMeterType(r.meter_id) === "gas"
                 ).length,
               },
@@ -268,14 +359,17 @@ const MeterReadingsList: React.FC<MeterReadingsListProps> = ({
                 key: "water",
                 label: "Suv",
                 icon: "💧",
-                count: readings.filter(
+                count: allReadings.filter(
                   (r) => getMeterType(r.meter_id) === "water"
                 ).length,
               },
             ].map((tab) => (
               <button
                 key={tab.key}
-                onClick={() => setActiveTab(tab.key as any)}
+                onClick={() => {
+                  setActiveTab(tab.key as any);
+                  setCurrentPage(1); // Reset to first page when changing tabs
+                }}
                 className={`py-2 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${
                   activeTab === tab.key
                     ? "border-blue-500 text-blue-600"
@@ -334,6 +428,24 @@ const MeterReadingsList: React.FC<MeterReadingsListProps> = ({
             <option value="all">All Status</option>
             <option value="verified">{t("energy.reading.verified")}</option>
             <option value="unverified">{t("energy.reading.unverified")}</option>
+          </select>
+
+          <select
+            value={filterFactory}
+            onChange={(e) => setFilterFactory(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="all">All Factories</option>
+            {Array.from(new Set(meters.map((meter) => meter.factory_id)))
+              .sort()
+              .map((factoryId) => {
+                const factory = factories.find((f) => f.id === factoryId);
+                return (
+                  <option key={factoryId} value={factoryId.toString()}>
+                    {factory ? factory.name : `Factory ${factoryId}`}
+                  </option>
+                );
+              })}
           </select>
 
           <button className="flex items-center justify-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">

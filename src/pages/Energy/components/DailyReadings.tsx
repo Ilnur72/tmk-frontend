@@ -171,13 +171,13 @@ const DailyReadings: React.FC<DailyReadingsProps> = ({ operatorData }) => {
                 <div className="mb-4 p-3 bg-gray-50 rounded-md">
                   <p className="text-sm text-gray-500 mb-1">Last Reading</p>
                   <p className="font-medium">
-                    {meter.latest_reading.current_reading}
+                    {meter.latest_reading || "Ҳали қиймат киритилмаган"}
                   </p>
-                  <p className="text-xs text-gray-400">
-                    {new Date(
-                      meter.latest_reading.reading_date
-                    ).toLocaleDateString()}
-                  </p>
+                  {meter.last_reading_date && (
+                    <p className="text-xs text-gray-400">
+                      {new Date(meter.last_reading_date).toLocaleDateString()}
+                    </p>
+                  )}
                 </div>
               )}
 

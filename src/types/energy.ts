@@ -32,7 +32,9 @@ export interface Meter {
   factory_id: number;
   workshop_id?: number;
   workshop?: Workshop;
-  latest_reading?: MeterReading;
+  latest_reading?: string | number; // Backend dan string yoki number keladi
+  last_reading_value?: number;
+  last_reading_date?: string;
   created_at: string;
   updated_at: string;
 }
