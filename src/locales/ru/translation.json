@@ -1081,6 +1081,8 @@
       "consumption": "Потребление",
       "reading_date": "Дата показания",
       "notes": "Заметки",
+      "last_reading": "Последнее показание",
+      "no_last_reading": "Ҳали йўқ",
       "save_reading": "Сохранить показание",
       "reading_saved": "Показание успешно сохранено",
       "reading_error": "Ошибка сохранения показания",

@@ -738,6 +738,8 @@
       "consumption": "Consumption",
       "reading_date": "Reading Date",
       "notes": "Notes",
+      "no_last_reading": "No last reading",
+      "last_reading": "Last Reading",
       "save_reading": "Save Reading",
       "reading_saved": "Reading saved successfully",
       "reading_error": "Error saving reading",
