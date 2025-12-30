@@ -186,9 +186,9 @@ const FactoryMap: React.FC = () => {
         el.style.cursor = "pointer";
 
         // Create popup content (not for factory map page)
-        const isFactoryMap = window.location.pathname === "/";
+        const isFactoryMap = window.location.pathname === "/factory-map";
         let popup = null;
-
+        
         if (!isFactoryMap) {
           const popupContent = `
             <div style="background: white; padding: 10px; border-radius: 5px;" class="w-96 max-md:w-[300px]">
@@ -243,7 +243,9 @@ const FactoryMap: React.FC = () => {
           flyToMarker(factory.coords);
 
           // Show React modal for factory map page
-          const isFactoryMap = window.location.pathname === "/";
+          const isFactoryMap = window.location.pathname === "/factory-map";
+          console.log(isFactoryMap);
+          
           if (isFactoryMap) {
             showFactoryDetails(factory);
           } else {
