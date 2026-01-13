@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { meterOperatorService } from "../services/meterOperatorService";
 import { toast } from "../../../utils/toast";
-import { Meter, User } from "../../../types/energy";
+import { Meter, User, Factory } from "../../../types/energy";
 import { Clock, Zap, Droplets, Flame, Save } from "lucide-react";
+import MeterCalendarInput from "./MeterCalendarInput";
+import { factoryService } from "../../../services/factoryService";
 
 interface DailyReadingsProps {
   operatorData: User | null;
@@ -18,26 +20,68 @@ const DailyReadings: React.FC<DailyReadingsProps> = ({ operatorData }) => {
   const [activeTab, setActiveTab] = useState<
     "all" | "electricity" | "gas" | "water"
   >("all");
+  const [factories, setFactories] = useState<Factory[]>([]);
+  const [selectedFactory, setSelectedFactory] = useState<number | null>(null);
+
+  // Group all readings by meter_id for calendar display
+  const [allReadings, setAllReadings] = useState<{
+    [meterId: number]: import("../../../types/energy").MeterReading[];
+  }>({});
 
   useEffect(() => {
-    fetchOperatorMeters();
+    // Fetch all readings for calendar display
+    const fetchAllReadings = async () => {
+      try {
+        const data = await meterOperatorService.getMyReadings();
+        const readingsArr = data.data || [];
+        const grouped: {
+          [meterId: number]: import("../../../types/energy").MeterReading[];
+        } = {};
+        readingsArr.forEach((reading) => {
+          if (!grouped[reading.meter_id]) grouped[reading.meter_id] = [];
+          grouped[reading.meter_id].push(reading);
+        });
+        setAllReadings(grouped);
+      } catch {}
+    };
+    fetchAllReadings();
+  }, [meters]);
+
+  useEffect(() => {
+    if (operatorData) {
+      fetchFactories();
+    }
   }, [operatorData]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchOperatorMeters();
+  }, [operatorData, selectedFactory]);
+
+  const fetchFactories = async () => {
+    try {
+      const data = await factoryService.getAllFactories();
+      setFactories(data);
+    } catch (error) {
+      toast.error("Zavodlar ro'yxatini olishda xatolik");
+    }
+  };
 
   const fetchOperatorMeters = async () => {
     try {
       setLoading(true);
-      const data = await meterOperatorService.getMyMeters();
-      console.log("Meters ma'lumotlari:", data); // Debug
+      let data;
+      if (operatorData && selectedFactory) {
+        // Admin: fetch meters for selected factory
+        data = await meterOperatorService.getMyMeters(selectedFactory);
+      } else {
+        // Operator: fetch own meters
+        data = await meterOperatorService.getMyMeters();
+      }
       setMeters(data);
-
       // Initialize readings state
       const initialReadings: { [key: number]: string } = {};
-      data.forEach((meter) => {
-        console.log(`Meter ${meter.id}:`, {
-          last_reading_value: meter.last_reading_value,
-          last_reading_date: meter.last_reading_date,
-          latest_reading: meter.latest_reading,
-        }); // Debug
+      data.forEach((meter: Meter) => {
         initialReadings[meter.id] = "";
       });
       setReadings(initialReadings);
@@ -45,7 +89,6 @@ const DailyReadings: React.FC<DailyReadingsProps> = ({ operatorData }) => {
       console.error("Error fetching meters:", error);
       if (error?.response?.status === 401) {
         toast.error(t("meter_operators.readings.session_expired"));
-        // Token tozalash va login sahifasiga yo'naltirish
         localStorage.removeItem("meterOperatorAuthToken");
         localStorage.removeItem("meterOperatorToken");
         window.location.reload();
@@ -78,9 +121,11 @@ const DailyReadings: React.FC<DailyReadingsProps> = ({ operatorData }) => {
   };
 
   const filteredMeters = meters.filter((meter) => {
-    return activeTab === "all" || meter.meter_type === activeTab;
+    const typeMatch = activeTab === "all" || meter.meter_type === activeTab;
+    const factoryMatch =
+      !selectedFactory || meter.factory_id === selectedFactory;
+    return typeMatch && factoryMatch;
   });
-  console.log("Filtered Meters:", filteredMeters);
   const handleSubmitReading = async (meterId: number) => {
     const readingValue = readings[meterId];
 
@@ -95,9 +140,9 @@ const DailyReadings: React.FC<DailyReadingsProps> = ({ operatorData }) => {
         meter_id: meterId,
         current_reading: parseFloat(readingValue),
         reading_date: new Date().toISOString(),
-        notes: operatorData
-          ? `Reading submitted by ${operatorData.first_name} ${operatorData.last_name}`
-          : "Reading submitted by operator",
+        // notes: operatorData
+        //   ? `Reading submitted by ${operatorData.first_name} ${operatorData.last_name}`
+        //   : "Reading submitted by operator",
       });
 
       toast.success(t("meter_operators.readings.reading_submit_success"));
@@ -136,7 +181,6 @@ const DailyReadings: React.FC<DailyReadingsProps> = ({ operatorData }) => {
       </div>
     );
   }
-
   return (
     <div className="p-6">
       <div className="mb-6">
@@ -145,6 +189,29 @@ const DailyReadings: React.FC<DailyReadingsProps> = ({ operatorData }) => {
         </h2>
         <p className="text-gray-600">{t("meter_operators.subtitle")}</p>
       </div>
+
+      {/* Factory Filter (Admin only) */}
+      {operatorData && factories.length > 0 && (
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Zavod bo'yicha filter
+          </label>
+          <select
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            value={selectedFactory || ""}
+            onChange={(e) =>
+              setSelectedFactory(e.target.value ? Number(e.target.value) : null)
+            }
+          >
+            <option value="">Barcha zavodlar</option>
+            {factories.map((factory) => (
+              <option key={factory.id} value={factory.id}>
+                {factory.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {/* Meter Type Tabs */}
       <div className="mb-6">
@@ -246,53 +313,30 @@ const DailyReadings: React.FC<DailyReadingsProps> = ({ operatorData }) => {
               </div>
 
               <div className="space-y-3">
-                <div>
-                  <div className="flex justify-between items-center mb-1">
-                    <label className="block text-sm font-medium text-gray-700">
-                      {t("meter_operators.readings.current_reading")}
-                    </label>
-                    <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
-                      {`${t("meter_operators.readings.last_reading")}: ${
-                        meter.latest_reading ||
-                        meter.last_reading_value ||
-                        t("meter_operators.readings.no_last_reading")
-                      }`}
-                      {meter.last_reading_date && (
-                        <p className="text-xs text-gray-400">
-                          {new Date(
-                            meter.last_reading_date
-                          ).toLocaleDateString()}
-                        </p>
-                      )}
-                    </span>
-                  </div>
-                  <input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={readings[meter.id] || ""}
-                    onChange={(e) =>
-                      handleReadingChange(meter.id, e.target.value)
+                <MeterCalendarInput
+                  meter={meter}
+                  readings={allReadings[meter.id] || []}
+                  onSubmit={async (date, value) => {
+                    setSubmitting(true);
+                    try {
+                      await meterOperatorService.createMyMeterReading({
+                        meter_id: meter.id,
+                        current_reading: value,
+                        reading_date: date,
+                      });
+                      toast.success(
+                        t("meter_operators.readings.reading_submit_success")
+                      );
+                      fetchOperatorMeters();
+                    } catch (error: any) {
+                      toast.error(
+                        t("meter_operators.readings.reading_submit_failed")
+                      );
+                    } finally {
+                      setSubmitting(false);
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    placeholder={t("meter_operators.readings.current_reading")}
-                  />
-                </div>
-
-                <button
-                  onClick={() => handleSubmitReading(meter.id)}
-                  disabled={submitting || !readings[meter.id]}
-                  className="w-full flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {submitting ? (
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  ) : (
-                    <>
-                      <Save className="h-4 w-4 mr-2" />
-                      {t("meter_operators.readings.save_reading")}
-                    </>
-                  )}
-                </button>
+                  }}
+                />
               </div>
             </div>
           ))}

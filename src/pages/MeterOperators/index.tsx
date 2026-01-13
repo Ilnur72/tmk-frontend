@@ -31,7 +31,6 @@ const MeterOperators: React.FC = () => {
       // Token bor bo'lsa, localStorage dan ma'lumot olish
       if (operatorId) {
         setOperatorData({ id: parseInt(operatorId) } as User);
-        console.log("Operator data loaded from localStorage, ID:", operatorId);
       }
 
       setLoading(false);
@@ -45,7 +44,6 @@ const MeterOperators: React.FC = () => {
   }, [isLoggedIn]);
 
   const handleLogin = (userData: User) => {
-    console.log("Login successful with user data:", userData);
     setOperatorData(userData);
     setIsLoggedIn(true);
     // Token service tomonidan allaqachon saqlangan

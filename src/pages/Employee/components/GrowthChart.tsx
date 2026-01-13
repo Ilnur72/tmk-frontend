@@ -9,6 +9,7 @@ import {
   YAxis,
   CartesianGrid,
   ResponsiveContainer,
+  Tooltip,
 } from "recharts";
 import { useTranslation } from "react-i18next";
 
@@ -200,6 +201,49 @@ const CustomDot: React.FC<any> = (props) => {
   );
 };
 
+// Custom Tooltip Component
+const CustomTooltip: React.FC<any> = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-4">
+        <p className="font-semibold text-gray-900 mb-2">{label}</p>
+        <div className="space-y-1">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-cyan-500"></div>
+              <span className="text-sm text-gray-600">Ходимлар:</span>
+            </div>
+            <span className="text-sm font-semibold text-gray-900">
+              {payload[0]?.value?.toLocaleString()}
+            </span>
+          </div>
+          {payload[1] && (
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                <span className="text-sm text-gray-600">Ўсиш:</span>
+              </div>
+              <span
+                className={`text-sm font-semibold ${
+                  payload[1].value > 0
+                    ? "text-green-600"
+                    : payload[1].value < 0
+                    ? "text-red-600"
+                    : "text-gray-600"
+                }`}
+              >
+                {payload[1].value > 0 ? "+" : ""}
+                {payload[1]?.value?.toLocaleString()}
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
 const EmployeeGrowthChart: React.FC = () => {
   const { t } = useTranslation();
   const { data: earsData, isLoading, error } = useEARSData();
@@ -299,7 +343,7 @@ const EmployeeGrowthChart: React.FC = () => {
           </div>
         </div>
 
-        <div className="h-96 bg-gray-100 rounded-lg flex items-center justify-center animate-pulse">
+        <div className="h-96 bg-white rounded-lg flex items-center justify-center animate-pulse">
           <p className="text-gray-400">{t("growth_chart.chart_loading")}</p>
         </div>
       </div>
@@ -327,7 +371,7 @@ const EmployeeGrowthChart: React.FC = () => {
   const padding = (maxEmployees - minEmployees) * 0.1;
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-5">
+    <div className="bg-white rounded-lg shadow-lg p-5">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6">
         <h2 className="text-lg font-medium text-gray-900">
           {t("growth_chart.employee_growth_title")}
@@ -447,6 +491,10 @@ const EmployeeGrowthChart: React.FC = () => {
                   minEmployees - padding || 0,
                   maxEmployees + padding || 1000,
                 ]}
+              />
+              <Tooltip
+                content={<CustomTooltip />}
+                cursor={{ stroke: "#e5e7eb", strokeWidth: 1 }}
               />
               <Line
                 type="monotone"

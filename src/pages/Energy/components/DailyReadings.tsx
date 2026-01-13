@@ -61,9 +61,9 @@ const DailyReadings: React.FC<DailyReadingsProps> = ({ operatorData }) => {
         meter_id: meterId,
         current_reading: parseFloat(readingValue),
         reading_date: new Date().toISOString(),
-        notes: operatorData
-          ? `Reading submitted by ${operatorData.first_name} ${operatorData.last_name}`
-          : "Reading submitted by operator",
+        // notes: operatorData
+        //   ? `Reading submitted by ${operatorData.first_name} ${operatorData.last_name}`
+        //   : "Reading submitted by operator",
       });
 
       toast.success("Reading submitted successfully");

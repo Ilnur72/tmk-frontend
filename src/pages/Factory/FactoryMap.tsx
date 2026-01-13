@@ -6,6 +6,42 @@ import axios from "axios";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { API_URL } from "../../config/const";
 
+// Weather Widget Component
+const WeatherWidget = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    // Set widget HTML with custom attributes
+    containerRef.current.innerHTML = `
+      <div style="border-radius: 12px; overflow: hidden;" id="ww_5e9f54c4e904c" v='1.3' loc='id' a='{"t":"horizontal","lang":"uz","sl_lpl":1,"ids":["wl2689"],"font":"Arial","sl_ics":"one_a","sl_sot":"celsius","cl_bkg":"#0288D1","cl_font":"#FFFFFF","cl_cloud":"#FFFFFF","cl_persp":"#FFFFFF","cl_sun":"#FFC107","cl_moon":"#FFC107","cl_thund":"#FF5722"}'>
+        <a href="https://weatherwidget.org/" id="ww_5e9f54c4e904c_u" target="_blank">Html weather widget</a>
+      </div>
+    `;
+
+    // Load widget script
+    const script = document.createElement("script");
+    script.src = "https://app3.weatherwidget.org/js/?id=ww_5e9f54c4e904c";
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
+    };
+  }, []);
+
+  return <div ref={containerRef}></div>;
+};
+
+enum ProjectCategory {
+  FACTORY = "factory",
+  MINE = "mine",
+  MINE_CART = "mine-cart",
+}
+
 interface Factory {
   id: number;
   name: string;
@@ -21,6 +57,7 @@ interface Factory {
   importance?: string;
   description?: string;
   category?: string;
+  project_category?: string;
   address?: string;
   custom_fields?: Record<string, any>;
   project_values?: any;
@@ -51,6 +88,13 @@ interface LayerToggleControl {
   onRemove(): void;
 }
 
+interface ObjectType {
+  id: number;
+  name: string;
+  description?: string;
+  active: boolean;
+}
+
 const FactoryMap: React.FC = () => {
   const { t } = useTranslation();
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -58,7 +102,12 @@ const FactoryMap: React.FC = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [selectedFactory, setSelectedFactory] = useState<Factory | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [showWeatherMapModal, setShowWeatherMapModal] = useState(false);
   const markersRef = useRef<maplibregl.Marker[]>([]);
+  const [allFactories, setAllFactories] = useState<Factory[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedObjectType, setSelectedObjectType] = useState<string>("");
+  const [objectTypes, setObjectTypes] = useState<ObjectType[]>([]);
 
   // Cleanup any existing VehicleTracking map instances
   const cleanupVehicleTrackingMaps = useCallback(() => {
@@ -188,7 +237,7 @@ const FactoryMap: React.FC = () => {
         // Create popup content (not for factory map page)
         const isFactoryMap = window.location.pathname === "/factory-map";
         let popup = null;
-        
+
         if (!isFactoryMap) {
           const popupContent = `
             <div style="background: white; padding: 10px; border-radius: 5px;" class="w-96 max-md:w-[300px]">
@@ -244,8 +293,7 @@ const FactoryMap: React.FC = () => {
 
           // Show React modal for factory map page
           const isFactoryMap = window.location.pathname === "/factory-map";
-          console.log(isFactoryMap);
-          
+
           if (isFactoryMap) {
             showFactoryDetails(factory);
           } else {
@@ -295,10 +343,30 @@ const FactoryMap: React.FC = () => {
     [flyToMarker, showFactoryDetails]
   );
 
+  // Fetch object types from backend
+  const fetchObjectTypes = useCallback(async () => {
+    try {
+      const response = await axios.get("/factory/object-types");
+      if (response.data && Array.isArray(response.data)) {
+        setObjectTypes(response.data);
+      }
+    } catch (error) {
+      console.error("Object types fetch error:", error);
+    }
+  }, []);
+
   // Fetch factories data
   const fetchFactories = useCallback(async () => {
     try {
-      const response = await axios.get("/factory/marker");
+      const params: any = {};
+
+      // Add project_category filter if selected
+      if (selectedCategory) {
+        params.project_category = selectedCategory;
+      }
+
+
+      const response = await axios.get("/factory/marker", { params });
       const data = response.data || [];
 
       // Parse coords if they're strings
@@ -310,11 +378,12 @@ const FactoryMap: React.FC = () => {
             : item.coords,
       }));
 
+      setAllFactories(processedData);
       addMarkersToMap(processedData);
     } catch (error) {
       console.error(t("factory.errors.fetch"), error);
     }
-  }, [addMarkersToMap]);
+  }, [selectedCategory, addMarkersToMap, t]);
 
   // Layer toggle control
   const createLayerToggleControl = useCallback((): LayerToggleControl => {
@@ -372,6 +441,7 @@ const FactoryMap: React.FC = () => {
     // Load markers when map is ready
     map.current.on("load", () => {
       fetchFactories();
+      fetchObjectTypes();
     });
 
     return () => {
@@ -393,6 +463,28 @@ const FactoryMap: React.FC = () => {
     });
   }, [sidebarCollapsed]);
 
+  // Filter factories when filters change
+  useEffect(() => {
+    // Refetch when category changes (backend filter)
+    fetchFactories();
+  }, [selectedCategory, fetchFactories]);
+
+  // Filter by object type (client-side only)
+  useEffect(() => {
+    let filtered = allFactories;
+
+    if (selectedObjectType) {
+      filtered = filtered.filter(
+        (factory) => factory.importance === selectedObjectType
+      );
+    }
+
+    addMarkersToMap(filtered);
+  }, [selectedObjectType, allFactories, addMarkersToMap]);
+
+  // Get unique categories
+  const categories = Object.values(ProjectCategory);
+
   return (
     <>
       <div className="grid grid-cols-12 gap-6">
@@ -402,6 +494,212 @@ const FactoryMap: React.FC = () => {
             ref={mapContainer}
             className="maplibregl-map max-md:my-2 max-md:w-full max-md:fixed rounded-[30px]"
           >
+            {/* Filters and Weather Section - positioned above map next to sidebar */}
+            <div
+              className="absolute z-10 transition-all duration-300 ease-in-out max-md:static max-md:mb-2 max-md:px-2 max-md:w-full"
+              style={{
+                top: window.innerWidth > 768 ? "16px" : "auto",
+                left:
+                  window.innerWidth > 768
+                    ? sidebarCollapsed
+                      ? "20px"
+                      : "320px"
+                    : "auto",
+                right: window.innerWidth > 768 ? "20px" : "auto",
+              }}
+            >
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 max-md:gap-2 max-md:grid-cols-1">
+                {/* Filters */}
+                <div className="lg:col-span-2 max-md:col-span-1">
+                  <div className=" backdrop-blur-md rounded-3xl shadow-lg border border-gray-200/50 p-4 max-md:p-3">
+                    {/* <div className="flex items-center mb-3">
+                      <svg className="w-5 h-5 text-cyan-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                      </svg>
+                      <h3 className="text-base font-bold text-gray-800">
+                        {t("factory.filters.title", "Filterlar")}
+                      </h3>
+                    </div> */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-md:gap-2">
+                      {/* Category Filter */}
+                      <div className="relative">
+                        <label className="block text-xs font-semibold text-gray-700 mb-1.5 max-md:text-[10px] max-md:mb-1">
+                          {t("factory.filters.category", "Loyiha kategoriyasi")}
+                        </label>
+                        <div className="relative">
+                          <select
+                            className="w-full px-3 py-2.5 pr-9 text-sm text-gray-700 bg-white border-2 border-gray-200 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200 hover:border-cyan-300 cursor-pointer max-md:px-2 max-md:py-2 max-md:pr-7 max-md:text-xs"
+                            style={{
+                              backgroundImage: "none",
+                              WebkitAppearance: "none",
+                              MozAppearance: "none",
+                            }}
+                            value={selectedCategory}
+                            onChange={(e) =>
+                              setSelectedCategory(e.target.value)
+                            }
+                          >
+                            <option value="" className="text-gray-500">
+                              {t("factory.filters.all", "Barchasi")}
+                            </option>
+                            {categories.map((cat) => (
+                              <option
+                                key={cat}
+                                value={cat}
+                                className="text-gray-700"
+                              >
+                                {cat.charAt(0).toUpperCase() +
+                                  cat.slice(1).replace("-", " ")}
+                              </option>
+                            ))}
+                          </select>
+                          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-gray-500">
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 9l-7 7-7-7"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+                        {selectedCategory && (
+                          <button
+                            onClick={() => setSelectedCategory("")}
+                            className="absolute top-7 right-9 text-gray-400 hover:text-red-500 transition-colors"
+                            title="Clear filter"
+                          >
+                            <svg
+                              className="w-3.5 h-3.5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M6 18L18 6M6 6l12 12"
+                              />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Object Type Filter */}
+                      <div className="relative">
+                        <label className="block text-xs font-semibold text-gray-700 mb-1.5 max-md:text-[10px] max-md:mb-1">
+                          {t("factory.filters.objectType", "Obyekt tipi")}
+                        </label>
+                        <div className="relative">
+                          <select
+                            className="w-full px-3 py-2.5 pr-9 text-sm text-gray-700 bg-white border-2 border-gray-200 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200 hover:border-cyan-300 cursor-pointer max-md:px-2 max-md:py-2 max-md:pr-7 max-md:text-xs"
+                            style={{
+                              backgroundImage: "none",
+                              WebkitAppearance: "none",
+                              MozAppearance: "none",
+                            }}
+                            value={selectedObjectType}
+                            onChange={(e) =>
+                              setSelectedObjectType(e.target.value)
+                            }
+                          >
+                            <option value="" className="text-gray-500">
+                              {t("factory.filters.all", "Barchasi")}
+                            </option>
+                            {objectTypes.map((type) => (
+                              <option
+                                key={type.id}
+                                value={type.name}
+                                className="text-gray-700"
+                              >
+                                {type.name}
+                              </option>
+                            ))}
+                          </select>
+                          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-gray-500">
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 9l-7 7-7-7"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+                        {selectedObjectType && (
+                          <button
+                            onClick={() => setSelectedObjectType("")}
+                            className="absolute top-7 right-9 text-gray-400 hover:text-red-500 transition-colors"
+                            title="Clear filter"
+                          >
+                            <svg
+                              className="w-3.5 h-3.5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M6 18L18 6M6 6l12 12"
+                              />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Weather Widget */}
+                <div className="lg:col-span-1 max-md:hidden">
+                  <div className="rounded-3xl  h-full flex flex-col gap-2 max-w-md overflow-hidden">
+                    <div className="flex-1 flex items-center justify-center overflow-hidden rounded-3xl">
+                      <div className="w-full scale-90 origin-center rounded-lg">
+                        <WeatherWidget />
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-end mr-5">
+                      <button
+                        onClick={() => setShowWeatherMapModal(true)}
+                        className="p-1.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg transition-colors shadow-md hover:shadow-lg flex items-center gap-1 text-xs"
+                        title="Ob-havo kartasini ochish"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+                          />
+                        </svg>
+                        Karta
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div
               id="left"
               className={`sidebar  left ${sidebarCollapsed ? "collapsed" : ""}`}
@@ -466,6 +764,52 @@ const FactoryMap: React.FC = () => {
         isOpen={showModal}
         onClose={closeModal}
       />
+
+      {/* Weather Map Modal - Fullscreen */}
+      {showWeatherMapModal && (
+        <div
+          className="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-sm"
+          onClick={() => setShowWeatherMapModal(false)}
+        >
+          <div className="relative w-full h-full overflow-hidden">
+            {/* Close Button */}
+            <button
+              onClick={() => setShowWeatherMapModal(false)}
+              className="absolute top-4 left-4 z-[10000] bg-white/90 hover:bg-white text-gray-800 rounded-full p-3 shadow-2xl transition-all hover:scale-110"
+              title="Yopish"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+
+            {/* Top gradient overlay to hide header */}
+            <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-black/80 to-transparent z-[9999] pointer-events-none"></div>
+
+            {/* Weather Map Iframe - positioned higher to hide top bar */}
+            <iframe
+              src="https://www.ventusky.com/temperature-map/2m-above-ground#p=39.59;69.02;8&t=20260112/07&src=link"
+              className="w-full border-0 rounded-lg"
+              style={{
+                height: "calc(100% + 77px)",
+                marginTop: "-77px",
+              }}
+              title="Ob-havo kartasi"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        </div>
+      )}
     </>
   );
 };

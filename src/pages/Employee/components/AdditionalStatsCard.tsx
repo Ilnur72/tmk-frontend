@@ -110,7 +110,7 @@ const AdditionalStatsCard: React.FC<AdditionalStatsCardProps> = ({
     if (hasChart) return null;
 
     return (
-      <div className="mt-4 h-14 bg-gray-50 rounded flex items-center justify-center relative overflow-hidden">
+      <div className="mt-4 h-14 bg-white-50 rounded flex items-center justify-center relative overflow-hidden">
         {/* Simple animated bars */}
         <div className="flex items-end space-x-1 h-8">
           {[1, 2, 3, 4, 5, 6].map((_, index) => (
@@ -125,14 +125,13 @@ const AdditionalStatsCard: React.FC<AdditionalStatsCardProps> = ({
             />
           ))}
         </div>
-       
       </div>
     );
   };
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-lg shadow-sm p-5 animate-pulse">
+      <div className="bg-white rounded-lg shadow-lg p-5 animate-pulse">
         <div className="flex items-center justify-between">
           <div className="flex-1">
             <div className="h-5 bg-gray-200 rounded w-3/4 mb-2"></div>
@@ -146,9 +145,9 @@ const AdditionalStatsCard: React.FC<AdditionalStatsCardProps> = ({
 
   return (
     <div
-      className={`bg-white rounded-lg shadow-sm p-5 ${
+      className={`bg-white rounded-lg shadow-lg p-5 ${
         onClick
-          ? "cursor-pointer hover:shadow-md transition-all duration-200 hover:scale-[1.02]"
+          ? "cursor-pointer hover:shadow-xl transition-all duration-200 hover:scale-[1.02]"
           : ""
       }`}
       onClick={onClick}

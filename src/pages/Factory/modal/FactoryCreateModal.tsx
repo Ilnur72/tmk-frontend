@@ -22,6 +22,13 @@ interface ProjectValue {
   amount: string;
 }
 
+interface ObjectType {
+  id: number;
+  name: string;
+  description?: string;
+  active: boolean;
+}
+
 const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
   isOpen,
   onClose,
@@ -44,11 +51,50 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
   const [previewImages, setPreviewImages] = useState<string[]>([]);
   const [currentImage, setCurrentImage] = useState(0);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
+  const [objectTypes, setObjectTypes] = useState<ObjectType[]>([]);
+  const [selectedObjectType, setSelectedObjectType] = useState<string>("");
+  const [showAddObjectType, setShowAddObjectType] = useState(false);
+  const [newObjectType, setNewObjectType] = useState("");
 
   const [markerIcon, setMarkerIcon] = useState("factory");
   const mapRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Fetch object types
+  React.useEffect(() => {
+    if (isOpen) {
+      fetchObjectTypes();
+    }
+  }, [isOpen]);
+
+  const fetchObjectTypes = async () => {
+    try {
+      const response = await axios.get("/factory/object-types");
+
+      if (response.data && Array.isArray(response.data)) {
+        setObjectTypes(response.data);
+      }
+    } catch (error) {
+      console.error("Object types fetch error:", error);
+    }
+  };
+
+  const handleAddObjectType = async () => {
+    if (!newObjectType.trim()) return;
+
+    try {
+      await axios.post("/factory/add-object-type", { name: newObjectType });
+      await fetchObjectTypes();
+      setSelectedObjectType(newObjectType);
+      setNewObjectType("");
+      setShowAddObjectType(false);
+      showToast("Yangi obyekt tipi qo'shildi!", "success");
+    } catch (error) {
+      console.error("Add object type error:", error);
+      showToast("Obyekt tipi qo'shishda xato!", "error");
+    }
+  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -146,6 +192,11 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
       formData.append("latitude", coordinates.lat.toString());
       formData.append("longitude", coordinates.lng.toString());
       formData.append("marker_icon", markerIcon);
+
+      // Add object type (importance)
+      if (selectedObjectType) {
+        formData.append("importance", selectedObjectType);
+      }
 
       // Add images
       selectedImages.forEach((image) => {
@@ -313,6 +364,70 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                     </select>
                   </div>
 
+                  {/* Object Type (Importance) */}
+                  <div>
+                    <label className="block mb-2 text-sm font-medium">
+                      {t("modal.object_type", "Obyekt tipi")}
+                    </label>
+                    <select
+                      value={selectedObjectType}
+                      onChange={(e) => setSelectedObjectType(e.target.value)}
+                      className="w-full border border-slate-200 bg-white p-2.5 text-sm rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
+                    >
+                      <option value="">
+                        {t("modal.select_object_type", "Tanlang")}
+                      </option>
+                      {objectTypes.map((type) => (
+                        <option key={type.id} value={type.name}>
+                          {type.name}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* Yangi obyekt tipi qo'shish */}
+                    {!showAddObjectType ? (
+                      <button
+                        type="button"
+                        onClick={() => setShowAddObjectType(true)}
+                        className="mt-2 text-xs text-primary hover:underline flex items-center gap-1"
+                      >
+                        <Plus className="w-3 h-3" />
+                        Yangi tip qo'shish
+                      </button>
+                    ) : (
+                      <div className="mt-2 flex gap-2">
+                        <input
+                          type="text"
+                          value={newObjectType}
+                          onChange={(e) => setNewObjectType(e.target.value)}
+                          onKeyPress={(e) =>
+                            e.key === "Enter" && handleAddObjectType()
+                          }
+                          placeholder="Yangi tip nomi..."
+                          className="flex-1 px-2 py-1.5 text-sm border border-slate-200 rounded focus:ring-2 focus:ring-primary focus:border-primary"
+                          autoFocus
+                        />
+                        <button
+                          type="button"
+                          onClick={handleAddObjectType}
+                          className="px-3 py-1.5 text-sm bg-primary text-white rounded hover:opacity-80"
+                        >
+                          Qo'shish
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowAddObjectType(false);
+                            setNewObjectType("");
+                          }}
+                          className="px-2 py-1.5 text-sm bg-gray-400 text-white rounded hover:bg-gray-500"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
                   {/* Marker Type */}
                   <div className="mt-4">
                     <label className="block mb-2 font-semibold">
@@ -331,11 +446,11 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                           src: "/image/mine-cart.png",
                           alt: "Shaxta",
                         },
-                        {
-                          value: "tmk-marker",
-                          src: "/image/tmk-marker.png",
-                          alt: "Tmk",
-                        },
+                        // {
+                        //   value: "tmk-marker",
+                        //   src: "/image/tmk-marker.png",
+                        //   alt: "Tmk",
+                        // },
                       ].map((marker) => (
                         <label
                           key={marker.value}

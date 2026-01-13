@@ -24,6 +24,13 @@ interface ProjectValue {
   amount: string;
 }
 
+interface ObjectType {
+  id: number;
+  name: string;
+  description?: string;
+  active: boolean;
+}
+
 interface ProjectData {
   name: string;
   enterprise_name: string;
@@ -67,8 +74,39 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
   ]);
   const [projectValueTotal, setProjectValueTotal] = useState<string>("");
   const [currentImage, setCurrentImage] = useState<number>(0);
+  const [objectTypes, setObjectTypes] = useState<ObjectType[]>([]);
+  const [selectedObjectType, setSelectedObjectType] = useState<string>("");
+  const [showAddObjectType, setShowAddObjectType] = useState(false);
+  const [newObjectType, setNewObjectType] = useState("");
   const mapRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
+
+  const fetchObjectTypes = React.useCallback(async () => {
+    try {
+      const response = await axios.get("/factory/object-types");
+      if (response.data && Array.isArray(response.data)) {
+        setObjectTypes(response.data);
+      }
+    } catch (error) {
+      console.error("Object types fetch error:", error);
+    }
+  }, []);
+
+  const handleAddObjectType = async () => {
+    if (!newObjectType.trim()) return;
+
+    try {
+      await axios.post("/factory/add-object-type", { name: newObjectType });
+      await fetchObjectTypes();
+      setSelectedObjectType(newObjectType);
+      setNewObjectType("");
+      setShowAddObjectType(false);
+      toast("Yangi obyekt tipi qo'shildi!", { type: "success" });
+    } catch (error) {
+      console.error("Add object type error:", error);
+      toast("Obyekt tipi qo'shishda xato!", { type: "error" });
+    }
+  };
 
   const fetchProjectData = React.useCallback(async () => {
     if (!factoryId) return;
@@ -88,6 +126,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
         lng: data.longitude || 69.2401,
       });
       setMarkerIcon(data.marker_icon || "factory");
+      setSelectedObjectType(data.importance || "");
       const images =
         typeof data.images === "string" ? JSON.parse(data.images) : data.images;
       // Set existing images
@@ -141,8 +180,9 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
   useEffect(() => {
     if (isOpen && factoryId) {
       fetchProjectData();
+      fetchObjectTypes();
     }
-  }, [isOpen, factoryId, fetchProjectData]);
+  }, [isOpen, factoryId, fetchProjectData, fetchObjectTypes]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -276,6 +316,11 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
       formData.append("latitude", coordinates.lat.toString());
       formData.append("longitude", coordinates.lng.toString());
       formData.append("marker_icon", markerIcon);
+
+      // Add object type (importance)
+      if (selectedObjectType) {
+        formData.append("importance", selectedObjectType);
+      }
       if (deletedImages.length > 0) {
         formData.append("deleted_images", JSON.stringify(deletedImages));
       }
@@ -492,6 +537,70 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                     </select>
                   </div>
 
+                  {/* Object Type (Importance) */}
+                  <div>
+                    <label className="block mb-2 text-sm font-medium">
+                      {t("modal.object_type", "Obyekt tipi")}
+                    </label>
+                    <select
+                      value={selectedObjectType}
+                      onChange={(e) => setSelectedObjectType(e.target.value)}
+                      className="w-full border border-slate-200 bg-white p-2.5 text-sm rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
+                    >
+                      <option value="">
+                        {t("modal.select_object_type", "Tanlang")}
+                      </option>
+                      {objectTypes.map((type) => (
+                        <option key={type.id} value={type.name}>
+                          {type.name}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* Yangi obyekt tipi qo'shish */}
+                    {!showAddObjectType ? (
+                      <button
+                        type="button"
+                        onClick={() => setShowAddObjectType(true)}
+                        className="mt-2 text-xs text-primary hover:underline flex items-center gap-1"
+                      >
+                        <Plus className="w-3 h-3" />
+                        Yangi tip qo'shish
+                      </button>
+                    ) : (
+                      <div className="mt-2 flex gap-2">
+                        <input
+                          type="text"
+                          value={newObjectType}
+                          onChange={(e) => setNewObjectType(e.target.value)}
+                          onKeyPress={(e) =>
+                            e.key === "Enter" && handleAddObjectType()
+                          }
+                          placeholder="Yangi tip nomi..."
+                          className="flex-1 px-2 py-1.5 text-sm border border-slate-200 rounded focus:ring-2 focus:ring-primary focus:border-primary"
+                          autoFocus
+                        />
+                        <button
+                          type="button"
+                          onClick={handleAddObjectType}
+                          className="px-3 py-1.5 text-sm bg-primary text-white rounded hover:opacity-80"
+                        >
+                          Qo'shish
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowAddObjectType(false);
+                            setNewObjectType("");
+                          }}
+                          className="px-2 py-1.5 text-sm bg-gray-400 text-white rounded hover:bg-gray-500"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
                   {/* Marker Type */}
                   <div className="mt-4">
                     <label className="block mb-2 font-semibold">
@@ -510,11 +619,11 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                           src: "/image/mine-cart.png",
                           alt: "Shaxta",
                         },
-                        {
-                          value: "tmk-marker",
-                          src: "/image/tmk-marker.png",
-                          alt: "Tmk",
-                        },
+                        // {
+                        //   value: "tmk-marker",
+                        //   src: "/image/tmk-marker.png",
+                        //   alt: "Tmk",
+                        // },
                       ].map((marker) => (
                         <label
                           key={marker.value}

@@ -1,6 +1,15 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { List } from "lucide-react";
+import {
+  List,
+  Users,
+  UserCheck,
+  UserX,
+  Clock,
+  LogOut,
+  UserMinus,
+  UserPlus,
+} from "lucide-react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +21,37 @@ import AdditionalStatsCard from "./components/AdditionalStatsCard";
 import { API_URL } from "../../config/const";
 
 // Types
+interface AttendanceData {
+  id: number;
+  full_name: string;
+  department: string;
+  status?: string;
+  time?: string;
+}
+
+interface AttendanceObject {
+  id: number;
+  name: string;
+  employee_count: number;
+}
+
+interface AttendanceStats {
+  total_employees: number;
+  not_arrived: number;
+  arrived: number;
+  late: number;
+  currently_in: number;
+  left: number;
+}
+
+interface AttendanceResponse {
+  active_object: number | null;
+  active_status: string;
+  counts: AttendanceStats;
+  data: AttendanceData[];
+  objects: AttendanceObject[];
+  success: boolean;
+}
 
 interface OrganizationData {
   count: number;
@@ -50,6 +90,8 @@ interface DashboardApiResponse {
   employees_office: number;
   employees_office_man: number;
   employees_office_woman: number;
+  fired: number;
+  hired: number;
 }
 
 interface BirthDataResponse {
@@ -87,6 +129,34 @@ const apiService = {
   },
   async getLanguageData(): Promise<LanguageData[]> {
     const response = await axios.get(`/employers/langs`);
+    return response.data;
+  },
+
+  async getAttendanceToken(): Promise<string> {
+    try {
+      const response = await axios.post(
+        "https://citynet.synterra.uz/api/login",
+        { phone: "998901234567" }
+      );
+      return response.data.token;
+    } catch (error) {
+      // Return current token as fallback
+      return "5|aKv2AVPkCToZH8DzSAbix8UCMAomD2Sqil6wjzQAc53a5535";
+    }
+  },
+
+  async getAttendanceData(
+    status: string,
+    token: string
+  ): Promise<AttendanceResponse> {
+    const response = await axios.get(
+      `https://citynet.synterra.uz/api/reports/today-tmk?status=${status}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return response.data;
   },
 };
@@ -150,6 +220,84 @@ const useLanguageData = () => {
 const Dashboard: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [attendanceToken, setAttendanceToken] = useState<string>(
+    "5|aKv2AVPkCToZH8DzSAbix8UCMAomD2Sqil6wjzQAc53a5535"
+  );
+  const [attendanceStats, setAttendanceStats] = useState<AttendanceStats>({
+    total_employees: 0,
+    not_arrived: 0,
+    arrived: 0,
+    late: 0,
+    currently_in: 0,
+    left: 0,
+  });
+  const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [attendanceData, setAttendanceData] = useState<AttendanceData[]>([]);
+  const [attendanceObjects, setAttendanceObjects] = useState<
+    AttendanceObject[]
+  >([]);
+  const [isLoadingAttendance, setIsLoadingAttendance] = useState(false);
+
+  // Fetch attendance data
+  useEffect(() => {
+    const fetchAttendanceData = async () => {
+      try {
+        setIsLoadingAttendance(true);
+        // Fetch with 'all' status to get counts
+        const response = await apiService.getAttendanceData(
+          "all",
+          attendanceToken
+        );
+        setAttendanceStats(response.counts);
+        setAttendanceObjects(response.objects);
+      } catch (error: any) {
+        if (error.response?.status === 401) {
+          const newToken = await apiService.getAttendanceToken();
+          setAttendanceToken(newToken);
+          const response = await apiService.getAttendanceData("all", newToken);
+          setAttendanceStats(response.counts);
+          setAttendanceObjects(response.objects);
+        }
+      } finally {
+        setIsLoadingAttendance(false);
+      }
+    };
+
+    fetchAttendanceData();
+  }, []);
+
+  // Fetch detailed attendance data when status is selected
+  useEffect(() => {
+    const fetchDetailedData = async () => {
+      if (selectedStatus === "all") {
+        setAttendanceData([]);
+        return;
+      }
+
+      try {
+        setIsLoadingAttendance(true);
+        const response = await apiService.getAttendanceData(
+          selectedStatus,
+          attendanceToken
+        );
+        setAttendanceData(response.data);
+      } catch (error: any) {
+        if (error.response?.status === 401) {
+          const newToken = await apiService.getAttendanceToken();
+          setAttendanceToken(newToken);
+          const response = await apiService.getAttendanceData(
+            selectedStatus,
+            newToken
+          );
+          setAttendanceData(response.data);
+        }
+      } finally {
+        setIsLoadingAttendance(false);
+      }
+    };
+
+    fetchDetailedData();
+  }, [selectedStatus, attendanceToken]);
 
   // Using React Query hooks
   const {
@@ -312,7 +460,8 @@ const Dashboard: React.FC = () => {
         {/* Header Section */}
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-lg font-medium text-gray-900">
-            {t("employee_dashboard.general_info")}
+            {/* {t("employee_dashboard.general_info")} */}
+            Бугунги даволат ҳолати
           </h2>
           <a
             href="employers/branches"
@@ -324,7 +473,7 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+        {/* <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
           <StatCard
             title={t("employee_dashboard.total_employees")}
             value={totalEmployees}
@@ -355,6 +504,196 @@ const Dashboard: React.FC = () => {
             }
             isLoading={isLoading}
           />
+        </div> */}
+
+        {/* Attendance Stats Section */}
+        <div className="mb-8">
+          {/* <h2 className="text-lg font-medium text-gray-900 mb-4">
+            Бугунги даволат ҳолати
+          </h2> */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-4">
+            {/* Total Employees */}
+            <div className="bg-white border-2 border-blue-200 rounded-lg shadow-lg p-4 hover:shadow-xl hover:border-blue-400 hover:scale-105 transition-all duration-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 font-medium">
+                    Жами ходимлар
+                  </p>
+                  <p className="text-2xl font-bold text-blue-600">
+                    {attendanceStats.total_employees}
+                  </p>
+                </div>
+                <Users className="h-10 w-10 text-blue-500" />
+              </div>
+            </div>
+
+            {/* Not Arrived */}
+            <div
+              className="bg-white border-2 border-blue-200 rounded-lg shadow-lg p-4 hover:shadow-xl hover:border-blue-400 hover:scale-105 transition-all duration-200 cursor-pointer"
+              onClick={() => setSelectedStatus("not_arrived")}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 font-medium">Келмаган</p>
+                  <p className="text-2xl font-bold text-red-600">
+                    {attendanceStats.not_arrived}
+                  </p>
+                </div>
+                <UserX className="h-10 w-10 text-red-500" />
+              </div>
+            </div>
+
+            {/* Arrived */}
+            <div
+              className="bg-white border-2 border-blue-200 rounded-lg shadow-lg p-4 hover:shadow-xl hover:border-blue-400 hover:scale-105 transition-all duration-200 cursor-pointer"
+              onClick={() => setSelectedStatus("arrived")}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 font-medium">Келган</p>
+                  <p className="text-2xl font-bold text-green-600">
+                    {attendanceStats.arrived}
+                  </p>
+                </div>
+                <UserCheck className="h-10 w-10 text-green-500" />
+              </div>
+            </div>
+
+            {/* Currently In */}
+            <div
+              className="bg-white border-2 border-blue-200 rounded-lg shadow-lg p-4 hover:shadow-xl hover:border-blue-400 hover:scale-105 transition-all duration-200 cursor-pointer"
+              onClick={() => setSelectedStatus("currently_in")}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 font-medium">
+                    Ҳозир ишда
+                  </p>
+                  <p className="text-2xl font-bold text-cyan-600">
+                    {attendanceStats.currently_in}
+                  </p>
+                </div>
+                <Clock className="h-10 w-10 text-cyan-500" />
+              </div>
+            </div>
+
+            {/* Left */}
+            <div
+              className="bg-white border-2 border-blue-200 rounded-lg shadow-lg p-4 hover:shadow-xl hover:border-blue-400 hover:scale-105 transition-all duration-200 cursor-pointer"
+              onClick={() => setSelectedStatus("left")}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 font-medium">Кетган</p>
+                  <p className="text-2xl font-bold text-gray-600">
+                    {attendanceStats.left}
+                  </p>
+                </div>
+                <LogOut className="h-10 w-10 text-gray-500" />
+              </div>
+            </div>
+
+            {/* Fired */}
+            <div className="bg-white border-2 border-blue-200 rounded-lg shadow-lg p-4 hover:shadow-xl hover:border-blue-400 hover:scale-105 transition-all duration-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 font-medium">
+                    Ишдан бўшатилган
+                  </p>
+                  <p className="text-2xl font-bold text-orange-600">
+                    {employeeData?.fired || 0}
+                  </p>
+                </div>
+                <UserMinus className="h-10 w-10 text-orange-500" />
+              </div>
+            </div>
+
+            {/* Hired */}
+            <div className="bg-white border-2 border-blue-200 rounded-lg shadow-lg p-4 hover:shadow-xl hover:border-blue-400 hover:scale-105 transition-all duration-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 font-medium">
+                    Ишга қабул қилинган
+                  </p>
+                  <p className="text-2xl font-bold text-purple-600">
+                    {employeeData?.hired || 0}
+                  </p>
+                </div>
+                <UserPlus className="h-10 w-10 text-purple-500" />
+              </div>
+            </div>
+          </div>
+
+          {/* Detailed Attendance Data */}
+          {/* {selectedStatus !== "all" && (
+            <div className="mt-4 bg-white rounded-lg shadow-md p-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium">
+                  {selectedStatus === "not_arrived" && "Келмаган ходимлар"}
+                  {selectedStatus === "arrived" && "Келган ходимлар"}
+                  {selectedStatus === "currently_in" && "Ҳозир ишда бўлганлар"}
+                  {selectedStatus === "left" && "Кетган ходимлар"}
+                </h3>
+                <button
+                  onClick={() => setSelectedStatus("all")}
+                  className="text-sm text-blue-600 hover:text-blue-700"
+                >
+                  Ёпиш
+                </button>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        №
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        Ф.И.О
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        Бўлим
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {isLoadingAttendance ? (
+                      <tr>
+                        <td colSpan={3} className="px-4 py-8 text-center">
+                          <div className="flex justify-center">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                          </div>
+                        </td>
+                      </tr>
+                    ) : attendanceData.length > 0 ? (
+                      attendanceData.map((item, index) => (
+                        <tr key={item.id} className="hover:bg-gray-50">
+                          <td className="px-4 py-3 text-sm text-gray-900">
+                            {index + 1}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-900">
+                            {item.full_name}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-500">
+                            {item.department || "-"}
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td
+                          colSpan={3}
+                          className="px-4 py-8 text-center text-gray-500"
+                        >
+                          Маълумот топилмади
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )} */}
         </div>
 
         {/* Charts Section */}
@@ -369,8 +708,8 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Additional Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
-          <AdditionalStatsCard
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+          {/* <AdditionalStatsCard
             title={t("employee_dashboard.active_inactive")}
             value="13500"
             description={t("employee_dashboard.active_inactive_desc")}
@@ -389,12 +728,30 @@ const Dashboard: React.FC = () => {
                 color: "#ef4444",
               },
             ]}
-          />
+          /> */}
           <AdditionalStatsCard
             title={t("employee_dashboard.internship_expiring")}
             value={(internshipData?.length || 0).toString()}
             description={t("employee_dashboard.internship_expiring_desc")}
-            hasChart={false}
+            percentage={
+              internshipData && internshipData.length > 0
+                ? `${Math.min(100, internshipData.length)}%`
+                : "0%"
+            }
+            hasChart={true}
+            chartType="pie"
+            chartData={[
+              {
+                name: "Tugaydi",
+                value: internshipData?.length || 0,
+                color: "#ef4444",
+              },
+              {
+                name: "Normal",
+                value: Math.max(0, 100 - (internshipData?.length || 0)),
+                color: "#10b981",
+              },
+            ]}
             isLoading={isInternshipLoading}
             onClick={handleInternshipClick}
           />
@@ -416,7 +773,7 @@ const Dashboard: React.FC = () => {
             chartType="pie"
             chartData={getPassportChartData()}
             isLoading={isPassportLoading}
-            onClick={handlePassportClick}
+            // onClick={handlePassportClick}
           />
           <AdditionalStatsCard
             title={t("employee_dashboard.knows_languages")}

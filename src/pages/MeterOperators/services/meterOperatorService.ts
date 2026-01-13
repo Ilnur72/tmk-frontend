@@ -23,16 +23,8 @@ const meterOperatorClient = axios.create({
 meterOperatorClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("meterOperatorAuthToken");
-    console.log("Request interceptor - Token:", token ? "EXISTS" : "NOT_FOUND");
-    console.log("Request URL:", config.url);
-    console.log("Request method:", config.method);
-
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-      console.log(
-        "Authorization header set:",
-        `Bearer ${token.substring(0, 20)}...`
-      );
     } else {
       console.warn("No token found in localStorage!");
     }
@@ -67,24 +59,16 @@ class MeterOperatorService {
 
   // POST /energy/login - Meter operator login with JWT
   async login(email: string, password: string): Promise<User> {
-    console.log("Login attempt with email:", email);
-
     const response = await axios.post(`${BASE_URL}/energy/login`, {
       email,
       password,
     });
-
-    console.log("Login response:", response.data);
 
     // Store JWT access token
     if (response.data.access_token) {
       localStorage.setItem(
         "meterOperatorAuthToken",
         response.data.access_token
-      );
-      console.log(
-        "Token saved to localStorage:",
-        response.data.access_token.substring(0, 20) + "..."
       );
     } else {
       console.error("No access_token in response!");
@@ -102,11 +86,13 @@ class MeterOperatorService {
 
   // ===== METER OPERATOR SPECIFIC ENDPOINTS =====
 
-  // GET /energy/meter-operators/my-meters
-  async getMyMeters(): Promise<Meter[]> {
-    const response = await meterOperatorClient.get(
-      "/energy/meter-operators/my-meters"
-    );
+  // GET /energy/meter-operators/my-meters?factoryId=xxx
+  async getMyMeters(factoryId?: number): Promise<Meter[]> {
+    let url = "/energy/meter-operators/my-meters";
+    if (factoryId) {
+      url += `?factoryId=${factoryId}`;
+    }
+    const response = await meterOperatorClient.get(url);
     return response.data;
   }
 

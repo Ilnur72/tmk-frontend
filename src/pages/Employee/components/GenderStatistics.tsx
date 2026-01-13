@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { EMPLOYEE_API_URL } from "../../../config/const";
+import { API_URL } from "../../../config/const";
 import axios from "axios";
 import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 
@@ -16,7 +16,7 @@ const GenderStatistics: React.FC = () => {
     const fetchGenderData = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${EMPLOYEE_API_URL}/dashboard/`);
+        const response = await axios.get(`${API_URL}/employers/dashboard/`);
         const data = response.data;
         const manPercent = Math.round(
           (data.employees_office_man / data.employees_office) * 100
@@ -78,11 +78,11 @@ const GenderStatistics: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg shadow-sm p-5">
+      <div className="bg-white rounded-lg shadow-lg p-5">
         <h2 className="text-lg font-medium text-gray-900 mb-5">
           {t("employee.gender_statistics")}
         </h2>
-        <div className="h-52 bg-gray-100 rounded-lg flex items-center justify-center animate-pulse">
+        <div className="h-52 bg-white rounded-lg flex items-center justify-center animate-pulse">
           <p className="text-gray-400">{t("employee.loading")}</p>
         </div>
       </div>
@@ -90,7 +90,7 @@ const GenderStatistics: React.FC = () => {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
+    <div className="bg-white rounded-lg shadow-lg p-6">
       <h2 className="text-lg font-medium text-gray-900 mb-6">
         {t("employee.gender_statistics")}
       </h2>

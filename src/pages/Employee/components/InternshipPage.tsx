@@ -155,7 +155,7 @@ const InternshipPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 max-sm:pt-10">
+    <div className="min-h-screen bg-white max-sm:pt-10">
       <div className="w-full px-2 sm:px-2 lg:px-2">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">

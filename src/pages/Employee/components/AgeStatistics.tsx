@@ -128,7 +128,7 @@ const AgeStatistics: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg shadow-sm p-5">
+      <div className="bg-white rounded-lg shadow-lg p-5">
         <h2 className="text-lg font-medium text-gray-900 mb-5">
           {t("employee.age_statistics")}
         </h2>
@@ -140,7 +140,7 @@ const AgeStatistics: React.FC = () => {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-5">
+    <div className="bg-white rounded-lg shadow-lg p-5">
       <h2 className="text-lg font-medium text-gray-900 mb-5">
         {t("employee.age_statistics")}
       </h2>

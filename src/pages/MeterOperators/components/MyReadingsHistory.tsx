@@ -51,10 +51,19 @@ const MyReadingsHistory: React.FC<MyReadingsHistoryProps> = ({
     }
   };
 
+  // Group readings by meter_id
   const filteredReadings = readings.filter((reading) => {
     if (activeTab === "all") return true;
-    // Assuming meter object has meter_type property accessible through reading
     return reading.meter?.meter_type === activeTab;
+  });
+
+  const readingsByMeter: { [meterId: number]: MeterReading[] } = {};
+  filteredReadings.forEach((reading) => {
+    const meterId = reading.meter_id;
+    if (!readingsByMeter[meterId]) {
+      readingsByMeter[meterId] = [];
+    }
+    readingsByMeter[meterId].push(reading);
   });
 
   const getMeterIcon = (type: string) => {
@@ -164,81 +173,72 @@ const MyReadingsHistory: React.FC<MyReadingsHistoryProps> = ({
           </p>
         </div>
       ) : (
-        <div className="bg-white shadow overflow-hidden sm:rounded-md">
-          <ul className="divide-y divide-gray-200">
-            {filteredReadings.map((reading) => (
-              <li key={reading.id}>
-                <div className="px-4 py-4 sm:px-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      {getMeterIcon(reading.meter?.meter_type || "unknown")}
-                      <div className="ml-3">
-                        <p className="text-sm font-medium text-gray-900">
-                          {reading.meter?.name || `Meter ${reading.meter_id}`}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          {reading.meter?.meter_type || "Unknown type"} meter
-                        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Object.entries(readingsByMeter).map(([meterId, meterReadings]) => {
+            const firstReading = meterReadings[0];
+            return (
+              <div
+                key={meterId}
+                className="bg-white shadow rounded-lg p-4 border border-gray-300 flex flex-col justify-between h-full"
+              >
+                <div className="flex items-center mb-2">
+                  {getMeterIcon(firstReading.meter?.meter_type || "unknown")}
+                  <div className="ml-3">
+                    <p className="text-md font-bold text-gray-900">
+                      {firstReading.meter?.name ||
+                        `Meter ${firstReading.meter_id}`}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {firstReading.meter?.meter_type || "Unknown type"} meter
+                    </p>
+                  </div>
+                </div>
+                <div className="divide-y divide-gray-200">
+                  {meterReadings.map((reading) => (
+                    <div key={reading.id} className="py-2">
+                      <div className="flex flex-wrap justify-between items-center">
+                        <div className="flex flex-col">
+                          <span className="text-xs text-gray-500">
+                            Reading Date:
+                          </span>
+                          <span className="text-sm text-gray-900">
+                            {new Date(
+                              reading.reading_date
+                            ).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <div className="flex flex-col text-right">
+                          <span className="text-xs text-gray-500">Value</span>
+                          <span className="text-base font-semibold text-gray-900">
+                            {reading.current_reading?.toLocaleString() || "0"}{" "}
+                            {getUnit(
+                              reading.meter?.meter_type || "electricity"
+                            )}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                      <div className="text-right">
-                        <p className="text-lg font-semibold text-gray-900">
-                          {reading.current_reading?.toLocaleString() || "0"}{" "}
-                          {getUnit(reading.meter?.meter_type || "electricity")}
-                        </p>
-                        {reading.consumption && (
-                          <p className="text-sm text-gray-500">
-                            Consumption:{" "}
+                      {reading.consumption && (
+                        <div className="flex justify-between text-xs text-gray-500 mt-1">
+                          <span>Consumption:</span>
+                          <span>
                             {reading.consumption?.toLocaleString() || "0"}{" "}
                             {getUnit(
                               reading.meter?.meter_type || "electricity"
                             )}
-                          </p>
-                        )}
-                      </div>
-                      <div className="flex items-center">
-                        {reading.is_verified ? (
-                          <CheckCircle className="h-5 w-5 text-green-500" />
-                        ) : (
-                          <XCircle className="h-5 w-5 text-red-500" />
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-2 sm:flex sm:justify-between">
-                    <div className="sm:flex">
-                      <p className="flex items-center text-sm text-gray-500">
-                        <Clock className="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400" />
-                        Reading Date:{" "}
-                        {new Date(reading.reading_date).toLocaleDateString()}
-                      </p>
-                      {reading.submission_time && (
-                        <p className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
-                          Submitted:{" "}
-                          {new Date(
-                            reading.submission_time
-                          ).toLocaleDateString()}
-                        </p>
+                          </span>
+                        </div>
                       )}
-                    </div>
-                    <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
                       {reading.is_late && (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 mt-1">
                           Late
                         </span>
                       )}
                     </div>
-                  </div>
-                  {reading.notes && (
-                    <div className="mt-2">
-                      <p className="text-sm text-gray-600">{reading.notes}</p>
-                    </div>
-                  )}
+                  ))}
                 </div>
-              </li>
-            ))}
-          </ul>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

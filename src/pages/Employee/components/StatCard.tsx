@@ -16,7 +16,7 @@ const StatCard: React.FC<StatCardProps> = ({
   isLoading = false,
 }) => {
   return (
-    <div className="relative bg-white rounded-lg shadow-sm p-5 hover:shadow-md transition-shadow">
+    <div className="relative bg-white rounded-lg shadow-lg p-5 hover:shadow-xl transition-shadow">
       <div className="flex justify-between items-start">
         <User className="h-7 w-7 text-green-500" />
         <div className="flex items-center bg-green-500 text-white text-xs font-medium rounded-full py-1 px-2">
