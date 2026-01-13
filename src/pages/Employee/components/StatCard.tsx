@@ -26,7 +26,7 @@ const StatCard: React.FC<StatCardProps> = ({
       </div>
       <div className="mt-6">
         <div className="text-3xl font-medium text-gray-900">
-          {isLoading ? "..." : value.toLocaleString()}
+          {isLoading ? "..." : (value ?? 0).toLocaleString()}
         </div>
         <div className="mt-1 text-base text-gray-500">{description}</div>
       </div>

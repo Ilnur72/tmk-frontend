@@ -43,7 +43,7 @@ interface AttendanceResponse {
 }
 
 const TodayAttendancePage: React.FC = () => {
-  const { t } = useTranslation();
+  // const { t } = useTranslation();
   const navigate = useNavigate();
   const [attendanceData, setAttendanceData] = useState<EmployeeAttendance[]>(
     []
@@ -57,11 +57,6 @@ const TodayAttendancePage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
 
-  useEffect(() => {
-    fetchAttendanceData();
-  }, [selectedStatus]); // selectedStatus o'zgarganda yangi ma'lumot yuklash
-  console.log(objects);
-  
   const fetchAttendanceData = async () => {
     try {
       setLoading(true);
@@ -89,6 +84,11 @@ const TodayAttendancePage: React.FC = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchAttendanceData();
+  }, [selectedStatus]); // selectedStatus o'zgarganda yangi ma'lumot yuklash
+  console.log(objects);
   console.log(stats);
 
   const getStatusBadgeColor = (status: string) => {

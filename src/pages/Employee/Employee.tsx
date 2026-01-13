@@ -1,15 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  List,
-  Users,
-  UserCheck,
-  UserX,
-  Clock,
-  LogOut,
-  UserMinus,
-  UserPlus,
-} from "lucide-react";
+import { List } from "lucide-react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -223,16 +214,8 @@ const Dashboard: React.FC = () => {
   const [attendanceToken, setAttendanceToken] = useState<string>(
     "5|aKv2AVPkCToZH8DzSAbix8UCMAomD2Sqil6wjzQAc53a5535"
   );
-  const [attendanceStats, setAttendanceStats] = useState<AttendanceStats>({
-    total_employees: 0,
-    not_arrived: 0,
-    arrived: 0,
-    late: 0,
-    currently_in: 0,
-    left: 0,
-  });
-  const [selectedStatus, setSelectedStatus] = useState<string>("all");
-  const [attendanceData, setAttendanceData] = useState<AttendanceData[]>([]);
+  const [attendanceStats, setAttendanceStats] =
+    useState<AttendanceStats | null>(null);
   const [attendanceObjects, setAttendanceObjects] = useState<
     AttendanceObject[]
   >([]);
@@ -248,15 +231,23 @@ const Dashboard: React.FC = () => {
           "all",
           attendanceToken
         );
-        setAttendanceStats(response.counts);
-        setAttendanceObjects(response.objects);
+        console.log("Attendance data fetched:", response);
+        if (response.success) {
+          setAttendanceStats(response.counts);
+          setAttendanceObjects(response.objects);
+        }
       } catch (error: any) {
         if (error.response?.status === 401) {
           const newToken = await apiService.getAttendanceToken();
           setAttendanceToken(newToken);
-          const response = await apiService.getAttendanceData("all", newToken);
-          setAttendanceStats(response.counts);
-          setAttendanceObjects(response.objects);
+          const retryResponse = await apiService.getAttendanceData(
+            "all",
+            newToken
+          );
+          if (retryResponse.success) {
+            setAttendanceStats(retryResponse.counts);
+            setAttendanceObjects(retryResponse.objects);
+          }
         }
       } finally {
         setIsLoadingAttendance(false);
@@ -264,40 +255,7 @@ const Dashboard: React.FC = () => {
     };
 
     fetchAttendanceData();
-  }, []);
-
-  // Fetch detailed attendance data when status is selected
-  useEffect(() => {
-    const fetchDetailedData = async () => {
-      if (selectedStatus === "all") {
-        setAttendanceData([]);
-        return;
-      }
-
-      try {
-        setIsLoadingAttendance(true);
-        const response = await apiService.getAttendanceData(
-          selectedStatus,
-          attendanceToken
-        );
-        setAttendanceData(response.data);
-      } catch (error: any) {
-        if (error.response?.status === 401) {
-          const newToken = await apiService.getAttendanceToken();
-          setAttendanceToken(newToken);
-          const response = await apiService.getAttendanceData(
-            selectedStatus,
-            newToken
-          );
-          setAttendanceData(response.data);
-        }
-      } finally {
-        setIsLoadingAttendance(false);
-      }
-    };
-
-    fetchDetailedData();
-  }, [selectedStatus, attendanceToken]);
+  }, [attendanceToken]);
 
   // Using React Query hooks
   const {
@@ -311,6 +269,12 @@ const Dashboard: React.FC = () => {
     isLoading: isOrgLoading,
     error: orgError,
   } = useOrganizationStats();
+
+  // Debug: Log organization data
+  console.log("Organization Data:", organizationData);
+
+  // Ensure organizationData is an array
+  const orgDataArray = Array.isArray(organizationData) ? organizationData : [];
 
   const {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -356,24 +320,15 @@ const Dashboard: React.FC = () => {
     languageError;
 
   // Calculate total employees including all branches
-  const totalEmployees = employeeData
-    ? employeeData.employees_office +
-      (organizationData.length > 0
-        ? organizationData.reduce(
-            (sum: number, org: OrganizationData) => sum + org.count,
-            0
-          )
-        : 0)
+  const totalEmployees = attendanceStats
+    ? attendanceStats.total_employees
+    : employeeData
+    ? employeeData.employees_full || 0
     : 0;
 
   // Handler for internship card click
   const handleInternshipClick = () => {
     navigate("/employers/internships");
-  };
-
-  // Handler for passport card click
-  const handlePassportClick = () => {
-    navigate("/employers/passports");
   };
 
   // Handler for language card click
@@ -445,9 +400,10 @@ const Dashboard: React.FC = () => {
           <button className="transition duration-200 border shadow-sm items-center justify-center py-2 px-3 rounded-md font-medium cursor-pointer focus:ring-4 focus:ring-blue-500 focus:ring-opacity-20 bg-primary border-primary hover:bg-opacity-80 text-white m-2 mb-2 mr-1 inline-block">
             {t("employee_dashboard.general_info")}
           </button>
-          <button 
+          <button
             onClick={() => navigate("/employers/today-attendance")}
-            className="transition duration-200 border shadow-sm items-center justify-center py-2 px-3 rounded-md font-medium cursor-pointer focus:ring-4 focus:ring-blue-500 focus:ring-opacity-20 bg-primary border-primary hover:bg-opacity-80 text-white m-2 mb-2 mr-1 inline-block">
+            className="transition duration-200 border shadow-sm items-center justify-center py-2 px-3 rounded-md font-medium cursor-pointer focus:ring-4 focus:ring-blue-500 focus:ring-opacity-20 bg-primary border-primary hover:bg-opacity-80 text-white m-2 mb-2 mr-1 inline-block"
+          >
             {t("employee_dashboard.online_info")}
           </button>
         </div>
@@ -475,10 +431,10 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Stats Cards */}
-        {/* <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
           <StatCard
             title={t("employee_dashboard.total_employees")}
-            value={totalEmployees}
+            value={employeeData?.employees_full || 0}
             description={t("employee_dashboard.total_employees_desc")}
             isLoading={isLoading}
           />
@@ -488,143 +444,49 @@ const Dashboard: React.FC = () => {
             description={t("employee_dashboard.central_office")}
             isLoading={isLoading}
           />
-          <StatCard
-            title={t("employee_dashboard.branch1")}
-            value={organizationData[2]?.count || 0}
-            description={
-              organizationData[2]?.tashkilot ||
-              t("employee_dashboard.branch1_desc")
-            }
-            isLoading={isLoading}
-          />
-          <StatCard
-            title={t("employee_dashboard.branch2")}
-            value={organizationData[3]?.count || 0}
-            description={
-              organizationData[3]?.tashkilot ||
-              t("employee_dashboard.branch2_desc")
-            }
-            isLoading={isLoading}
-          />
-        </div> */}
+          {attendanceObjects.length > 0 ? (
+            attendanceObjects.map((obj) => (
+              <StatCard
+                key={obj.id}
+                title={obj.name}
+                value={obj.employee_count || 0}
+                description={obj.name}
+                isLoading={isLoadingAttendance}
+              />
+            ))
+          ) : orgDataArray.length > 0 ? (
+            orgDataArray.map((org, index) => (
+              <StatCard
+                key={org.tashkilot || index}
+                title={org.tashkilot || `Филиал ${index + 1}`}
+                value={org.count || 0}
+                description={org.tashkilot || `Филиал ${index + 1}`}
+                isLoading={isLoading}
+              />
+            ))
+          ) : (
+            <>
+              <StatCard
+                title={t("employee_dashboard.branch1")}
+                value={0}
+                description={t("employee_dashboard.branch1_desc")}
+                isLoading={isLoading}
+              />
+              <StatCard
+                title={t("employee_dashboard.branch2")}
+                value={0}
+                description={t("employee_dashboard.branch2_desc")}
+                isLoading={isLoading}
+              />
+            </>
+          )}
+        </div>
 
         {/* Attendance Stats Section */}
         <div className="mb-8">
           {/* <h2 className="text-lg font-medium text-gray-900 mb-4">
             Бугунги даволат ҳолати
           </h2> */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-4">
-            {/* Total Employees */}
-            <div className="bg-white border-2 border-blue-200 rounded-lg shadow-lg p-4 hover:shadow-xl hover:border-blue-400 hover:scale-105 transition-all duration-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 font-medium">
-                    Жами ходимлар
-                  </p>
-                  <p className="text-2xl font-bold text-blue-600">
-                    {attendanceStats.total_employees}
-                  </p>
-                </div>
-                <Users className="h-10 w-10 text-blue-500" />
-              </div>
-            </div>
-
-            {/* Not Arrived */}
-            <div
-              className="bg-white border-2 border-blue-200 rounded-lg shadow-lg p-4 hover:shadow-xl hover:border-blue-400 hover:scale-105 transition-all duration-200 cursor-pointer"
-              onClick={() => setSelectedStatus("not_arrived")}
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 font-medium">Келмаган</p>
-                  <p className="text-2xl font-bold text-red-600">
-                    {attendanceStats.not_arrived}
-                  </p>
-                </div>
-                <UserX className="h-10 w-10 text-red-500" />
-              </div>
-            </div>
-
-            {/* Arrived */}
-            <div
-              className="bg-white border-2 border-blue-200 rounded-lg shadow-lg p-4 hover:shadow-xl hover:border-blue-400 hover:scale-105 transition-all duration-200 cursor-pointer"
-              onClick={() => setSelectedStatus("arrived")}
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 font-medium">Келган</p>
-                  <p className="text-2xl font-bold text-green-600">
-                    {attendanceStats.arrived}
-                  </p>
-                </div>
-                <UserCheck className="h-10 w-10 text-green-500" />
-              </div>
-            </div>
-
-            {/* Currently In */}
-            <div
-              className="bg-white border-2 border-blue-200 rounded-lg shadow-lg p-4 hover:shadow-xl hover:border-blue-400 hover:scale-105 transition-all duration-200 cursor-pointer"
-              onClick={() => setSelectedStatus("currently_in")}
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 font-medium">
-                    Ҳозир ишда
-                  </p>
-                  <p className="text-2xl font-bold text-cyan-600">
-                    {attendanceStats.currently_in}
-                  </p>
-                </div>
-                <Clock className="h-10 w-10 text-cyan-500" />
-              </div>
-            </div>
-
-            {/* Left */}
-            <div
-              className="bg-white border-2 border-blue-200 rounded-lg shadow-lg p-4 hover:shadow-xl hover:border-blue-400 hover:scale-105 transition-all duration-200 cursor-pointer"
-              onClick={() => setSelectedStatus("left")}
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 font-medium">Кетган</p>
-                  <p className="text-2xl font-bold text-gray-600">
-                    {attendanceStats.left}
-                  </p>
-                </div>
-                <LogOut className="h-10 w-10 text-gray-500" />
-              </div>
-            </div>
-
-            {/* Fired */}
-            <div className="bg-white border-2 border-blue-200 rounded-lg shadow-lg p-4 hover:shadow-xl hover:border-blue-400 hover:scale-105 transition-all duration-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 font-medium">
-                    Ишдан бўшатилган
-                  </p>
-                  <p className="text-2xl font-bold text-orange-600">
-                    {employeeData?.fired || 0}
-                  </p>
-                </div>
-                <UserMinus className="h-10 w-10 text-orange-500" />
-              </div>
-            </div>
-
-            {/* Hired */}
-            <div className="bg-white border-2 border-blue-200 rounded-lg shadow-lg p-4 hover:shadow-xl hover:border-blue-400 hover:scale-105 transition-all duration-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 font-medium">
-                    Ишга қабул қилинган
-                  </p>
-                  <p className="text-2xl font-bold text-purple-600">
-                    {employeeData?.hired || 0}
-                  </p>
-                </div>
-                <UserPlus className="h-10 w-10 text-purple-500" />
-              </div>
-            </div>
-          </div>
 
           {/* Detailed Attendance Data */}
           {/* {selectedStatus !== "all" && (
