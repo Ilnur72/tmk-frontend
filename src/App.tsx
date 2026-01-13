@@ -21,6 +21,7 @@ import Factory from "./pages/Factory/Factory";
 import BranchesPage from "./pages/Employee/components/BranchData";
 import InternshipPage from "./pages/Employee/components/InternshipPage";
 import LanguagePage from "./pages/Employee/components/LanguagePage";
+import TodayAttendancePage from "./pages/Employee/components/TodayAttendancePage";
 import Finance from "./pages/Finance/Finance";
 import Partners from "./pages/Partners/Partners";
 import Applications from "./pages/Applications/Applications";
@@ -109,6 +110,7 @@ const AppRoutes: React.FC = () => {
           <Route path="/employers/branches" element={<BranchesPage />} />
           <Route path="/employers/internships" element={<InternshipPage />} />
           <Route path="/employers/languages" element={<LanguagePage />} />
+          <Route path="/employers/today-attendance" element={<TodayAttendancePage />} />
           <Route path="/techniques" element={<Techniques />} />
           <Route path="/cameras" element={<Camera />} />
           <Route path="/production" element={<Production />} />

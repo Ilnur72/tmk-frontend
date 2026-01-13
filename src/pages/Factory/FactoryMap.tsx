@@ -15,7 +15,7 @@ const WeatherWidget = () => {
 
     // Set widget HTML with custom attributes
     containerRef.current.innerHTML = `
-      <div style="border-radius: 12px; overflow: hidden;" id="ww_5e9f54c4e904c" v='1.3' loc='id' a='{"t":"horizontal","lang":"uz","sl_lpl":1,"ids":["wl2689"],"font":"Arial","sl_ics":"one_a","sl_sot":"celsius","cl_bkg":"#0288D1","cl_font":"#FFFFFF","cl_cloud":"#FFFFFF","cl_persp":"#FFFFFF","cl_sun":"#FFC107","cl_moon":"#FFC107","cl_thund":"#FF5722"}'>
+      <div style="border-radius: 12px; overflow: hidden;" id="ww_5e9f54c4e904c" v='1.3' loc='id' a='{"t":"horizontal","lang":"uz","sl_lpl":1,"ids":["wl2689"],"font":"Arial","sl_ics":"one_a","sl_sot":"celsius","cl_bkg":"#33b5d6","cl_font":"#FFFFFF","cl_cloud":"#FFFFFF","cl_persp":"#FFFFFF","cl_sun":"#FFC107","cl_moon":"#FFC107","cl_thund":"#FF5722"}'>
         <a href="https://weatherwidget.org/" id="ww_5e9f54c4e904c_u" target="_blank">Html weather widget</a>
       </div>
     `;
@@ -364,7 +364,6 @@ const FactoryMap: React.FC = () => {
       if (selectedCategory) {
         params.project_category = selectedCategory;
       }
-
 
       const response = await axios.get("/factory/marker", { params });
       const data = response.data || [];

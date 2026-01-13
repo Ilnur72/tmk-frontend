@@ -2,6 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  /* Global input, select, textarea focus styles */
+  input:focus,
+  select:focus,
+  textarea:focus {
+    --tw-ring-opacity: 1;
+    --tw-ring-color: #33b5d6 !important;
+    border-color: #33b5d6 !important;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+  }
+
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    --tw-ring-opacity: 1;
+    --tw-ring-color: #33b5d6 !important;
+    border-color: #33b5d6 !important;
+  }
+
+  /* Override any blue focus rings */
+  *:focus {
+    --tw-ring-opacity: 1;
+  }
+}
+
 /* MapLibre GL CSS */
 @import "maplibre-gl/dist/maplibre-gl.css";
 

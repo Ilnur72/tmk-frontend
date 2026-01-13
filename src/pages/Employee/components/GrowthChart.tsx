@@ -452,13 +452,7 @@ const EmployeeGrowthChart: React.FC = () => {
 
       <div className="relative">
         <CustomLegend />
-        <div
-          className="h-96 w-full"
-          style={{
-            background:
-              "linear-gradient(to right, rgba(255,255,255,0.9), transparent 80px, transparent calc(100% - 80px), rgba(255,255,255,0.9))",
-          }}
-        >
+        <div className="h-96 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={filteredChartData}
@@ -528,10 +522,6 @@ const EmployeeGrowthChart: React.FC = () => {
             </LineChart>
           </ResponsiveContainer>
         </div>
-
-        {/* Gradient overlays for the fade effect */}
-        <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-white via-white/80 to-transparent pointer-events-none" />
-        <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-white via-white/80 to-transparent pointer-events-none" />
       </div>
 
       {/* No data message */}

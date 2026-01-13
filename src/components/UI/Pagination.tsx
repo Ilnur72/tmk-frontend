@@ -89,7 +89,7 @@ const Pagination: React.FC<PaginationProps> = ({
           <select
             value={itemsPerPage}
             onChange={(e) => onItemsPerPageChange(Number(e.target.value))}
-            className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
           >
             {itemsPerPageOptions.map((option) => (
               <option key={option} value={option}>
@@ -150,7 +150,7 @@ const Pagination: React.FC<PaginationProps> = ({
                   onClick={() => onPageChange(page)}
                   className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                     page === currentPage
-                      ? "bg-blue-600 text-white"
+                      ? "bg-primary text-white"
                       : "text-gray-700 hover:bg-gray-100"
                   }`}
                 >
