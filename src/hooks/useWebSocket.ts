@@ -38,8 +38,6 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
     if (socketRef.current?.connected) return;
 
     try {
-      console.log("🔌 Setting up WebSocket connection...");
-
       socketRef.current = io(url, {
         transports: ["websocket", "polling"],
         timeout: 20000,
@@ -50,7 +48,6 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
       });
 
       socketRef.current.on("connect", () => {
-        console.log("✅ WebSocket connected to TMK tracking server");
         setIsConnected(true);
         setConnectionStatus("connected");
         setError(null);
@@ -59,7 +56,6 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
         // Auto-enable real-time tracking on connect
         setTimeout(() => {
           if (socketRef.current?.connected) {
-            console.log("🎯 Auto-enabling real-time tracking...");
             socketRef.current.emit("enableRealTimeTracking", {
               interval: 1000, // 1 second updates
               includePosition: true,
@@ -71,15 +67,12 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
       });
 
       socketRef.current.on("disconnect", (reason: string) => {
-        console.log("❌ WebSocket disconnected:", reason);
         setIsConnected(false);
         setConnectionStatus("disconnected");
       });
 
       // Main event: Vehicle updates
       socketRef.current.on("vehicleUpdates", (data: VehicleUpdateData) => {
-        console.log("🚛 Vehicle updates received:", data);
-
         if (data.status === "success" && data.vehicles) {
           setVehicles(data.vehicles);
           setLastUpdate(new Date(data.timestamp || Date.now()));
@@ -102,7 +95,6 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
 
       // Real-time vehicle updates (your snippet event)
       socketRef.current.on("realTimeVehicleUpdate", (data: any) => {
-        console.log("⚡ realTimeVehicleUpdate received:", data);
         try {
           if (data && Array.isArray(data.vehicles)) {
             setVehicles(data.vehicles);
@@ -118,23 +110,15 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
         }
       });
 
-      // Status response for checkStatus
-      socketRef.current.on("statusResponse", (status: any) => {
-        console.log("🛈 statusResponse received:", status);
-      });
-
       socketRef.current.on("connect_error", (error: any) => {
-        console.error("❌ WebSocket connection error:", error);
         setError("Serverga ulanish xatoligi - REST API ga o'tildi");
         setConnectionStatus("connection_error");
       });
 
       socketRef.current.on("error", (error: any) => {
-        console.error("❌ WebSocket error:", error);
         setError(`WebSocket xatolik: ${error.message || error}`);
       });
     } catch (error) {
-      console.error("❌ WebSocket setup error:", error);
       setError(`Ulanish sozlashda xatolik: ${error}`);
       setConnectionStatus("setup_error");
     }
@@ -142,7 +126,6 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
 
   const disconnect = useCallback(() => {
     if (socketRef.current) {
-      console.log("🔌 Disconnecting WebSocket...");
       socketRef.current.disconnect();
       socketRef.current = null;
       setIsConnected(false);
@@ -153,7 +136,6 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
   // Request vehicle details
   const requestVehicleDetails = useCallback((vehicleId: number) => {
     if (socketRef.current?.connected) {
-      console.log(`📋 Requesting details for vehicle ${vehicleId}`);
       socketRef.current.emit("requestVehicleDetails", { vehicleId });
     }
   }, []);
@@ -161,7 +143,6 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
   // Sync vehicles
   const syncVehicles = useCallback(() => {
     if (socketRef.current?.connected) {
-      console.log("🔄 Syncing vehicles...");
       socketRef.current.emit("syncVehicles");
     }
   }, []);
@@ -169,7 +150,6 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
   // Enable real-time tracking
   const enableRealTimeTracking = useCallback(() => {
     if (socketRef.current?.connected) {
-      console.log("⚡ Enabling real-time tracking...");
       socketRef.current.emit("enableRealTimeTracking", {
         interval: 1000,
         includePosition: true,
@@ -182,7 +162,6 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
   // Disable real-time tracking
   const disableRealTimeTracking = useCallback(() => {
     if (socketRef.current?.connected) {
-      console.log("⏹️ Disabling real-time tracking...");
       socketRef.current.emit("disableRealTimeTracking");
     }
   }, []);
@@ -190,7 +169,6 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
   // Check status
   const checkStatus = useCallback(() => {
     if (socketRef.current?.connected) {
-      console.log("🔍 Checking server status...");
       socketRef.current.emit("checkStatus");
     }
   }, []);

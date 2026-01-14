@@ -292,6 +292,13 @@
       "inactive": "Неактивная",
       "maintenance": "Техническое обслуживание",
       "broken": "Не работает"
+    },
+    "filters": {
+      "title": "Фильтры",
+      "category": "Категория проекта",
+      "objectType": "Тип объекта",
+      "all": "Все",
+      "map": "Карта"
     }
   },
   "applications": {

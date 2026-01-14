@@ -86,11 +86,6 @@ const VehicleTracking: React.FC = () => {
       const marker = markersRef.current.get(vehicleId);
       if (marker) {
         const markerPosition = marker.getLngLat();
-        console.log(
-          `🎯 Flying to marker position:`,
-          markerPosition.lat,
-          markerPosition.lng
-        );
 
         map.current.flyTo({
           center: [markerPosition.lng, markerPosition.lat],
@@ -101,11 +96,6 @@ const VehicleTracking: React.FC = () => {
         // Fallback to vehicle data from state
         const vehicle = vehicles.find((v: any) => v.id === vehicleId);
         if (vehicle?.position) {
-          console.log(
-            `🎯 Flying to state position:`,
-            vehicle.position.latitude,
-            vehicle.position.longitude
-          );
           map.current.flyTo({
             center: [vehicle.position.longitude, vehicle.position.latitude],
             zoom: 16,
@@ -143,14 +133,8 @@ const VehicleTracking: React.FC = () => {
           clearInterval(refreshInterval);
           setRefreshInterval(null);
         }
-        console.log("🔴➡️🟢 Real-time yoqildi, WebSocket ishlatiladi");
       } else {
-        // Real-time o'chirildi - manual interval boshlash
-        console.log("🟢➡️🔴 Real-time o'chirildi, 30 soniyada yangilanadi");
-
-        // Darhol birinchi ma'lumotlarni olish
         const fetchManualData = async () => {
-          console.log("🔄 Manual refresh (real-time o'chiq)");
           try {
             // Direct API call to avoid dependency issues
             const [vehiclesResponse, statsResponse] = await Promise.all([
@@ -191,11 +175,6 @@ const VehicleTracking: React.FC = () => {
                 sensors: vehicle.sensors || {},
               }));
 
-              console.log(
-                "🔄 Manual mode: Setting vehicles",
-                processedVehicles.length,
-                "vehicles"
-              );
               setVehicles(processedVehicles);
               cacheRef.current.vehicles = processedVehicles;
             }
@@ -231,16 +210,10 @@ const VehicleTracking: React.FC = () => {
   const handleUpdateVehicleDriver = useCallback(
     async (vehicleId: number, driverData: any) => {
       try {
-        console.log("🔄 Starting driver update process...", {
-          vehicleId,
-          driverData,
-        });
         let driverId = driverData.id;
 
         // Agar driver ID yo'q bo'lsa, yangi driver yaratamiz
         if (!driverId) {
-          console.log("📝 Creating new driver...");
-          console.log("🚀 API Call: POST", `${API_BASE_URL}/drivers`);
           const createResponse = await axios.post(`${API_BASE_URL}/drivers`, {
             firstName: driverData.firstName,
             lastName: driverData.lastName,
@@ -257,28 +230,17 @@ const VehicleTracking: React.FC = () => {
             email: driverData.email,
           });
 
-          console.log(
-            "� Create Response:",
-            createResponse.status,
-            createResponse.data
-          );
-
           if (
             createResponse.status === 201 &&
             createResponse.data.status === "success"
           ) {
             driverId = createResponse.data.data.id;
-            console.log("✅ Driver created with ID:", driverId);
           } else {
             throw new Error("Failed to create driver");
           }
         } else {
           // Mavjud haydovchi ma'lumotlarini yangilash
-          console.log("📝 Updating existing driver with ID:", driverId);
-          console.log(
-            "🚀 API Call: PUT",
-            `${API_BASE_URL}/drivers/${driverId}`
-          );
+
           const updateResponse = await axios.put(
             `${API_BASE_URL}/drivers/${driverId}`,
             {
@@ -293,27 +255,10 @@ const VehicleTracking: React.FC = () => {
               email: driverData.email,
             }
           );
-          console.log(
-            "📊 Update Response:",
-            updateResponse.status,
-            updateResponse.data
-          );
         }
 
-        // Haydovchini vehiclega tayinlash
-        console.log("🔗 Assigning driver to vehicle...");
-        console.log(
-          "🚀 API Call: POST",
-          `${API_BASE_URL}/drivers/${driverId}/assign-vehicle/${vehicleId}`
-        );
         const assignResponse = await axios.post(
           `${API_BASE_URL}/drivers/${driverId}/assign-vehicle/${vehicleId}`
-        );
-
-        console.log(
-          "📊 Assign Response:",
-          assignResponse.status,
-          assignResponse.data
         );
 
         if (assignResponse.status === 200 || assignResponse.status === 201) {
@@ -326,16 +271,10 @@ const VehicleTracking: React.FC = () => {
             )
           );
 
-          console.log("✅ Driver assigned successfully:", assignResponse.data);
-
           // LocalStorage'ga saqlash (backup sifatida)
           const storageKey = `vehicle_driver_${vehicleId}`;
           const fullDriverData = { ...driverData, id: driverId };
           localStorage.setItem(storageKey, JSON.stringify(fullDriverData));
-          console.log(
-            "💾 Saved driver data to localStorage as backup:",
-            fullDriverData
-          );
 
           // Success notification
           alert(
@@ -349,12 +288,6 @@ const VehicleTracking: React.FC = () => {
           );
         }
       } catch (error: any) {
-        console.error("❌ Error updating driver data:", error);
-        console.error(
-          "❌ Error details:",
-          error.response?.data || error.message
-        );
-
         // Error notification
         alert(
           `${t("vehicle_tracking.error_occurred")}\n\n${
@@ -368,8 +301,6 @@ const VehicleTracking: React.FC = () => {
 
   const fetchVehicles = useCallback(async () => {
     try {
-      console.log("⚡ Smart loading strategy...");
-
       // INSTANT: Cache'dan ma'lumotlarni darhol ko'rsatish
       const cache = cacheRef.current;
       const now = Date.now();
@@ -383,7 +314,6 @@ const VehicleTracking: React.FC = () => {
         setVehicles(cache.vehicles);
         setStats(cache.stats || { total: 0, online: 0 });
         setLoading(false);
-        console.log("⚡ Fresh cache used, no API call needed");
         return;
       }
 
@@ -391,10 +321,7 @@ const VehicleTracking: React.FC = () => {
         setVehicles(cache.vehicles);
         setStats(cache.stats || { total: 0, online: 0 });
         setLoading(false);
-        console.log("⚡ Stale cache used, refreshing in background...");
       }
-
-      console.log("🔄 Loading fresh data from API...");
 
       // ⚡ ULTRA FAST: API calls with 1 second timeout
       const [vehiclesResponse, statsResponse] = await Promise.all([
@@ -438,7 +365,6 @@ const VehicleTracking: React.FC = () => {
 
         setVehicles(processedVehicles);
         cacheRef.current.vehicles = processedVehicles;
-        console.log("✅ Fresh vehicles loaded");
       }
 
       if (statsData) {
@@ -448,7 +374,6 @@ const VehicleTracking: React.FC = () => {
         };
         setStats(newStats);
         cacheRef.current.stats = newStats;
-        console.log("✅ Fresh stats loaded");
       }
 
       cacheRef.current.lastUpdate = Date.now();
@@ -469,12 +394,6 @@ const VehicleTracking: React.FC = () => {
       wsVehicles.length > 0 &&
       isRealTimeEnabled
     ) {
-      // ✅ WebSocket is working and real-time enabled - use real-time data
-      console.log(
-        "🚀 REAL-TIME: Using WebSocket data:",
-        wsVehicles.length,
-        "vehicles"
-      );
       setVehicles(wsVehicles);
       setStats({
         total: wsVehicles.length,
@@ -484,7 +403,6 @@ const VehicleTracking: React.FC = () => {
 
       // Stop fallback polling since WebSocket is working
       if (fallbackIntervalRef.current) {
-        console.log("🛑 WebSocket working - stopping fallback...");
         clearInterval(fallbackIntervalRef.current);
         fallbackIntervalRef.current = null;
         setFallbackMode(false);
@@ -505,13 +423,10 @@ const VehicleTracking: React.FC = () => {
       !fallbackIntervalRef.current &&
       isRealTimeEnabled // Fallback faqat real-time enabled bo'lsa ishlasin
     ) {
-      // ❌ WebSocket failed - start fallback polling (only if not already running)
-      console.log("⚠️ WebSocket failed, starting REST API fallback...");
       setFallbackMode(true);
 
       fallbackIntervalRef.current = setInterval(async () => {
         try {
-          console.log("📡 Fetching via REST API (fallback)...");
           const [vehiclesResponse, statsResponse] = await Promise.all([
             axios.get(`${API_BASE_URL}/api/vehicles/realtime`),
             axios.get(`${API_BASE_URL}/api/vehicles/stats`),
@@ -592,7 +507,6 @@ const VehicleTracking: React.FC = () => {
 
       // Fetch immediately if no cache, or after 2 minutes if stale
       if (!cacheRef.current.vehicles || now - lastUpdate > 120000) {
-        console.log("🔄 Smart fetch triggered (Manual mode or no WebSocket)");
         fetchVehicles();
       }
     }
@@ -660,14 +574,6 @@ const VehicleTracking: React.FC = () => {
 
             // Only animate if position actually changed significantly
             if (distance > 0.0001) {
-              // ~11 meters
-              console.log(
-                `🚗 Vehicle ${vehicle.id} moving from`,
-                currentLngLat,
-                "to",
-                newLngLat
-              );
-
               // Smooth transition using MapLibre's flyTo
               existingMarker.setLngLat(newLngLat);
             }
@@ -708,25 +614,15 @@ const VehicleTracking: React.FC = () => {
             el.addEventListener("click", (e) => {
               e.stopPropagation();
 
-              console.log(`🔍 MARKER CLICKED for Vehicle ${vehicle.id}`);
-
               // ✅ SOLUTION: Get CURRENT position from the marker object itself
               // This is always up-to-date because marker position is updated in real-time
               const currentMarkerPosition = marker.getLngLat();
-
-              console.log(`� Current marker position:`, {
-                lat: currentMarkerPosition.lat,
-                lng: currentMarkerPosition.lng,
-              });
 
               // Use the focusOnVehicle function for consistency
               focusOnVehicle(vehicle.id);
             });
 
             markersRef.current.set(vehicle.id, marker);
-            console.log(
-              `🆕 New vehicle marker created for ${vehicle.name} (ID: ${vehicle.id})`
-            );
           }
         }
       });
@@ -735,7 +631,6 @@ const VehicleTracking: React.FC = () => {
       const currentVehicleIds = new Set(vehicles.map((v) => v.id));
       markersRef.current.forEach((marker, vehicleId) => {
         if (!currentVehicleIds.has(vehicleId)) {
-          console.log(`🗑️ Removing marker for vehicle ${vehicleId}`);
           marker.remove();
           markersRef.current.delete(vehicleId);
         }

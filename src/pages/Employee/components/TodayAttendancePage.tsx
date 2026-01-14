@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Users, UserCheck, UserX, Clock } from "lucide-react";
@@ -56,24 +56,34 @@ const TodayAttendancePage: React.FC = () => {
   const [selectedObject, setSelectedObject] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
+  const isInitialMount = useRef(true);
 
   const fetchAttendanceData = async () => {
     try {
       setLoading(true);
 
-      const url = `${API_URL}/employers/citynet/today-tmk?query[status]=${selectedStatus}`;
-      console.log("Fetching data with URL:", url);
-      console.log(url);
+      // Build URL with query parameters
+      let url = `${API_URL}/employers/citynet/today-tmk?query[status]=${selectedStatus}`;
+
+      // Add object_id to query if selected
+      if (selectedObject !== null) {
+        url += `&query[object_id]=${selectedObject}`;
+      }
 
       const response = await axios.get<AttendanceResponse>(url);
-      console.log("Response data:", response.data);
-      console.log("Selected status:", selectedStatus);
 
       if (response.data.success) {
         setAttendanceData(response.data.data);
         setStats(response.data.counts);
-        setObjects(response.data.objects || []);
-        if (response.data.active_object) {
+
+        // Faqat birinchi yuklanishda tashkilotlar ro'yxatini saqlash
+        if (isInitialMount.current && response.data.objects) {
+          setObjects(response.data.objects);
+          isInitialMount.current = false;
+        }
+
+        // Faqat birinchi yuklanishda active_object ni o'rnatish
+        if (selectedObject === null && response.data.active_object) {
           setSelectedObject(response.data.active_object);
         }
       }
@@ -87,9 +97,7 @@ const TodayAttendancePage: React.FC = () => {
 
   useEffect(() => {
     fetchAttendanceData();
-  }, [selectedStatus]); // selectedStatus o'zgarganda yangi ma'lumot yuklash
-  console.log(objects);
-  console.log(stats);
+  }, [selectedStatus, selectedObject]); // selectedStatus va selectedObject o'zgarganda yangi ma'lumot yuklash
 
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
@@ -125,24 +133,16 @@ const TodayAttendancePage: React.FC = () => {
     }
   };
 
-  const filteredData = attendanceData.filter((emp) => {
-    // Tashkilot bo'yicha filter (frontend)
-    const objectMatch =
-      selectedObject === null || emp.object_id === selectedObject;
-
-    return objectMatch;
-  });
-
-  // Pagination logic
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  // Pagination logic (no filtering - data already filtered by backend)
+  const totalPages = Math.ceil(attendanceData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const paginatedData = filteredData.slice(startIndex, endIndex);
+  const paginatedData = attendanceData.slice(startIndex, endIndex);
 
   // Filter o'zgarganda 1-sahifaga qaytish
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedObject]);
+  }, [selectedObject, selectedStatus]);
 
   if (loading) {
     return (
@@ -207,25 +207,28 @@ const TodayAttendancePage: React.FC = () => {
         {/* Stats Cards */}
         {stats && (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-            <div
-              onClick={() => setSelectedStatus("all")}
-              className={`bg-white rounded-xl p-4 shadow-lg cursor-pointer transition-all hover:scale-105 ${
-                selectedStatus === "all" ? "ring-2 ring-primary" : ""
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-primary/10 rounded-lg">
-                  <Users className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Jami</p>
-                  <p className="text-2xl font-bold text-primary">
-                    {stats?.total_employees ||
-                      stats.arrived + stats.not_arrived}
-                  </p>
+            {/* Jami - faqat hammasi tanlanganda ko'rsatiladi */}
+            {selectedObject === null && (
+              <div
+                onClick={() => setSelectedStatus("all")}
+                className={`bg-white rounded-xl p-4 shadow-lg cursor-pointer transition-all hover:scale-105 ${
+                  selectedStatus === "all" ? "ring-2 ring-primary" : ""
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-primary/10 rounded-lg">
+                    <Users className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Jami</p>
+                    <p className="text-2xl font-bold text-primary">
+                      {stats?.total_employees ||
+                        stats.arrived + stats.not_arrived}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             <div
               onClick={() => setSelectedStatus("arrived")}
@@ -246,24 +249,27 @@ const TodayAttendancePage: React.FC = () => {
               </div>
             </div>
 
-            <div
-              onClick={() => setSelectedStatus("late")}
-              className={`bg-white rounded-xl p-4 shadow-lg cursor-pointer transition-all hover:scale-105 ${
-                selectedStatus === "late" ? "ring-2 ring-yellow-500" : ""
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-yellow-100 rounded-lg">
-                  <Clock className="w-6 h-6 text-yellow-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Kechikkan</p>
-                  <p className="text-2xl font-bold text-yellow-600">
-                    {stats.late}
-                  </p>
+            {/* Kechikkan - faqat hammasi tanlanganda ko'rsatiladi */}
+            {selectedObject === null && (
+              <div
+                onClick={() => setSelectedStatus("late")}
+                className={`bg-white rounded-xl p-4 shadow-lg cursor-pointer transition-all hover:scale-105 ${
+                  selectedStatus === "late" ? "ring-2 ring-yellow-500" : ""
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-yellow-100 rounded-lg">
+                    <Clock className="w-6 h-6 text-yellow-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Kechikkan</p>
+                    <p className="text-2xl font-bold text-yellow-600">
+                      {stats.late}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             <div
               onClick={() => setSelectedStatus("currently_in")}
@@ -303,24 +309,27 @@ const TodayAttendancePage: React.FC = () => {
               </div>
             </div>
 
-            <div
-              onClick={() => setSelectedStatus("not_arrived")}
-              className={`bg-white rounded-xl p-4 shadow-lg cursor-pointer transition-all hover:scale-105 ${
-                selectedStatus === "not_arrived" ? "ring-2 ring-red-500" : ""
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-red-100 rounded-lg">
-                  <UserX className="w-6 h-6 text-red-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Kelmagan</p>
-                  <p className="text-2xl font-bold text-red-600">
-                    {stats.not_arrived}
-                  </p>
+            {/* Kelmagan - faqat hammasi tanlanganda ko'rsatiladi */}
+            {selectedObject === null && (
+              <div
+                onClick={() => setSelectedStatus("not_arrived")}
+                className={`bg-white rounded-xl p-4 shadow-lg cursor-pointer transition-all hover:scale-105 ${
+                  selectedStatus === "not_arrived" ? "ring-2 ring-red-500" : ""
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-red-100 rounded-lg">
+                    <UserX className="w-6 h-6 text-red-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Kelmagan</p>
+                    <p className="text-2xl font-bold text-red-600">
+                      {stats.not_arrived}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         )}
 
@@ -330,7 +339,7 @@ const TodayAttendancePage: React.FC = () => {
             Xodimlar ro'yxati
             {selectedStatus !== "all" && (
               <span className="ml-2 text-sm text-gray-500">
-                ({getStatusText(selectedStatus)} - {filteredData.length} ta)
+                ({getStatusText(selectedStatus)} - {attendanceData.length} ta)
               </span>
             )}
           </h2>
@@ -407,7 +416,7 @@ const TodayAttendancePage: React.FC = () => {
             ))}
           </div>
 
-          {filteredData.length === 0 && (
+          {attendanceData.length === 0 && (
             <div className="text-center py-12 text-gray-500">
               <Users className="w-16 h-16 mx-auto mb-4 text-gray-300" />
               <p className="text-lg">Ma'lumot topilmadi</p>
@@ -416,11 +425,11 @@ const TodayAttendancePage: React.FC = () => {
         </div>
 
         {/* Pagination */}
-        {filteredData.length > 0 && (
+        {attendanceData.length > 0 && (
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
-            totalItems={filteredData.length}
+            totalItems={attendanceData.length}
             itemsPerPage={itemsPerPage}
             onPageChange={setCurrentPage}
             onItemsPerPageChange={setItemsPerPage}

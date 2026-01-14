@@ -299,6 +299,13 @@
       "inactive": "Inactive",
       "maintenance": "Maintenance",
       "broken": "Broken"
+    },
+    "filters": {
+      "title": "Filters",
+      "category": "Project Category",
+      "objectType": "Object Type",
+      "all": "All",
+      "map": "Map"
     }
   },
   "applications": {

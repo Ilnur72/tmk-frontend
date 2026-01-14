@@ -5,6 +5,7 @@ import maplibregl from "maplibre-gl";
 import axios from "axios";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { API_URL } from "../../config/const";
+import { Select } from "../../components/UI/Select";
 
 // Weather Widget Component
 const WeatherWidget = () => {
@@ -186,7 +187,8 @@ const FactoryMap: React.FC = () => {
     (coords: [number, number], fromSidebar = false) => {
       if (!map.current) return;
 
-      if (window.innerWidth <= 768 && fromSidebar && !sidebarCollapsed) {
+      // Close sidebar when marker or sidebar item is clicked
+      if (!sidebarCollapsed) {
         toggleSidebar();
       }
 
@@ -495,7 +497,7 @@ const FactoryMap: React.FC = () => {
           >
             {/* Filters and Weather Section - positioned above map next to sidebar */}
             <div
-              className="absolute z-10 transition-all duration-300 ease-in-out max-md:static max-md:mb-2 max-md:px-2 max-md:w-full"
+              className="absolute z-10 transition-all duration-300 ease-in-out max-md:static max-md:mb-2 max-md:px-2 max-md:w-full pointer-events-none"
               style={{
                 top: window.innerWidth > 768 ? "16px" : "auto",
                 left:
@@ -507,179 +509,128 @@ const FactoryMap: React.FC = () => {
                 right: window.innerWidth > 768 ? "20px" : "auto",
               }}
             >
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 max-md:gap-2 max-md:grid-cols-1">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 max-md:gap-2 max-md:grid-cols-1 items-start">
                 {/* Filters */}
-                <div className="lg:col-span-2 max-md:col-span-1">
-                  <div className=" backdrop-blur-md rounded-3xl shadow-lg border border-gray-200/50 p-4 max-md:p-3">
-                    {/* <div className="flex items-center mb-3">
-                      <svg className="w-5 h-5 text-cyan-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                      </svg>
-                      <h3 className="text-base font-bold text-gray-800">
-                        {t("factory.filters.title", "Filterlar")}
-                      </h3>
-                    </div> */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-md:gap-2">
-                      {/* Category Filter */}
-                      <div className="relative">
-                        <label className="block text-xs font-semibold text-gray-700 mb-1.5 max-md:text-[10px] max-md:mb-1">
+                <div className="lg:col-span-2 max-md:col-span-1 pointer-events-auto">
+                  <div className="backdrop-blur-md rounded-2xl shadow-md border border-gray-200/50 p-2.5 max-md:p-2 w-fit">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-md:gap-1.5">
+                      {/* Category Filter - Checkbox with Icons */}
+                      <div>
+                        <label className="block mb-1 text-sm font-semibold text-gray-700 max-md:text-[10px]">
                           {t("factory.filters.category", "Loyiha kategoriyasi")}
+                          :
                         </label>
-                        <div className="relative">
-                          <select
-                            className="w-full px-3 py-2.5 pr-9 text-sm text-gray-700 bg-white border-2 border-gray-200 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200 hover:border-cyan-300 cursor-pointer max-md:px-2 max-md:py-2 max-md:pr-7 max-md:text-xs"
-                            style={{
-                              backgroundImage: "none",
-                              WebkitAppearance: "none",
-                              MozAppearance: "none",
-                            }}
-                            value={selectedCategory}
-                            onChange={(e) =>
-                              setSelectedCategory(e.target.value)
-                            }
-                          >
-                            <option value="" className="text-gray-500">
+                        <div className="flex flex-wrap justify-center gap-2 max-md:gap-1">
+                          {/* All button */}
+                          <label className="flex flex-col items-center gap-0.5 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="category"
+                              value=""
+                              checked={selectedCategory === ""}
+                              onChange={() => setSelectedCategory("")}
+                              className="w-3 h-3"
+                            />
+                            <div className="text-lg">📋</div>
+                            <span className="text-xs text-gray-600">
                               {t("factory.filters.all", "Barchasi")}
-                            </option>
-                            {categories.map((cat) => (
-                              <option
-                                key={cat}
-                                value={cat}
-                                className="text-gray-700"
-                              >
-                                {cat.charAt(0).toUpperCase() +
-                                  cat.slice(1).replace("-", " ")}
-                              </option>
-                            ))}
-                          </select>
-                          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-gray-500">
-                            <svg
-                              className="w-4 h-4"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M19 9l-7 7-7-7"
-                              />
-                            </svg>
-                          </div>
+                            </span>
+                          </label>
+
+                          {/* Factory */}
+                          <label className="flex flex-col items-center gap-0.5 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="category"
+                              value="factory"
+                              checked={selectedCategory === "factory"}
+                              onChange={() => setSelectedCategory("factory")}
+                              className="w-3 h-3"
+                            />
+                            <img
+                              src="/image/factory.png"
+                              alt="Factory"
+                              className="w-7 h-7"
+                            />
+                            <span className="text-xs text-gray-600">Metal</span>
+                          </label>
+
+                          {/* Mine */}
+                          <label className="flex flex-col items-center gap-0.5 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="category"
+                              value="mine"
+                              checked={selectedCategory === "mine"}
+                              onChange={() => setSelectedCategory("mine")}
+                              className="w-3 h-3"
+                            />
+                            <img
+                              src="/image/mine.png"
+                              alt="Mine"
+                              className="w-7 h-7"
+                            />
+                            <span className="text-xs text-gray-600">Mine</span>
+                          </label>
+
+                          {/* Mine Cart */}
+                          <label className="flex flex-col items-center gap-0.5 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="category"
+                              value="mine-cart"
+                              checked={selectedCategory === "mine-cart"}
+                              onChange={() => setSelectedCategory("mine-cart")}
+                              className="w-3 h-3"
+                            />
+                            <img
+                              src="/image/mine-cart.png"
+                              alt="Mine Cart"
+                              className="w-7 h-7"
+                            />
+                            <span className="text-xs text-gray-600">
+                              Market
+                            </span>
+                          </label>
                         </div>
-                        {selectedCategory && (
-                          <button
-                            onClick={() => setSelectedCategory("")}
-                            className="absolute top-7 right-9 text-gray-400 hover:text-red-500 transition-colors"
-                            title="Clear filter"
-                          >
-                            <svg
-                              className="w-3.5 h-3.5"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M6 18L18 6M6 6l12 12"
-                              />
-                            </svg>
-                          </button>
-                        )}
                       </div>
 
-                      {/* Object Type Filter */}
-                      <div className="relative">
-                        <label className="block text-xs font-semibold text-gray-700 mb-1.5 max-md:text-[10px] max-md:mb-1">
-                          {t("factory.filters.objectType", "Obyekt tipi")}
-                        </label>
-                        <div className="relative">
-                          <select
-                            className="w-full px-3 py-2.5 pr-9 text-sm text-gray-700 bg-white border-2 border-gray-200 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200 hover:border-cyan-300 cursor-pointer max-md:px-2 max-md:py-2 max-md:pr-7 max-md:text-xs"
-                            style={{
-                              backgroundImage: "none",
-                              WebkitAppearance: "none",
-                              MozAppearance: "none",
-                            }}
-                            value={selectedObjectType}
-                            onChange={(e) =>
-                              setSelectedObjectType(e.target.value)
-                            }
-                          >
-                            <option value="" className="text-gray-500">
-                              {t("factory.filters.all", "Barchasi")}
-                            </option>
-                            {objectTypes.map((type) => (
-                              <option
-                                key={type.id}
-                                value={type.name}
-                                className="text-gray-700"
-                              >
-                                {type.name}
-                              </option>
-                            ))}
-                          </select>
-                          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-gray-500">
-                            <svg
-                              className="w-4 h-4"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M19 9l-7 7-7-7"
-                              />
-                            </svg>
-                          </div>
-                        </div>
-                        {selectedObjectType && (
-                          <button
-                            onClick={() => setSelectedObjectType("")}
-                            className="absolute top-7 right-9 text-gray-400 hover:text-red-500 transition-colors"
-                            title="Clear filter"
-                          >
-                            <svg
-                              className="w-3.5 h-3.5"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M6 18L18 6M6 6l12 12"
-                              />
-                            </svg>
-                          </button>
-                        )}
+                      {/* Object Type Filter - Custom Select */}
+                      <div>
+                        <Select
+                          label={t("factory.filters.objectType", "Obyekt tipi")}
+                          options={[
+                            {
+                              id: "",
+                              name: t("factory.filters.all", "Barchasi"),
+                            },
+                            ...objectTypes.map((type) => ({
+                              id: type.name,
+                              name: type.name,
+                            })),
+                          ]}
+                          value={selectedObjectType}
+                          onChange={(value) => setSelectedObjectType(value)}
+                        />
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Weather Widget */}
-                <div className="lg:col-span-1 max-md:hidden">
-                  <div className="rounded-3xl  h-full flex flex-col gap-2 max-w-md overflow-hidden">
-                    <div className="flex-1 flex items-center justify-center overflow-hidden rounded-3xl">
-                      <div className="w-full scale-90 origin-center rounded-lg">
-                        <WeatherWidget />
-                      </div>
+                <div className="lg:col-span-1 max-md:hidden pointer-events-auto">
+                  <div className="rounded-3xl overflow-hidden">
+                    <div className="w-full scale-90 origin-top rounded-lg">
+                      <WeatherWidget />
                     </div>
-                    <div className="flex items-center justify-end mr-5">
+                    {/* Weather Map Button */}
+                    <div className="pb-1 px-5 border-t border-gray-100/50 justify-end flex">
                       <button
                         onClick={() => setShowWeatherMapModal(true)}
-                        className="p-1.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg transition-colors shadow-md hover:shadow-lg flex items-center gap-1 text-xs"
-                        title="Ob-havo kartasini ochish"
+                        className="w-full px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-primary hover:from-cyan-600 hover:to-primary text-white font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 text-sm group"
                       >
                         <svg
-                          className="w-4 h-4"
+                          className="w-4 h-4 transition-transform group-hover:scale-110"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -691,7 +642,7 @@ const FactoryMap: React.FC = () => {
                             d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
                           />
                         </svg>
-                        Karta
+                        {t("factory.filters.map", "Karta")}
                       </button>
                     </div>
                   </div>

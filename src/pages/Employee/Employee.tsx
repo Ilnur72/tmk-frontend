@@ -231,7 +231,6 @@ const Dashboard: React.FC = () => {
           "all",
           attendanceToken
         );
-        console.log("Attendance data fetched:", response);
         if (response.success) {
           setAttendanceStats(response.counts);
           setAttendanceObjects(response.objects);
@@ -269,9 +268,6 @@ const Dashboard: React.FC = () => {
     isLoading: isOrgLoading,
     error: orgError,
   } = useOrganizationStats();
-
-  // Debug: Log organization data
-  console.log("Organization Data:", organizationData);
 
   // Ensure organizationData is an array
   const orgDataArray = Array.isArray(organizationData) ? organizationData : [];

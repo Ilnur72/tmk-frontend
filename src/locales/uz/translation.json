@@ -292,6 +292,13 @@
       "inactive": "Фаол эмас",
       "maintenance": "Техник хизмат",
       "broken": "Ишламайди"
+    },
+    "filters": {
+      "title": "Филтрлар",
+      "category": "Лойиҳа категорияси",
+      "objectType": "Объект тури",
+      "all": "Барчаси",
+      "map": "Карта"
     }
   },
   "applications": {
