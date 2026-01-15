@@ -414,8 +414,7 @@ const Dashboard: React.FC = () => {
         {/* Header Section */}
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-lg font-medium text-gray-900">
-            {/* {t("employee_dashboard.general_info")} */}
-            Бугунги даволат ҳолати
+            {t("employee_dashboard.today_attendance_status")}
           </h2>
           <a
             href="employers/branches"

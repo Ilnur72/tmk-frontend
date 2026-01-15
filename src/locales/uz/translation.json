@@ -230,7 +230,23 @@
     "loading": "Юкланмоқда...",
     "male": "Эркак киши",
     "female": "Аёл киши",
-    "gender_statistics": "Гендер статистикаси"
+    "gender_statistics": "Гендер статистикаси",
+    "today_attendance": "Бугунги давомат",
+    "back": "Орқага",
+    "organization": "Ташкилот",
+    "all": "Хаммаси",
+    "total": "Жами",
+    "arrived": "Келган",
+    "late": "Кечикган",
+    "currently_in": "Ичкарида",
+    "left": "Кетган",
+    "not_arrived": "Келмаган",
+    "employee_list_attendance": "Ходимлар рўйхати",
+    "entry_time": "Кириш",
+    "exit_time": "Чиқиш",
+    "object": "Объект",
+    "no_data_found": "Маълумот топилмади",
+    "data_loading_error": "Маълумотларни юклашда хатолик юз берди"
   },
   "layout": {
     "search": "Қидириш...",
@@ -681,6 +697,7 @@
   "employee_dashboard": {
     "general_info": "Умумий маълумот",
     "online_info": "Онлайн маълумот",
+    "today_attendance_status": "Бугунги даволат ҳолати",
     "load_error": "Маълумотларни юклашда хатолик",
     "all_branches_info": "Барча филиаллар ҳақида маълумот",
     "total_employees": "Жами ходимлар",
@@ -781,6 +798,8 @@
   },
   "energy": {
     "title": "Энергия бошқаруви",
+    "description": "Энергия истеъмолини кузатиш ва объектларингиз бўйича таҳлилларни кўриш",
+    "reports_coming_soon": "Энергия ҳисоботлари ва таҳлиллар тез орада...",
     "dashboard": "Бошқарув панели",
     "workshops": "Цехлар",
     "meters": "Ҳисобгичлар",
@@ -882,6 +901,18 @@
       "edit": "Таҳрирлаш",
       "delete": "Ўчириш",
       "view": "Кўриш"
+    },
+    "energy_chart": {
+      "tab_title": "Диаграмма",
+      "title": "Энергия диаграммаси",
+      "description": "Энергия истеъмолининг тарихий маълумотлари ва таҳлиллари",
+      "powered_by": "Metabase Analytics орқали таъминланган"
+    },
+    "readings_analytics": {
+      "tab_title": "Кўрсаткичлар таҳлили",
+      "title": "Кўрсаткичлар таҳлили",
+      "description": "Ҳисобгичлар кўрсаткичларининг батафсил таҳлили ва статистикаси",
+      "powered_by": "Metabase Analytics орқали таъминланган"
     }
   },
   "energy_management": {
@@ -1121,6 +1152,12 @@
       "save": "Сақлаш",
       "cancel": "Бекор қилиш",
       "refresh": "Янгилаш"
+    },
+    "readings_chart": {
+      "tab_title": "Диаграмма",
+      "title": "Кўрсаткичлар диаграммаси",
+      "description": "Ҳисобгичлар кўрсаткичларининг тарихий маълумотлари",
+      "powered_by": "Metabase Analytics орқали таъминланган"
     }
   }
 }

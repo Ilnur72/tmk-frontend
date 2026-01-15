@@ -218,6 +218,22 @@
     }
   },
   "employee": {
+    "today_attendance": "Посещаемость сегодня",
+    "back": "Назад",
+    "organization": "Организация",
+    "all": "Все",
+    "total": "Всего",
+    "arrived": "Пришел",
+    "late": "Опоздал",
+    "currently_in": "Внутри",
+    "left": "Ушел",
+    "not_arrived": "Не пришел",
+    "employee_list_attendance": "Список сотрудников",
+    "entry_time": "Вход",
+    "exit_time": "Выход",
+    "object": "Объект",
+    "no_data_found": "Данные не найдены",
+    "data_loading_error": "Ошибка загрузки данных",
     "title": "Сотрудники",
     "employees": "Сотрудники",
     "add_employee": "Добавить сотрудника",
@@ -679,6 +695,7 @@
     "project_total_value_key": "Стоимость проекта"
   },
   "employee_dashboard": {
+    "today_attendance_status": "Статус посещаемости сегодня",
     "general_info": "Общая информация",
     "online_info": "Онлайн информация",
     "load_error": "Ошибка загрузки данных",
@@ -780,6 +797,8 @@
     "surkhandarya": "Сурхандарьинская область"
   },
   "energy": {
+    "description": "Мониторинг потребления энергии и просмотр аналитики по вашим объектам",
+    "reports_coming_soon": "Отчеты по энергии и аналитика скоро...",
     "title": "Управление энергопотреблением",
     "dashboard": "Панель управления",
     "workshops": "Цеха",
@@ -882,6 +901,18 @@
       "edit": "Редактировать",
       "delete": "Удалить",
       "view": "Просмотр"
+    },
+    "energy_chart": {
+      "tab_title": "Диаграмма",
+      "title": "Диаграмма энергии",
+      "description": "Исторические данные и анализ потребления энергии",
+      "powered_by": "Предоставлено Metabase Analytics"
+    },
+    "readings_analytics": {
+      "tab_title": "Анализ показаний",
+      "title": "Анализ показаний",
+      "description": "Детальный анализ и статистика показаний счётчиков",
+      "powered_by": "Предоставлено Metabase Analytics"
     }
   },
   "energy_management": {
@@ -1120,6 +1151,12 @@
       "save": "Сохранить",
       "cancel": "Отмена",
       "refresh": "Обновить"
+    },
+    "readings_chart": {
+      "tab_title": "Диаграмма",
+      "title": "Диаграмма показаний",
+      "description": "Историческая информация показаний счётчиков",
+      "powered_by": "Предоставлено Metabase Analytics"
     }
   }
 }

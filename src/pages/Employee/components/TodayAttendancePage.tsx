@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Users, UserCheck, UserX, Clock } from "lucide-react";
 import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 import { API_URL } from "../../../config/const";
 import Pagination from "../../../components/UI/Pagination";
 
@@ -43,14 +44,8 @@ interface AttendanceResponse {
 }
 
 const TodayAttendancePage: React.FC = () => {
-  // const { t } = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
-  const [attendanceData, setAttendanceData] = useState<EmployeeAttendance[]>(
-    []
-  );
-  const [stats, setStats] = useState<AttendanceStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [objects, setObjects] = useState<ObjectInfo[]>([]);
   const [selectedObject, setSelectedObject] = useState<number | null>(null);
@@ -58,46 +53,33 @@ const TodayAttendancePage: React.FC = () => {
   const [itemsPerPage, setItemsPerPage] = useState(20);
   const isInitialMount = useRef(true);
 
-  const fetchAttendanceData = async () => {
-    try {
-      setLoading(true);
-
-      // Build URL with query parameters
+  // React Query bilan ma'lumot yuklash
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["todayAttendance", selectedStatus, selectedObject],
+    queryFn: async () => {
       let url = `${API_URL}/employers/citynet/today-tmk?query[status]=${selectedStatus}`;
-
-      // Add object_id to query if selected
       if (selectedObject !== null) {
         url += `&query[object_id]=${selectedObject}`;
       }
-
       const response = await axios.get<AttendanceResponse>(url);
+      return response.data;
+    },
+    staleTime: 30000, // 30 sekund
+    refetchOnWindowFocus: false,
+  });
 
-      if (response.data.success) {
-        setAttendanceData(response.data.data);
-        setStats(response.data.counts);
-
-        // Faqat birinchi yuklanishda tashkilotlar ro'yxatini saqlash
-        if (isInitialMount.current && response.data.objects) {
-          setObjects(response.data.objects);
-          isInitialMount.current = false;
-        }
-
-        // Faqat birinchi yuklanishda active_object ni o'rnatish
-        if (selectedObject === null && response.data.active_object) {
-          setSelectedObject(response.data.active_object);
-        }
-      }
-    } catch (err) {
-      setError("Ma'lumotlarni yuklashda xatolik yuz berdi");
-      console.error("Error fetching attendance data:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Birinchi yuklanishda objects va selectedObject ni o'rnatish
   useEffect(() => {
-    fetchAttendanceData();
-  }, [selectedStatus, selectedObject]); // selectedStatus va selectedObject o'zgarganda yangi ma'lumot yuklash
+    if (data && isInitialMount.current) {
+      if (data.objects) {
+        setObjects(data.objects);
+      }
+      if (data.active_object) {
+        setSelectedObject(data.active_object);
+      }
+      isInitialMount.current = false;
+    }
+  }, [data]);
 
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
@@ -119,21 +101,23 @@ const TodayAttendancePage: React.FC = () => {
   const getStatusText = (status: string) => {
     switch (status) {
       case "arrived":
-        return "Kelgan";
+        return t("employee.arrived");
       case "late":
-        return "Kechikkan";
+        return t("employee.late");
       case "currently_in":
-        return "Hozir ichkarida";
+        return t("employee.currently_in");
       case "left":
-        return "Ketgan";
+        return t("employee.left");
       case "not_arrived":
-        return "Kelmagan";
+        return t("employee.not_arrived");
       default:
         return status;
     }
   };
 
   // Pagination logic (no filtering - data already filtered by backend)
+  const attendanceData = data?.data || [];
+  const stats = data?.counts || null;
   const totalPages = Math.ceil(attendanceData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -144,12 +128,12 @@ const TodayAttendancePage: React.FC = () => {
     setCurrentPage(1);
   }, [selectedObject, selectedStatus]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-100 p-6 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Yuklanmoqda...</p>
+          <p className="mt-4 text-gray-600">{t("employee.loading")}</p>
         </div>
       </div>
     );
@@ -165,16 +149,18 @@ const TodayAttendancePage: React.FC = () => {
             className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow hover:shadow-md transition-all"
           >
             <ArrowLeft className="w-5 h-5" />
-            <span>Orqaga</span>
+            <span>{t("employee.back")}</span>
           </button>
-          <h1 className="text-3xl font-bold text-gray-800">Bugungi Davomat</h1>
+          <h1 className="text-3xl font-bold text-gray-800">
+            {t("employee.today_attendance")}
+          </h1>
         </div>
 
         {/* Tashkilotlar filter */}
         {objects.length > 0 && (
           <div className="mb-6 bg-white rounded-xl shadow-lg p-4">
             <h3 className="text-sm font-medium text-gray-700 mb-3">
-              Tashkilot:
+              {t("employee.organization")}:
             </h3>
             <div className="flex flex-wrap gap-3">
               <button
@@ -185,7 +171,7 @@ const TodayAttendancePage: React.FC = () => {
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 }`}
               >
-                Hammasi ({attendanceData.length})
+                {t("employee.all")} ({attendanceData.length})
               </button>
               {objects.map((obj) => (
                 <button
@@ -220,7 +206,9 @@ const TodayAttendancePage: React.FC = () => {
                     <Users className="w-6 h-6 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">Jami</p>
+                    <p className="text-sm text-gray-600">
+                      {t("employee.total")}
+                    </p>
                     <p className="text-2xl font-bold text-primary">
                       {stats?.total_employees ||
                         stats.arrived + stats.not_arrived}
@@ -241,7 +229,9 @@ const TodayAttendancePage: React.FC = () => {
                   <UserCheck className="w-6 h-6 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Kelgan</p>
+                  <p className="text-sm text-gray-600">
+                    {t("employee.arrived")}
+                  </p>
                   <p className="text-2xl font-bold text-green-600">
                     {stats.arrived}
                   </p>
@@ -262,7 +252,9 @@ const TodayAttendancePage: React.FC = () => {
                     <Clock className="w-6 h-6 text-yellow-600" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">Kechikkan</p>
+                    <p className="text-sm text-gray-600">
+                      {t("employee.late")}
+                    </p>
                     <p className="text-2xl font-bold text-yellow-600">
                       {stats.late}
                     </p>
@@ -282,7 +274,9 @@ const TodayAttendancePage: React.FC = () => {
                   <Users className="w-6 h-6 text-cyan-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Ichkarida</p>
+                  <p className="text-sm text-gray-600">
+                    {t("employee.currently_in")}
+                  </p>
                   <p className="text-2xl font-bold text-cyan-600">
                     {stats.currently_in}
                   </p>
@@ -301,7 +295,7 @@ const TodayAttendancePage: React.FC = () => {
                   <UserCheck className="w-6 h-6 text-gray-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Ketgan</p>
+                  <p className="text-sm text-gray-600">{t("employee.left")}</p>
                   <p className="text-2xl font-bold text-gray-600">
                     {stats.left}
                   </p>
@@ -322,7 +316,9 @@ const TodayAttendancePage: React.FC = () => {
                     <UserX className="w-6 h-6 text-red-600" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">Kelmagan</p>
+                    <p className="text-sm text-gray-600">
+                      {t("employee.not_arrived")}
+                    </p>
                     <p className="text-2xl font-bold text-red-600">
                       {stats.not_arrived}
                     </p>
@@ -336,7 +332,7 @@ const TodayAttendancePage: React.FC = () => {
         {/* Employee List */}
         <div className="bg-white rounded-xl shadow-lg p-6">
           <h2 className="text-xl font-bold text-gray-800 mb-4">
-            Xodimlar ro'yxati
+            {t("employee.employee_list_attendance")}
             {selectedStatus !== "all" && (
               <span className="ml-2 text-sm text-gray-500">
                 ({getStatusText(selectedStatus)} - {attendanceData.length} ta)
@@ -346,7 +342,9 @@ const TodayAttendancePage: React.FC = () => {
 
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-              {error}
+              {error instanceof Error
+                ? error.message
+                : t("employee.data_loading_error")}
             </div>
           )}
 
@@ -395,18 +393,24 @@ const TodayAttendancePage: React.FC = () => {
 
                     <div className="mt-2 text-xs text-gray-500">
                       <div className="flex items-center gap-1">
-                        <span className="font-medium">Kirish:</span>
+                        <span className="font-medium">
+                          {t("employee.entry_time")}:
+                        </span>
                         <span>{employee.entry_time}</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <span className="font-medium">Chiqish:</span>
+                        <span className="font-medium">
+                          {t("employee.exit_time")}:
+                        </span>
                         <span>{employee.exit_time}</span>
                       </div>
                     </div>
 
                     {employee.object_name !== "-" && (
                       <div className="mt-1 text-xs text-gray-600">
-                        <span className="font-medium">Obyekt:</span>{" "}
+                        <span className="font-medium">
+                          {t("employee.object")}:
+                        </span>{" "}
                         {employee.object_name}
                       </div>
                     )}
@@ -419,7 +423,7 @@ const TodayAttendancePage: React.FC = () => {
           {attendanceData.length === 0 && (
             <div className="text-center py-12 text-gray-500">
               <Users className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-              <p className="text-lg">Ma'lumot topilmadi</p>
+              <p className="text-lg">{t("employee.no_data_found")}</p>
             </div>
           )}
         </div>

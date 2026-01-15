@@ -132,6 +132,10 @@ const Sidebar = () => {
           <ul className="py-2">
             {menuItems.map((item) => {
               const Icon = item.icon;
+              const isActive =
+                location.pathname.startsWith(item.href) ||
+                location.pathname.replace(/\/$/, "") ===
+                  item.href.replace(/\/$/, "");
               return (
                 <li
                   key={`mobile-${item.href}`}
@@ -142,30 +146,21 @@ const Sidebar = () => {
                     onClick={() => closeMobileMenu()}
                     className={({ isActive }) =>
                       `menu flex items-center px-6 py-4 hover:bg-opacity-50 transition-colors ${
-                        location.pathname.replace(/\/$/, "") ===
-                        item.href.replace(/\/$/, "")
-                          ? "bg-white border-r-4 border-primary"
-                          : ""
+                        isActive ? "bg-white border-r-4 border-primary" : ""
                       }`
                     }
                     end={item.href === "/"}
                   >
                     <div
                       className={`menu__icon mr-4 ${
-                        item.href.replace(/\/$/, "") ===
-                        location.pathname.replace(/\/$/, "")
-                          ? "text-primary"
-                          : "text-white"
+                        isActive ? "text-primary" : "text-white"
                       }`}
                     >
                       <Icon className={`w-5 h-5`} />
                     </div>
                     <div
                       className={`menu__title text-sm font-medium ${
-                        item.href.replace(/\/$/, "") ===
-                        location.pathname.replace(/\/$/, "")
-                          ? "text-black"
-                          : "text-white"
+                        isActive ? "text-black" : "text-white"
                       }`}
                     >
                       {t(item.title)}
@@ -212,15 +207,16 @@ const Sidebar = () => {
         <ul>
           {menuItems.map((item) => {
             const Icon = item.icon;
+            const isActive =
+              location.pathname.startsWith(item.href) ||
+              location.pathname.replace(/\/$/, "") ===
+                item.href.replace(/\/$/, "");
             return (
               <li key={item.href} id={item.id}>
                 <NavLink
                   to={item.href}
                   className={({ isActive }) =>
-                    location.pathname.replace(/\/$/, "") ===
-                    item.href.replace(/\/$/, "")
-                      ? "side-menu side-menu--active"
-                      : "side-menu"
+                    isActive ? "side-menu side-menu--active" : "side-menu"
                   }
                   end={item.href === "/"}
                   onClick={() => closeMobileMenu()}

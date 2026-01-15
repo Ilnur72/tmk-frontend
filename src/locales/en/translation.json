@@ -225,6 +225,22 @@
     }
   },
   "employee": {
+    "today_attendance": "Today's Attendance",
+    "back": "Back",
+    "organization": "Organization",
+    "all": "All",
+    "total": "Total",
+    "arrived": "Arrived",
+    "late": "Late",
+    "currently_in": "Currently In",
+    "left": "Left",
+    "not_arrived": "Not Arrived",
+    "employee_list_attendance": "Employee List",
+    "entry_time": "Entry",
+    "exit_time": "Exit",
+    "object": "Object",
+    "no_data_found": "No data found",
+    "data_loading_error": "Error loading data",
     "title": "Employees",
     "employees": "Employees",
     "add_employee": "Add Employee",
@@ -777,6 +793,12 @@
       "save": "Save",
       "cancel": "Cancel",
       "refresh": "Refresh"
+    },
+    "readings_chart": {
+      "tab_title": "Chart",
+      "title": "Readings Chart",
+      "description": "Historical meter readings data",
+      "powered_by": "Powered by Metabase Analytics"
     }
   },
   "total_projects": "Total Projects",
@@ -918,6 +940,7 @@
     "project_total_value_key": "Project Value"
   },
   "employee_dashboard": {
+    "today_attendance_status": "Today's Attendance Status",
     "general_info": "General Information",
     "online_info": "Online Information",
     "load_error": "Data loading error",
@@ -1019,6 +1042,8 @@
     "surkhandarya": "Surkhandarya Region"
   },
   "energy": {
+    "description": "Monitor energy consumption and view analytics across your facilities",
+    "reports_coming_soon": "Energy reports and analytics coming soon...",
     "title": "Energy Management",
     "dashboard": "Dashboard",
     "workshops": "Workshops",
@@ -1121,6 +1146,18 @@
       "edit": "Edit",
       "delete": "Delete",
       "view": "View"
+    },
+    "energy_chart": {
+      "tab_title": "Chart",
+      "title": "Energy Chart",
+      "description": "Historical energy consumption data and analytics",
+      "powered_by": "Powered by Metabase Analytics"
+    },
+    "readings_analytics": {
+      "tab_title": "Readings Analytics",
+      "title": "Readings Analytics",
+      "description": "Detailed analysis and statistics of meter readings",
+      "powered_by": "Powered by Metabase Analytics"
     }
   }
 }

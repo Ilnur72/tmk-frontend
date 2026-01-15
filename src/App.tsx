@@ -89,7 +89,7 @@ const AppRoutes: React.FC = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<Dashboard />} />
+      <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/factory" element={<Factory />} />
       <Route path="/factory-map" element={<FactoryMap />} />
@@ -110,7 +110,10 @@ const AppRoutes: React.FC = () => {
           <Route path="/employers/branches" element={<BranchesPage />} />
           <Route path="/employers/internships" element={<InternshipPage />} />
           <Route path="/employers/languages" element={<LanguagePage />} />
-          <Route path="/employers/today-attendance" element={<TodayAttendancePage />} />
+          <Route
+            path="/employers/today-attendance"
+            element={<TodayAttendancePage />}
+          />
           <Route path="/techniques" element={<Techniques />} />
           <Route path="/cameras" element={<Camera />} />
           <Route path="/production" element={<Production />} />
