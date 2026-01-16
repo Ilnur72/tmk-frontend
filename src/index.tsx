@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+import "./config/axios"; // Import axios config to setup interceptors
 import axios from "axios";
 import { API_URL } from "./config/const";
 import { CookiesProvider } from "react-cookie";
