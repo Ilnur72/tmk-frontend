@@ -488,9 +488,6 @@ const FactoryMap: React.FC = () => {
     addMarkersToMap(filtered);
   }, [selectedObjectType, allFactories]);
 
-  // Get unique categories
-  const categories = Object.values(ProjectCategory);
-
   return (
     <>
       <div className="grid grid-cols-12 gap-6">
@@ -500,7 +497,7 @@ const FactoryMap: React.FC = () => {
             ref={mapContainer}
             className="maplibregl-map max-md:my-2 max-md:w-full max-md:fixed rounded-[30px]"
           >
-            {/* Filters and Weather Section - positioned above map next to sidebar */}
+            {/* Filters Section - positioned above map next to sidebar */}
             <div
               className="absolute z-10 transition-all duration-300 ease-in-out max-md:static max-md:mb-2 max-md:px-2 max-md:w-full pointer-events-none"
               style={{
@@ -511,12 +508,11 @@ const FactoryMap: React.FC = () => {
                       ? "20px"
                       : "320px"
                     : "auto",
-                right: window.innerWidth > 768 ? "20px" : "auto",
               }}
             >
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 max-md:gap-2 max-md:grid-cols-1 items-start">
+              <div className="grid grid-cols-1 gap-2 max-md:gap-2 items-start">
                 {/* Filters */}
-                <div className="lg:col-span-2 max-md:col-span-1 pointer-events-auto">
+                <div className="pointer-events-auto">
                   <div className="backdrop-blur-md rounded-2xl shadow-md border border-gray-200/50 p-2.5 max-md:p-2 w-fit">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-md:gap-1.5">
                       {/* Category Filter - Checkbox with Icons */}
@@ -621,36 +617,42 @@ const FactoryMap: React.FC = () => {
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
 
-                {/* Weather Widget */}
-                <div className="lg:col-span-1 max-md:hidden pointer-events-auto">
-                  <div className="rounded-3xl overflow-hidden">
-                    <div className="w-full scale-90 origin-top rounded-lg">
-                      <WeatherWidget />
-                    </div>
-                    {/* Weather Map Button */}
-                    <div className="pb-1 px-5 border-t border-gray-100/50 justify-end flex">
-                      <button
-                        onClick={() => setShowWeatherMapModal(true)}
-                        className="w-full px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-primary hover:from-cyan-600 hover:to-primary text-white font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 text-sm group"
-                      >
-                        <svg
-                          className="w-4 h-4 transition-transform group-hover:scale-110"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
-                          />
-                        </svg>
-                        {t("factory.filters.map", "Karta")}
-                      </button>
-                    </div>
-                  </div>
+            {/* Weather Widget - fixed to right, independent of sidebar */}
+            <div
+              className="absolute z-10 max-md:hidden pointer-events-auto"
+              style={{
+                top: "16px",
+                right: "20px",
+              }}
+            >
+              <div className="rounded-3xl overflow-hidden" style={{ width: "350px" }}>
+                <div className="w-full scale-90 origin-top rounded-lg">
+                  <WeatherWidget />
+                </div>
+                {/* Weather Map Button */}
+                <div className="pb-1 px-5 border-t border-gray-100/50 justify-end flex">
+                  <button
+                    onClick={() => setShowWeatherMapModal(true)}
+                    className="w-full px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-primary hover:from-cyan-600 hover:to-primary text-white font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 text-sm group"
+                  >
+                    <svg
+                      className="w-4 h-4 transition-transform group-hover:scale-110"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+                      />
+                    </svg>
+                    {t("factory.filters.map", "Karta")}
+                  </button>
                 </div>
               </div>
             </div>
