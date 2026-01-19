@@ -285,7 +285,7 @@
       "low": "Low"
     },
     "details": {
-      "project_goal": "Лойиҳа мақсади",
+      "project_goal": "Project Goal",
       "title": "Project Details",
       "sort": "Sort",
       "images": "Project Images",
@@ -882,7 +882,7 @@
   "manage_parameters": "Manage Parameters",
   "comment": "Comment",
   "modal": {
-    "project_goal": "Лойиҳа мақсади",
+    "project_goal": "Project Goal",
     "create_project": "Create Project",
     "edit_project": "Edit Project",
     "parameter_update": "Update Parameter",
@@ -929,6 +929,8 @@
     "work_progress_percent": "Work Progress Percentage",
     "project_location": "Project Location",
     "project_status": "Project Status",
+    "object_type": "Object Type",
+    "select_object_type": "Select",
     "project_value": "Project Value",
     "project_value_sections": "Project Value Sections",
     "add_new_field": "Add New Field",

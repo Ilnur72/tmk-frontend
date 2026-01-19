@@ -42,6 +42,23 @@ const MapComponent: React.FC<MapComponentProps> = ({
     };
   }, []);
 
+  // Update map center and marker when props change (useful for edit modal)
+  useEffect(() => {
+    if (mapRef.current) {
+      try {
+        mapRef.current.setCenter([longitude, latitude]);
+        if (
+          markerRef.current &&
+          typeof markerRef.current.setLngLat === "function"
+        ) {
+          markerRef.current.setLngLat([longitude, latitude]);
+        }
+      } catch (err) {
+        // ignore if map not yet initialized
+      }
+    }
+  }, [latitude, longitude]);
+
   const initializeMap = () => {
     const maplibregl = (window as any).maplibregl;
 

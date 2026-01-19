@@ -21,22 +21,37 @@ axios.interceptors.request.use(
 
     // Add lang parameter to URL
     if (config.url) {
-      const url = new URL(config.url, window.location.origin);
-      url.searchParams.set("lang", currentLang);
+      // Check if URL already has parameters
+      const separator = config.url.includes("?") ? "&" : "?";
 
-      // If URL is relative, use pathname + search
-      if (config.url.startsWith("/") || config.url.startsWith("http")) {
-        config.url = config.url.startsWith("http")
-          ? url.toString()
-          : url.pathname + url.search;
+      // Only add lang if not already present
+      if (!config.url.includes("lang=")) {
+        config.url = `${config.url}${separator}lang=${currentLang}`;
       }
     }
+
+    console.log("🌐 API Request:", config.method?.toUpperCase(), config.url);
 
     return config;
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
+);
+
+// Add response interceptor to log responses
+axios.interceptors.response.use(
+  (response) => {
+    console.log("✅ API Response:", response.config.url, {
+      status: response.status,
+      data: response.data,
+    });
+    return response;
+  },
+  (error) => {
+    console.error("❌ API Error:", error.config?.url, error.response?.data);
+    return Promise.reject(error);
+  },
 );
 
 export default axios;

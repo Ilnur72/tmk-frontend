@@ -121,10 +121,30 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
       setProjectData(data);
 
       // Populate form fields
-      setCoordinates({
-        lat: data.latitude || 41.2995,
-        lng: data.longitude || 69.2401,
-      });
+      // Prefer explicit latitude/longitude fields from backend, fallback to coords array/string
+      let lat = 41.2995;
+      let lng = 69.2401;
+
+      if (data.latitude !== undefined && data.longitude !== undefined) {
+        lat = data.latitude;
+        lng = data.longitude;
+      } else if (data.coords) {
+        try {
+          const parsed =
+            typeof data.coords === "string"
+              ? JSON.parse(data.coords.replace(/'/g, '"'))
+              : data.coords;
+          if (Array.isArray(parsed) && parsed.length >= 2) {
+            // stored as [lng, lat] in many places
+            lng = Number(parsed[0]) || lng;
+            lat = Number(parsed[1]) || lat;
+          }
+        } catch (err) {
+          // ignore and keep defaults
+        }
+      }
+
+      setCoordinates({ lat, lng });
       setMarkerIcon(data.marker_icon || "factory");
       setSelectedObjectType(data.importance || "");
       const images =
@@ -136,8 +156,8 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
         setPreviewImages(
           images.map(
             (image: string) =>
-              `${API_URL}/mnt/tmkupload/factory-images/${image}`
-          )
+              `${API_URL}/mnt/tmkupload/factory-images/${image}`,
+          ),
         );
       }
 
@@ -147,7 +167,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
           ([key, value]) => ({
             key,
             value: value as string,
-          })
+          }),
         );
         setCustomFields(fields.length > 0 ? fields : [{ key: "", value: "" }]);
       }
@@ -163,10 +183,10 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
             ([key, amount]) => ({
               key,
               amount: amount as string,
-            })
+            }),
           );
           setProjectValues(
-            values.length > 0 ? values : [{ key: "", amount: "" }]
+            values.length > 0 ? values : [{ key: "", amount: "" }],
           );
         }
       }
@@ -193,7 +213,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
       // Update preview images
       const newPreviewImages = [
         ...existingImages.map(
-          (image) => `${API_URL}/mnt/tmkupload/factory-images/${image}`
+          (image) => `${API_URL}/mnt/tmkupload/factory-images/${image}`,
         ),
         ...newSelectedImages.map((file) => URL.createObjectURL(file)),
       ];
@@ -221,7 +241,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
       // Update preview images after removing selected image
       const newPreviewImages = [
         ...existingImages.map(
-          (image) => `${API_URL}/mnt/tmkupload/factory-images/${image}`
+          (image) => `${API_URL}/mnt/tmkupload/factory-images/${image}`,
         ),
         ...newSelectedImages.map((file) => URL.createObjectURL(file)),
       ];
@@ -242,7 +262,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
       // Previewni yangilash
       const newPreviewImages = [
         ...newExistingImages.map(
-          (image) => `${API_URL}/mnt/tmkupload/factory-images/${image}`
+          (image) => `${API_URL}/mnt/tmkupload/factory-images/${image}`,
         ),
         ...selectedImages.map((file) => URL.createObjectURL(file)),
       ];
@@ -265,10 +285,10 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
   const updateCustomField = (
     index: number,
     field: "key" | "value",
-    value: string
+    value: string,
   ) => {
     setCustomFields((prev) =>
-      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item))
+      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item)),
     );
   };
 
@@ -285,10 +305,10 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
   const updateProjectValue = (
     index: number,
     field: "key" | "amount",
-    value: string
+    value: string,
   ) => {
     setProjectValues((prev) =>
-      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item))
+      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item)),
     );
   };
 
@@ -334,19 +354,22 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
       // Add custom fields
       const validCustomFields = customFields.filter(
-        (field) => field.key.trim() && field.value.trim()
+        (field) => field.key.trim() && field.value.trim(),
       );
       if (validCustomFields.length > 0) {
-        const customFieldsObj = validCustomFields.reduce((acc, field) => {
-          acc[field.key] = field.value;
-          return acc;
-        }, {} as Record<string, string>);
+        const customFieldsObj = validCustomFields.reduce(
+          (acc, field) => {
+            acc[field.key] = field.value;
+            return acc;
+          },
+          {} as Record<string, string>,
+        );
         formData.append("custom_fields", JSON.stringify(customFieldsObj));
       }
 
       // Add project values
       const validProjectValues = projectValues.filter(
-        (value) => value.key.trim() && value.amount.trim()
+        (value) => value.key.trim() && value.amount.trim(),
       );
       const projectValuesObj: Record<string, any> = {};
 
@@ -354,10 +377,13 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
         projectValuesObj[t("modal.project_total_value_key")] =
           projectValueTotal;
         if (validProjectValues.length > 0) {
-          const childValues = validProjectValues.reduce((acc, value) => {
-            acc[value.key] = value.amount;
-            return acc;
-          }, {} as Record<string, string>);
+          const childValues = validProjectValues.reduce(
+            (acc, value) => {
+              acc[value.key] = value.amount;
+              return acc;
+            },
+            {} as Record<string, string>,
+          );
           projectValuesObj["child"] = childValues;
         }
       }
@@ -368,7 +394,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
       const response = await axios.put(
         `${API_URL}/factory/update/${factoryId}`,
-        formData
+        formData,
       );
 
       if (response.status !== 200) {
@@ -842,8 +868,8 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                       <strong>{t("modal.map_instruction")}</strong>
                     </div>
                     <MapComponent
-                      containerId="create-project-map"
-                      type="create"
+                      containerId="edit-project-map"
+                      type="edit"
                       latitude={coordinates.lat}
                       longitude={coordinates.lng}
                       onCoordinatesChange={({ lat, lng }) =>
