@@ -19,6 +19,11 @@ export function Select({ label, options, value, onChange }: SelectProps) {
 
   const selectedOption = options.find((option) => option.id === value);
 
+  const truncateText = (text: string, maxLength: number = 10) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + "...";
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -52,19 +57,8 @@ export function Select({ label, options, value, onChange }: SelectProps) {
           onClick={() => setIsOpen(!isOpen)}
           className="w-full bg-white border-2 border-gray-200 rounded-lg px-2 py-1.5 pr-7 text-left text-gray-700 text-xs font-normal focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent hover:border-cyan-300 transition-all duration-200 flex items-center justify-between shadow-sm"
         >
-          <span
-            className="truncate"
-            title={selectedOption?.name || ""}
-            style={{
-              display: "inline-block",
-              maxWidth: "calc(100% - 24px)",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              verticalAlign: "middle",
-            }}
-          >
-            {selectedOption?.name}
+          <span title={selectedOption?.name || ""}>
+            {truncateText(selectedOption?.name || "", 10)}
           </span>
           <ChevronDown
             className={`w-3 h-3 text-gray-500 transition-transform flex-shrink-0 ml-1 ${
@@ -85,18 +79,8 @@ export function Select({ label, options, value, onChange }: SelectProps) {
                     option.id === value ? "bg-cyan-50" : ""
                   }`}
                 >
-                  <span
-                    className="text-gray-700 truncate"
-                    title={option.name}
-                    style={{
-                      display: "inline-block",
-                      maxWidth: "100%",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {option.name}
+                  <span className="text-gray-700" title={option.name}>
+                    {truncateText(option.name, 10)}
                   </span>
                   {option.id === value && (
                     <Check className="w-3.5 h-3.5 text-cyan-600 flex-shrink-0" />
