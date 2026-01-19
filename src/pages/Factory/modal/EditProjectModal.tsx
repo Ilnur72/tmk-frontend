@@ -145,8 +145,27 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
       }
 
       setCoordinates({ lat, lng });
-      setMarkerIcon(data.marker_icon || "factory");
-      setSelectedObjectType(data.importance || "");
+
+      // Sanitize marker_icon - remove tuple/array format, quotes, and extension
+      let cleanMarkerIcon = (data.marker_icon || "factory").toString();
+      // Remove tuple/array format: ("factory","factory") → factory
+      cleanMarkerIcon = cleanMarkerIcon.replace(
+        /^\(["']?(.+?)["']?,.*\)$/,
+        "$1",
+      );
+      // Remove brackets and parentheses
+      cleanMarkerIcon = cleanMarkerIcon.replace(/[\[\]()]/g, "");
+      // Remove quotes
+      cleanMarkerIcon = cleanMarkerIcon.replace(/['"]/g, "");
+      // Remove extension
+      cleanMarkerIcon = cleanMarkerIcon.replace(/\.(png|jpg|jpeg|svg)$/i, "");
+      // Trim whitespace
+      cleanMarkerIcon = cleanMarkerIcon.trim();
+      // Fallback to factory if empty
+      cleanMarkerIcon = cleanMarkerIcon || "factory";
+      setMarkerIcon(cleanMarkerIcon);
+
+      setSelectedObjectType(data.object_type || "");
       const images =
         typeof data.images === "string" ? JSON.parse(data.images) : data.images;
       // Set existing images
@@ -335,11 +354,27 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
       // Add coordinates
       formData.append("latitude", coordinates.lat.toString());
       formData.append("longitude", coordinates.lng.toString());
-      formData.append("marker_icon", markerIcon);
 
-      // Add object type (importance)
+      // Sanitize marker_icon before sending - ensure clean value without any formatting
+      let cleanMarkerIcon = markerIcon.toString();
+      // Remove any tuple/array format
+      cleanMarkerIcon = cleanMarkerIcon.replace(
+        /^\(["']?(.+?)["']?,.*\)$/,
+        "$1",
+      );
+      // Remove brackets and parentheses
+      cleanMarkerIcon = cleanMarkerIcon.replace(/[\[\]()]/g, "");
+      // Remove quotes
+      cleanMarkerIcon = cleanMarkerIcon.replace(/['"]/g, "");
+      // Remove extension if present
+      cleanMarkerIcon = cleanMarkerIcon.replace(/\.(png|jpg|jpeg|svg)$/i, "");
+      // Trim and fallback
+      cleanMarkerIcon = cleanMarkerIcon.trim() || "factory";
+      formData.append("marker_icon", cleanMarkerIcon);
+
+      // Add object type
       if (selectedObjectType) {
-        formData.append("importance", selectedObjectType);
+        formData.append("object_type", selectedObjectType);
       }
       if (deletedImages.length > 0) {
         formData.append("deleted_images", JSON.stringify(deletedImages));
@@ -403,7 +438,6 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
       onClose();
       onSuccess();
-      toast(t("modal.project_updated_success"), { type: "success" });
     } catch (error) {
       console.error("Error updating project:", error);
       toast(t("modal.project_update_error"), { type: "error" });
@@ -657,7 +691,6 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                         >
                           <input
                             type="radio"
-                            name="marker_icon"
                             value={marker.value}
                             checked={markerIcon === marker.value}
                             onChange={(e) => setMarkerIcon(e.target.value)}

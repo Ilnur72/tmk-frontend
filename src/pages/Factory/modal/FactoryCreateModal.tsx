@@ -146,10 +146,10 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
   const updateCustomField = (
     index: number,
     field: "key" | "value",
-    value: string
+    value: string,
   ) => {
     setCustomFields((prev) =>
-      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item))
+      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item)),
     );
   };
 
@@ -166,10 +166,10 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
   const updateProjectValue = (
     index: number,
     field: "key" | "amount",
-    value: string
+    value: string,
   ) => {
     setProjectValues((prev) =>
-      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item))
+      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item)),
     );
   };
 
@@ -191,11 +191,22 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
       // Add coordinates
       formData.append("latitude", coordinates.lat.toString());
       formData.append("longitude", coordinates.lng.toString());
-      formData.append("marker_icon", markerIcon);
 
-      // Add object type (importance)
+      // Sanitize marker_icon before sending
+      let cleanMarkerIcon = markerIcon.toString().trim();
+      cleanMarkerIcon = cleanMarkerIcon.replace(
+        /^\(["']?(.+?)["']?,.*\)$/,
+        "$1",
+      );
+      cleanMarkerIcon = cleanMarkerIcon.replace(/[\[\]()]/g, "");
+      cleanMarkerIcon = cleanMarkerIcon.replace(/['"]/g, "");
+      cleanMarkerIcon = cleanMarkerIcon.replace(/\.(png|jpg|jpeg|svg)$/i, "");
+      cleanMarkerIcon = cleanMarkerIcon.trim() || "factory";
+      formData.append("marker_icon", cleanMarkerIcon);
+
+      // Add object type
       if (selectedObjectType) {
-        formData.append("importance", selectedObjectType);
+        formData.append("object_type", selectedObjectType);
       }
 
       // Add images
@@ -205,29 +216,35 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
 
       // Add custom fields
       const validCustomFields = customFields.filter(
-        (field) => field.key.trim() && field.value.trim()
+        (field) => field.key.trim() && field.value.trim(),
       );
       if (validCustomFields.length > 0) {
-        const customFieldsObj = validCustomFields.reduce((acc, field) => {
-          acc[field.key] = field.value;
-          return acc;
-        }, {} as Record<string, string>);
+        const customFieldsObj = validCustomFields.reduce(
+          (acc, field) => {
+            acc[field.key] = field.value;
+            return acc;
+          },
+          {} as Record<string, string>,
+        );
         formData.append("custom_fields", JSON.stringify(customFieldsObj));
       }
 
       // Add project values
       const validProjectValues = projectValues.filter(
-        (value) => value.key.trim() && value.amount.trim()
+        (value) => value.key.trim() && value.amount.trim(),
       );
       const projectValuesObj: Record<string, any> = {};
 
       if (projectValueTotal.trim()) {
         projectValuesObj["Лойиҳанинг қиймати"] = projectValueTotal;
         if (validProjectValues.length > 0) {
-          const childValues = validProjectValues.reduce((acc, value) => {
-            acc[value.key] = value.amount;
-            return acc;
-          }, {} as Record<string, string>);
+          const childValues = validProjectValues.reduce(
+            (acc, value) => {
+              acc[value.key] = value.amount;
+              return acc;
+            },
+            {} as Record<string, string>,
+          );
           projectValuesObj["child"] = childValues;
         }
       }
@@ -458,7 +475,6 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                         >
                           <input
                             type="radio"
-                            name="marker_icon"
                             value={marker.value}
                             checked={markerIcon === marker.value}
                             onChange={(e) => setMarkerIcon(e.target.value)}

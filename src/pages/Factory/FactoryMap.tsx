@@ -55,7 +55,7 @@ interface Factory {
   enterprise_name?: string;
   project_goal?: string;
   region?: string;
-  importance?: string;
+  object_type?: string;
   description?: string;
   category?: string;
   project_category?: string;
@@ -114,7 +114,7 @@ const FactoryMap: React.FC = () => {
   const cleanupVehicleTrackingMaps = useCallback(() => {
     // Remove any vehicle tracking map containers
     const vehicleMapContainer = document.getElementById(
-      "vehicleTrackingMapContainer"
+      "vehicleTrackingMapContainer",
     );
     if (vehicleMapContainer) {
       vehicleMapContainer.innerHTML = "";
@@ -162,7 +162,7 @@ const FactoryMap: React.FC = () => {
         },
       ],
     }),
-    []
+    [],
   );
 
   // Show factory details modal
@@ -187,8 +187,7 @@ const FactoryMap: React.FC = () => {
     (coords: [number, number], fromSidebar = false) => {
       if (!map.current) return;
 
-      // Close sidebar when marker or sidebar item is clicked
-      if (!sidebarCollapsed) {
+      if (window.innerWidth <= 768 && fromSidebar && !sidebarCollapsed) {
         toggleSidebar();
       }
 
@@ -200,7 +199,7 @@ const FactoryMap: React.FC = () => {
         essential: true,
       });
     },
-    [sidebarCollapsed, toggleSidebar]
+    [sidebarCollapsed, toggleSidebar],
   );
 
   // Add markers to map
@@ -228,9 +227,12 @@ const FactoryMap: React.FC = () => {
 
         // Create marker element
         const el = document.createElement("img");
-        const imageName = factory.marker_icon
-          ? `${factory.marker_icon}.png`
-          : "marker.png";
+        // Sanitize marker_icon and ensure proper format
+        let iconName = factory.marker_icon || "marker";
+        // Remove any existing extension
+        iconName = iconName.replace(/\.(png|jpg|jpeg|svg)$/i, "");
+        // Add .png extension
+        const imageName = `${iconName}.png`;
         el.src = `/image/${imageName}`;
         el.style.width = "64px";
         el.style.height = "64px";
@@ -247,22 +249,22 @@ const FactoryMap: React.FC = () => {
                 factory.name
               }</h2>
               <p style="margin: 5px 0; font-size: 1.4em;">${t(
-                "factory.info.project_object"
+                "factory.info.project_object",
               )}</p>
               <p style="margin: 5px 0; font-size: 1.4em;">${t(
-                "factory.info.construction_process"
+                "factory.info.construction_process",
               )}</p>
               <p style="margin: 5px 0; font-size: 1.4em;">${t(
-                "factory.info.production_process"
+                "factory.info.production_process",
               )}</p>
               <p style="margin: 5px 0; font-size: 1.4em;">${t(
-                "factory.info.online_video"
+                "factory.info.online_video",
               )}</p>
               <p style="margin: 5px 0; font-size: 1.4em;">${t(
-                "factory.info.employee_info"
+                "factory.info.employee_info",
               )}</p>
               <p style="margin: 5px 0; font-size: 1.4em;">${t(
-                "factory.info.technique_info"
+                "factory.info.technique_info",
               )}</p>
               ${
                 factory.images
@@ -278,7 +280,7 @@ const FactoryMap: React.FC = () => {
 
         // Create marker
         const marker = new maplibregl.Marker({ element: el }).setLngLat(
-          factory.coords
+          factory.coords,
         );
 
         if (popup) {
@@ -311,7 +313,7 @@ const FactoryMap: React.FC = () => {
         // Add to sidebar list
         const clickAction = isFactoryMap
           ? `flyToMarker([${factory.coords}], true); setTimeout(() => { window.showReactModal(${index}); }, 500);`
-          : `flyToMarker([${factory.coords}], true)`;
+          : `flyToMarker([${factory.coords}], true);`;
 
         listData += `
         <div class="intro-x">
@@ -342,7 +344,7 @@ const FactoryMap: React.FC = () => {
         }
       };
     },
-    [flyToMarker, showFactoryDetails]
+    [flyToMarker, showFactoryDetails, t],
   );
 
   // Fetch object types from backend
@@ -472,16 +474,19 @@ const FactoryMap: React.FC = () => {
 
   // Filter by object type (client-side only)
   useEffect(() => {
+    if (allFactories.length === 0) return;
+
     let filtered = allFactories;
 
     if (selectedObjectType) {
       filtered = filtered.filter(
-        (factory) => factory.importance === selectedObjectType
+        (factory) => factory.object_type === selectedObjectType,
       );
     }
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     addMarkersToMap(filtered);
-  }, [selectedObjectType, allFactories, addMarkersToMap]);
+  }, [selectedObjectType, allFactories]);
 
   // Get unique categories
   const categories = Object.values(ProjectCategory);
