@@ -218,6 +218,12 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
   useEffect(() => {
     if (isOpen && factoryId) {
+      // Reset image-related transient state when opening modal to avoid
+      // accumulating previews or selected files across opens.
+      setSelectedImages([]);
+      setDeletedImages([]);
+      setPreviewImages([]);
+
       fetchProjectData();
       fetchObjectTypes();
     }
@@ -379,13 +385,15 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
       if (deletedImages.length > 0) {
         formData.append("deleted_images", JSON.stringify(deletedImages));
       }
-      // Add new images
+      // Add new images (files)
       selectedImages.forEach((image) => {
         formData.append("images", image);
       });
 
-      // Add existing images that weren't removed
-      formData.append("existing_images", JSON.stringify(existingImages));
+      // NOTE: do NOT send `existing_images` here. Backend should treat
+      // `images` as files to append and `deleted_images` as items to remove.
+      // Sending `existing_images` as well may cause duplication if the
+      // server appends rather than replaces the list.
 
       // Add custom fields
       const validCustomFields = customFields.filter(

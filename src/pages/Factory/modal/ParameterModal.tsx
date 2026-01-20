@@ -30,14 +30,14 @@ const ParameterModal: React.FC<ParameterModalProps> = ({
 
     try {
       const response = await axios.get(
-        `/factory/param/${parameter.factoryParamId}`
+        `/factory/param/${parameter.factoryParamId}`,
       );
       const data = response.data;
 
       if (parameter.paramType === "date") {
         try {
           const logResponse = await axios.get(
-            `/factory/log?query[factoryParamId]=${parameter.factoryParamId}`
+            `/factory/log?query[factoryParamId]=${parameter.factoryParamId}`,
           );
           const logData = logResponse.data;
           if (logData[0]?.value) {
@@ -94,14 +94,14 @@ const ParameterModal: React.FC<ParameterModalProps> = ({
           `/factory/param/update/${parameter.factoryParamId}`,
           {
             status: status,
-          }
+          },
         );
 
         if (response.status === 200) {
           const data = response.data;
           // Update UI status image
           const img = document.getElementById(
-            parameter.factoryParamId.toString()
+            parameter.factoryParamId.toString(),
           );
           if (img) {
             const imgElement = img as HTMLImageElement;
@@ -122,7 +122,7 @@ const ParameterModal: React.FC<ParameterModalProps> = ({
       logFormData.append("params_id", parameter.paramId.toString());
       logFormData.append(
         "factory_params_id",
-        parameter.factoryParamId.toString()
+        parameter.factoryParamId.toString(),
       );
       logFormData.append("value", status);
       logFormData.append("izoh", comment || "");
@@ -135,7 +135,7 @@ const ParameterModal: React.FC<ParameterModalProps> = ({
 
       const logResponse = await axios.post(
         `${API_URL}/factory/log`,
-        logFormData
+        logFormData,
       );
 
       if (logResponse.status === 201) {
@@ -143,10 +143,10 @@ const ParameterModal: React.FC<ParameterModalProps> = ({
 
         // Update UI
         const paramComment = document.querySelector(
-          `[data-param-id="${parameter.factoryParamId}"]`
+          `[data-param-id="${parameter.factoryParamId}"]`,
         );
         const paramDate = document.querySelector(
-          `#factory-param-date-${parameter.factoryParamId}`
+          `#factory-param-date-${parameter.factoryParamId}`,
         );
 
         if (status.length > 2) {
@@ -166,9 +166,8 @@ const ParameterModal: React.FC<ParameterModalProps> = ({
         if (paramComment && logData.data?.izoh) {
           paramComment.classList.add("flex");
           paramComment.classList.remove("hidden");
-          (
-            paramComment as HTMLElement
-          ).textContent = `Изох: ${logData.data.izoh}`;
+          (paramComment as HTMLElement).textContent =
+            `Изох: ${logData.data.izoh}`;
         } else if (paramComment && !logData.data?.izoh) {
           paramComment.classList.add("hidden");
           paramComment.classList.remove("flex");
@@ -230,8 +229,8 @@ const ParameterModal: React.FC<ParameterModalProps> = ({
                     onChange={(e) => setStatus(e.target.value)}
                     className="block w-full rounded-md border border-gray-300 bg-white p-2.5 text-base text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                   >
-                    <option value="1">Мавжуд</option>
-                    <option value="0">Мавжуд эмас</option>
+                    <option value="1">{t("modal.exists")}</option>
+                    <option value="0">{t("modal.not_exists")}</option>
                   </select>
                 )}
               </div>

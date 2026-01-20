@@ -628,7 +628,10 @@ const FactoryMap: React.FC = () => {
                 right: "20px",
               }}
             >
-              <div className="rounded-3xl overflow-hidden" style={{ width: "350px" }}>
+              <div
+                className="rounded-3xl overflow-hidden"
+                style={{ width: "350px" }}
+              >
                 <div className="w-full scale-90 origin-top rounded-lg">
                   <WeatherWidget />
                 </div>

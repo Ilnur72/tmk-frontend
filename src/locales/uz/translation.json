@@ -661,6 +661,8 @@
     "project_name": "Лойиҳа номи",
     "parameter_status": "Параметр статуси",
     "parameter_comment": "Параметр изоҳи",
+    "exists": "Мавжуд",
+    "not_exists": "Мавжуд эмас",
     "select_files": "Файлларни танлаш",
     "history_empty": "Тарих маълумотлари йўқ",
     "date": "Сана",

@@ -661,6 +661,8 @@
     "project_name": "Название проекта",
     "parameter_status": "Статус параметра",
     "parameter_comment": "Комментарий параметра",
+    "exists": "Есть",
+    "not_exists": "Отсутствует",
     "select_files": "Выбрать файлы",
     "history_empty": "Данные истории отсутствуют",
     "date": "Дата",

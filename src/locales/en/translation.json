@@ -906,6 +906,8 @@
     "confirm_delete": "Are you sure you want to delete this project {{name}}?",
     "parameter_status": "Parameter Status",
     "parameter_comment": "Parameter Comment",
+    "exists": "Exists",
+    "not_exists": "Not exists",
     "select_files": "Select Files",
     "history_empty": "No history data",
     "date": "Date",

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { ShoppingCart, Monitor, CreditCard } from "lucide-react";
 import { FactoryInterface, FactoryCounts } from "./types/factory";
@@ -36,7 +36,7 @@ const Factory: React.FC = () => {
 
   // Modal data states
   const [selectedFactoryId, setSelectedFactoryId] = useState<number | null>(
-    null
+    null,
   );
   const [selectedParameter, setSelectedParameter] = useState<any>(null);
   const [factoryToDelete, setFactoryToDelete] = useState<{
@@ -46,7 +46,14 @@ const Factory: React.FC = () => {
   const [modalImages, setModalImages] = useState<string[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
+  const didFetchRef = useRef(false);
+
   useEffect(() => {
+    // React 18 StrictMode may mount effects twice in development.
+    // Guard to ensure we only fetch once.
+    if (didFetchRef.current) return;
+    didFetchRef.current = true;
+
     generateFactoryHtml();
     checkUserPermissions();
   }, []);
@@ -97,7 +104,7 @@ const Factory: React.FC = () => {
         atob(base64)
           .split("")
           .map((c) => "%" + c.charCodeAt(0).toString(16).padStart(2, "0"))
-          .join("")
+          .join(""),
       );
       return JSON.parse(jsonPayload);
     } catch (e) {
