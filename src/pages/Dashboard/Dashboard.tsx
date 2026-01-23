@@ -22,6 +22,8 @@ import {
   Activity,
 } from "lucide-react";
 import "./Dashboard.css";
+import axios from "../../config/axios";
+import type { DashboardAnalyticsOverview } from "../../types/dashboard";
 
 interface GeneralStats {
   // Factory & Production
@@ -84,7 +86,7 @@ const GeneralDashboard: React.FC = () => {
   const { t } = useTranslation();
   const [stats, setStats] = useState<GeneralStats | null>(null);
   const [recentActivities, setRecentActivities] = useState<RecentActivity[]>(
-    []
+    [],
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -94,93 +96,61 @@ const GeneralDashboard: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      // Mock data - real API integration kerak bo'ladi
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const res = await axios.get<{
+        success: boolean;
+        data: DashboardAnalyticsOverview;
+      }>("/dashboard/overview");
+      const data = res.data?.data;
 
+      if (!data) {
+        throw new Error("Ma'lumot yuklanmadi");
+      }
+
+      // Map analytics data to component state
       setStats({
         // Factory & Production
-        totalFactories: 12,
-        activeWorkshops: 45,
-        totalProduction: 15420,
-        productionGrowth: 8.5,
+        totalFactories: data.factories.total,
+        activeWorkshops: data.factories.started,
+        totalProduction: data.finance.totalPrices,
+        productionGrowth:
+          data.factories.thisMonthNew - data.factories.lastMonthNew,
 
         // Sales & Finance
-        totalSales: 342150,
-        monthlyRevenue: 1250000,
-        salesGrowth: 12.3,
-        pendingOrders: 28,
+        totalSales: data.finance.totalPrices,
+        monthlyRevenue: data.finance.totalSources,
+        salesGrowth: data.finance.recentChanges,
+        pendingOrders: data.factories.registration,
 
         // Employees & Partners
-        totalEmployees: 1250,
-        activeEmployees: 1180,
-        totalPartners: 85,
-        newPartners: 7,
+        totalEmployees: data.employees.total,
+        activeEmployees: data.drivers.active,
+        totalPartners: 0,
+        newPartners: 0,
 
         // Energy & Utilities
-        energyConsumption: 4750,
-        totalMeters: 156,
-        unverifiedReadings: 23,
-        energySavings: 15.2,
+        energyConsumption: data.energy.thisMonth,
+        totalMeters: data.het.totalReadings,
+        unverifiedReadings: 0,
+        energySavings: Math.abs(data.energy.change),
 
         // Applications & System
-        totalApplications: 2150,
-        pendingApplications: 45,
-        approvedApplications: 1890,
-        rejectedApplications: 215,
+        totalApplications: 0,
+        pendingApplications: 0,
+        approvedApplications: 0,
+        rejectedApplications: 0,
 
         // Cameras & Security
-        activeCameras: 124,
-        totalCameras: 135,
-        securityAlerts: 3,
+        activeCameras: 0,
+        totalCameras: 0,
+        securityAlerts: data.drivers.expiredLicenses,
 
         // General System
         systemUptime: 99.8,
-        dailyUsers: 456,
-        notifications: 12,
+        dailyUsers: data.transport.online,
+        notifications: data.drivers.expiredLicenses,
       });
 
-      setRecentActivities([
-        {
-          id: "1",
-          type: "production",
-          title: "Yangi ishlab chiqarish buyurtmasi",
-          description: "Zavod #3 da 500 dona mahsulot ishlab chiqarildi",
-          timestamp: "2 daqiqa oldin",
-          status: "success",
-        },
-        {
-          id: "2",
-          type: "energy",
-          title: "Energiya iste'moli oshdi",
-          description: "Bu oydagi energiya iste'moli 15% ga oshdi",
-          timestamp: "15 daqiqa oldin",
-          status: "warning",
-        },
-        {
-          id: "3",
-          type: "employee",
-          title: "Yangi xodim qo'shildi",
-          description: "Ahmad Karimov ishga qabul qilindi",
-          timestamp: "1 soat oldin",
-          status: "info",
-        },
-        {
-          id: "4",
-          type: "sales",
-          title: "Katta sotish shartnomasi",
-          description: "500,000$ lik shartnoma imzolandi",
-          timestamp: "2 soat oldin",
-          status: "success",
-        },
-        {
-          id: "5",
-          type: "security",
-          title: "Xavfsizlik ogohlantirishi",
-          description: "Zavod #1 da harakatni aniqlash tizimi ishga tushdi",
-          timestamp: "3 soat oldin",
-          status: "error",
-        },
-      ]);
+      setRecentActivities([]);
     } catch (error: any) {
       console.error("Dashboard data loading error:", error);
       setError("Dashboard ma'lumotlarini yuklashda xatolik");
@@ -490,7 +460,7 @@ const GeneralDashboard: React.FC = () => {
                 <div key={activity.id} className="flex items-start space-x-3">
                   <div
                     className={`p-2 rounded-full ${getStatusColor(
-                      activity.status
+                      activity.status,
                     )}`}
                   >
                     {getActivityIcon(activity.type)}

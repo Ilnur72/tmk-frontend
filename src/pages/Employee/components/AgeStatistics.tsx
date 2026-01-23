@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { BirthData } from "../../../types/dashboard";
 import { EMPLOYEE_API_URL } from "../../../config/const";
@@ -25,14 +25,19 @@ const AgeStatistics: React.FC = () => {
     { label: t("employee.age_50_plus"), value: 0, color: "#ffd600" },
   ]);
   const [loading, setLoading] = useState(true);
+  const didFetchRef = useRef(false);
 
   useEffect(() => {
+    // Prevent double fetch in React 18 StrictMode
+    if (didFetchRef.current) return;
+    didFetchRef.current = true;
+
     const fetchAgeData = async () => {
       try {
         setLoading(true);
 
         const response = await axios.get(
-          `${EMPLOYEE_API_URL}/tugilgan-kunlar/`
+          `${EMPLOYEE_API_URL}/tugilgan-kunlar/`,
         );
         const data = response.data;
 
@@ -60,7 +65,7 @@ const AgeStatistics: React.FC = () => {
         const total = counts.reduce((a, b) => a + b, 0);
 
         const percentages = counts.map((count) =>
-          total > 0 ? Math.round((count / total) * 100) : 0
+          total > 0 ? Math.round((count / total) * 100) : 0,
         );
 
         setAgeData([
@@ -94,7 +99,8 @@ const AgeStatistics: React.FC = () => {
     };
 
     fetchAgeData();
-  }, [t]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const renderCustomLabel = ({
     cx,

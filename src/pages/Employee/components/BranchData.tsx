@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, Search, Filter, Download, Users } from "lucide-react";
+import { ArrowLeft, Search, Users } from "lucide-react";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 
@@ -84,7 +84,7 @@ const StatsSummary: React.FC<{
   const { t } = useTranslation();
   const totalEmployees = branches.reduce(
     (sum, branch) => sum + branch.hodimlar_soni,
-    0
+    0,
   );
   const averageEmployees =
     branches.length > 0 ? Math.round(totalEmployees / branches.length) : 0;
@@ -205,7 +205,7 @@ const BranchesTable: React.FC<{
                 const actualIndex = startIndex + index;
                 const totalEmployees = branches.reduce(
                   (sum, b) => sum + b.hodimlar_soni,
-                  0
+                  0,
                 );
                 const percentage =
                   totalEmployees > 0
@@ -344,8 +344,13 @@ const BranchesPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  const didFetchRef = React.useRef(false);
 
   useEffect(() => {
+    // Prevent double fetch in React 18 StrictMode
+    if (didFetchRef.current) return;
+    didFetchRef.current = true;
+
     const fetchBranches = async () => {
       try {
         setLoading(true);
@@ -367,11 +372,12 @@ const BranchesPage: React.FC = () => {
     };
 
     fetchBranches();
-  }, [t]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const filtered = branches.filter((branch) =>
-      branch.filial_nomi.toLowerCase().includes(searchTerm.toLowerCase())
+      branch.filial_nomi.toLowerCase().includes(searchTerm.toLowerCase()),
     );
     setFilteredBranches(filtered);
     setCurrentPage(1); // Reset to first page when searching

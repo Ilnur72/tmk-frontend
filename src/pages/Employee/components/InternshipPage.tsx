@@ -22,18 +22,27 @@ interface InternshipData {
 // API Service
 const apiService = {
   async getInternshipData(): Promise<InternshipData[]> {
-    const response = await axios.get("/employers/internship");    
+    const response = await axios.get("/employers/internship");
     return response.data;
   },
 };
 
 // Custom hook
 const useInternshipData = () => {
+  const didFetchRef = React.useRef(false);
   return useQuery<InternshipData[]>({
     queryKey: ["internshipData"],
     queryFn: apiService.getInternshipData,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
+    enabled: (() => {
+      if (didFetchRef.current) return false;
+      didFetchRef.current = true;
+      return true;
+    })(),
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 };
 
@@ -51,7 +60,7 @@ const InternshipPage: React.FC = () => {
 
   // Filter data based on search
   const filteredData = internshipData.filter((item) =>
-    item.еxpiration.toLowerCase().includes(searchTerm.toLowerCase())
+    item.еxpiration.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   // Pagination calculations

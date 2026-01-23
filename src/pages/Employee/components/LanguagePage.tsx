@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   ArrowLeft,
   Search,
-  Filter,
   Globe,
   ChevronLeft,
   ChevronRight,
@@ -11,7 +10,6 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useScrollToTop, scrollToTop } from "../../../hooks/useScrollToTop";
-import { useTranslation } from "react-i18next";
 
 // Types
 interface LanguageSkill {
@@ -37,11 +35,20 @@ const apiService = {
 
 // Custom hook
 const useLanguageData = () => {
+  const didFetchRef = React.useRef(false);
   return useQuery<LanguageData[]>({
     queryKey: ["languageData"],
     queryFn: apiService.getLanguageData,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
+    enabled: (() => {
+      if (didFetchRef.current) return false;
+      didFetchRef.current = true;
+      return true;
+    })(),
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 };
 
@@ -80,18 +87,18 @@ const LanguagePage: React.FC = () => {
   const uniqueLanguages = Array.from(
     new Set(
       languageData.flatMap((employee) =>
-        employee.langs.map((lang) => lang.name)
-      )
-    )
+        employee.langs.map((lang) => lang.name),
+      ),
+    ),
   ).sort();
 
   // Get unique levels for filter
   const uniqueLevels = Array.from(
     new Set(
       languageData.flatMap((employee) =>
-        employee.langs.map((lang) => lang.level)
-      )
-    )
+        employee.langs.map((lang) => lang.level),
+      ),
+    ),
   ).sort((a, b) => getLevelPriority(b) - getLevelPriority(a));
 
   // Filter data based on search and filters
@@ -107,7 +114,7 @@ const LanguagePage: React.FC = () => {
     // Language filter
     if (filterLanguage !== "all") {
       const hasLanguage = employee.langs.some(
-        (lang) => lang.name === filterLanguage
+        (lang) => lang.name === filterLanguage,
       );
       if (!hasLanguage) return false;
     }
@@ -115,7 +122,7 @@ const LanguagePage: React.FC = () => {
     // Level filter
     if (filterLevel !== "all") {
       const hasLevel = employee.langs.some(
-        (lang) => lang.level === filterLevel
+        (lang) => lang.level === filterLevel,
       );
       if (!hasLevel) return false;
     }
@@ -350,7 +357,7 @@ const LanguagePage: React.FC = () => {
               </div>
               <div className="text-green-900 text-lg font-bold">
                 {Object.entries(languageCount).sort(
-                  ([, a], [, b]) => b - a
+                  ([, a], [, b]) => b - a,
                 )[0]?.[0] || "Нет"}
               </div>
             </div>
@@ -466,7 +473,7 @@ const LanguagePage: React.FC = () => {
                             </div>
                             <span
                               className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getLevelColor(
-                                lang.level
+                                lang.level,
                               )}`}
                             >
                               {lang.level}

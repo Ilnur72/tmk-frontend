@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import VideoModal from "../Factory/modal/VideoModal";
 import { CameraType } from "../Factory/types/factory";
@@ -17,8 +17,12 @@ const App: React.FC = () => {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [currentCamera, setCurrentCamera] = useState<CameraType | null>(null);
+  const didFetchRef = useRef(false);
 
   useEffect(() => {
+    if (didFetchRef.current) return;
+    didFetchRef.current = true;
+
     const loadDataAsync = async () => {
       const response = await axios.get("/cameras");
       setFactories(response.data.factories);
@@ -144,7 +148,7 @@ const App: React.FC = () => {
                               </div>
                               <span
                                 className={`absolute top-2 right-2 text-xs px-2 py-1 rounded ${getStatusBadgeClass(
-                                  camera.status
+                                  camera.status,
                                 )}`}
                               >
                                 ●
@@ -166,7 +170,7 @@ const App: React.FC = () => {
                       ))}
                     </div>
                   </div>
-                )
+                ),
             )}
           </div>
         </div>

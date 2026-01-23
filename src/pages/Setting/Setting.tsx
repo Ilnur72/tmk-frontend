@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { X, Plus, Edit, Trash2, Camera, Settings } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { showToast } from "../../utils/toast";
@@ -45,14 +45,14 @@ const Setting: React.FC = () => {
 
   // Form states
   const [currentParameter, setCurrentParameter] = useState<Parameter | null>(
-    null
+    null,
   );
   const [currentCamera, setCurrentCamera] = useState<CameraInterface | null>(
-    null
+    null,
   );
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [deleteType, setDeleteType] = useState<"parameter" | "camera">(
-    "parameter"
+    "parameter",
   );
 
   // Form data states
@@ -71,6 +71,8 @@ const Setting: React.FC = () => {
     status: "active" as CameraInterface["status"],
     has_ptz: false,
   });
+
+  const didFetchRef = useRef(false);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -93,8 +95,11 @@ const Setting: React.FC = () => {
   }, [t]);
 
   useEffect(() => {
+    if (didFetchRef.current) return;
+    didFetchRef.current = true;
     loadData();
-  }, [loadData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleCreateParameter = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -134,8 +139,8 @@ const Setting: React.FC = () => {
         prev.map((param) =>
           param.id === currentParameter.id
             ? { ...param, name: parameterForm.name, type: parameterForm.type }
-            : param
-        )
+            : param,
+        ),
       );
 
       setIsEditParamModalOpen(false);
@@ -192,8 +197,10 @@ const Setting: React.FC = () => {
 
       setCameras((prev: any) =>
         prev.map((camera: any) =>
-          camera.id === currentCamera.id ? { ...camera, ...cameraForm } : camera
-        )
+          camera.id === currentCamera.id
+            ? { ...camera, ...cameraForm }
+            : camera,
+        ),
       );
 
       setIsEditCameraModalOpen(false);
@@ -480,7 +487,7 @@ const Setting: React.FC = () => {
                     <td className="py-3 px-2 text-xs sm:text-sm md:text-base">
                       <span
                         className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${getStatusColor(
-                          camera.status
+                          camera.status,
                         )}`}
                       >
                         {getStatusText(camera.status)}

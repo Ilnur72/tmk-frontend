@@ -1,50 +1,50 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { API_URL } from "../../../config/const";
-import axios from "axios";
 import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+
+interface DashboardApiResponse {
+  employees_full: number;
+  employees_office: number;
+  employees_office_man: number;
+  employees_office_woman: number;
+  fired: number;
+  hired: number;
+}
 
 const GenderStatistics: React.FC = () => {
   const { t } = useTranslation();
-  const [genderData, setGenderData] = useState([
-    { label: t("employee.male"), value: 0, color: "#3b82f6" },
-    { label: t("employee.female"), value: 0, color: "#f59e0b" },
-  ]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchGenderData = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(`${API_URL}/employers/dashboard/`);
-        const data = response.data;
-        const manPercent = Math.round(
-          (data.employees_office_man / data.employees_office) * 100
-        );
-        const womanPercent = 100 - manPercent;
+  // Use the same queryKey as Employee.tsx to share cache
+  const { data, isLoading } = useQuery<DashboardApiResponse>({
+    queryKey: ["dashboard"],
+    queryFn: async () => {
+      const response = await axios.get(`/employers/dashboard/`);
+      return response.data;
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
 
-        setGenderData([
-          { label: t("employee.male"), value: manPercent, color: "#3b82f6" },
-          {
-            label: t("employee.female"),
-            value: womanPercent,
-            color: "#f59e0b",
-          },
-        ]);
-      } catch (error) {
-        console.error("Error fetching gender data:", error);
-        // Set default values on error
-        setGenderData([
-          { label: t("employee.male"), value: 95, color: "#3b82f6" },
-          { label: t("employee.female"), value: 5, color: "#f59e0b" },
-        ]);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const genderData = useMemo(() => {
+    if (!data) {
+      return [
+        { label: t("employee.male"), value: 95, color: "#3b82f6" },
+        { label: t("employee.female"), value: 5, color: "#f59e0b" },
+      ];
+    }
 
-    fetchGenderData();
-  }, [t]);
+    const manPercent = Math.round(
+      (data.employees_office_man / data.employees_office) * 100,
+    );
+    const womanPercent = 100 - manPercent;
+
+    return [
+      { label: t("employee.male"), value: manPercent, color: "#3b82f6" },
+      { label: t("employee.female"), value: womanPercent, color: "#f59e0b" },
+    ];
+  }, [data, t]);
 
   const renderCustomLabel = ({
     cx,
@@ -76,7 +76,7 @@ const GenderStatistics: React.FC = () => {
     );
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="bg-white rounded-lg shadow-lg p-5">
         <h2 className="text-lg font-medium text-gray-900 mb-5">

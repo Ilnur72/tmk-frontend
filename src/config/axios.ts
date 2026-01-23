@@ -1,8 +1,14 @@
 import axios from "axios";
 import i18n from "../i18n";
 
+// Create axios instance with base URL
+const axiosInstance = axios.create({
+  baseURL: process.env.REACT_APP_API_URL || "http://localhost:8085",
+  timeout: 30000,
+});
+
 // Add request interceptor to automatically add lang parameter
-axios.interceptors.request.use(
+axiosInstance.interceptors.request.use(
   (config) => {
     // Get current language
     const lang = i18n.language || "uz";
@@ -40,7 +46,7 @@ axios.interceptors.request.use(
 );
 
 // Add response interceptor to log responses
-axios.interceptors.response.use(
+axiosInstance.interceptors.response.use(
   (response) => {
     console.log("✅ API Response:", response.config.url, {
       status: response.status,
@@ -54,4 +60,4 @@ axios.interceptors.response.use(
   },
 );
 
-export default axios;
+export default axiosInstance;

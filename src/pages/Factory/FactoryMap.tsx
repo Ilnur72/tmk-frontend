@@ -10,12 +10,14 @@ import { Select } from "../../components/UI/Select";
 // Weather Widget Component
 const WeatherWidget = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const scriptRef = useRef<HTMLScriptElement | null>(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    const container = containerRef.current;
+    if (!container) return;
 
     // Set widget HTML with custom attributes
-    containerRef.current.innerHTML = `
+    container.innerHTML = `
       <div style="border-radius: 12px; overflow: hidden;" id="ww_5e9f54c4e904c" v='1.3' loc='id' a='{"t":"horizontal","lang":"uz","sl_lpl":1,"ids":["wl2689"],"font":"Arial","sl_ics":"one_a","sl_sot":"celsius","cl_bkg":"#33b5d6","cl_font":"#FFFFFF","cl_cloud":"#FFFFFF","cl_persp":"#FFFFFF","cl_sun":"#FFC107","cl_moon":"#FFC107","cl_thund":"#FF5722"}'>
         <a href="https://weatherwidget.org/" id="ww_5e9f54c4e904c_u" target="_blank">Html weather widget</a>
       </div>
@@ -25,11 +27,33 @@ const WeatherWidget = () => {
     const script = document.createElement("script");
     script.src = "https://app3.weatherwidget.org/js/?id=ww_5e9f54c4e904c";
     script.async = true;
+    script.id = "weather-widget-script";
+    scriptRef.current = script;
     document.body.appendChild(script);
 
     return () => {
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
+      // Clean up script
+      if (scriptRef.current && document.body.contains(scriptRef.current)) {
+        try {
+          document.body.removeChild(scriptRef.current);
+        } catch (e) {
+          // Ignore if already removed
+        }
+      }
+
+      // Clean up widget container
+      if (container) {
+        container.innerHTML = "";
+      }
+
+      // Clean up any global variables created by the widget
+      try {
+        const widgetEl = document.getElementById("ww_5e9f54c4e904c");
+        if (widgetEl?.parentNode) {
+          widgetEl.parentNode.removeChild(widgetEl);
+        }
+      } catch (e) {
+        // Ignore cleanup errors
       }
     };
   }, []);
@@ -109,6 +133,7 @@ const FactoryMap: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedObjectType, setSelectedObjectType] = useState<string>("");
   const [objectTypes, setObjectTypes] = useState<ObjectType[]>([]);
+  const didFetchRef = useRef(false);
 
   // Cleanup any existing VehicleTracking map instances
   const cleanupVehicleTrackingMaps = useCallback(() => {
@@ -443,6 +468,10 @@ const FactoryMap: React.FC = () => {
 
     // Load markers when map is ready
     map.current.on("load", () => {
+      // Prevent double fetch in React 18 StrictMode
+      if (didFetchRef.current) return;
+      didFetchRef.current = true;
+
       fetchFactories();
       fetchObjectTypes();
     });
@@ -468,9 +497,13 @@ const FactoryMap: React.FC = () => {
 
   // Filter factories when filters change
   useEffect(() => {
+    // Skip initial fetch if didFetchRef is false (map not loaded yet)
+    if (!didFetchRef.current) return;
+
     // Refetch when category changes (backend filter)
     fetchFactories();
-  }, [selectedCategory, fetchFactories]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCategory]);
 
   // Filter by object type (client-side only)
   useEffect(() => {

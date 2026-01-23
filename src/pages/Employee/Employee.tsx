@@ -99,7 +99,7 @@ const apiService = {
 
   async getOrganizationStats(): Promise<OrganizationData[]> {
     const response = await axios.get(
-      `${API_URL}/employers/tashkilot-statistika/`
+      `${API_URL}/employers/tashkilot-statistika/`,
     );
     return response.data;
   },
@@ -127,7 +127,7 @@ const apiService = {
     try {
       const response = await axios.post(
         "https://citynet.synterra.uz/api/login",
-        { phone: "998901234567" }
+        { phone: "998901234567" },
       );
       return response.data.token;
     } catch (error) {
@@ -138,7 +138,7 @@ const apiService = {
 
   async getAttendanceData(
     status: string,
-    token: string
+    token: string,
   ): Promise<AttendanceResponse> {
     const response = await axios.get(
       `https://citynet.synterra.uz/api/reports/today-tmk?status=${status}`,
@@ -146,7 +146,7 @@ const apiService = {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
     return response.data;
   },
@@ -154,56 +154,110 @@ const apiService = {
 
 // Custom hooks using React Query
 const useDashboardData = () => {
+  const didFetchRef = React.useRef(false);
   return useQuery<DashboardApiResponse>({
     queryKey: ["dashboard"],
     queryFn: apiService.getDashboardData,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
+    enabled: (() => {
+      if (didFetchRef.current) return false;
+      didFetchRef.current = true;
+      return true;
+    })(),
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 };
 
 const useOrganizationStats = () => {
+  const didFetchRef = React.useRef(false);
   return useQuery<OrganizationData[]>({
     queryKey: ["organizationStats"],
     queryFn: apiService.getOrganizationStats,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
+    enabled: (() => {
+      if (didFetchRef.current) return false;
+      didFetchRef.current = true;
+      return true;
+    })(),
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 };
 
 const useBirthData = () => {
+  const didFetchRef = React.useRef(false);
   return useQuery<BirthDataResponse>({
     queryKey: ["birthData"],
     queryFn: apiService.getBirthData,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
+    enabled: (() => {
+      if (didFetchRef.current) return false;
+      didFetchRef.current = true;
+      return true;
+    })(),
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 };
 
 const useInternshipData = () => {
+  const didFetchRef = React.useRef(false);
   return useQuery<InternshipData[]>({
     queryKey: ["internshipData"],
     queryFn: apiService.getInternshipData,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
+    enabled: (() => {
+      if (didFetchRef.current) return false;
+      didFetchRef.current = true;
+      return true;
+    })(),
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 };
 
 const usePassportData = () => {
+  const didFetchRef = React.useRef(false);
   return useQuery<PassportData>({
     queryKey: ["passportData"],
     queryFn: apiService.getPassportData,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
+    enabled: (() => {
+      if (didFetchRef.current) return false;
+      didFetchRef.current = true;
+      return true;
+    })(),
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 };
 
 const useLanguageData = () => {
+  const didFetchRef = React.useRef(false);
   return useQuery<LanguageData[]>({
     queryKey: ["languageData"],
     queryFn: apiService.getLanguageData,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
+    enabled: (() => {
+      if (didFetchRef.current) return false;
+      didFetchRef.current = true;
+      return true;
+    })(),
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 };
 
@@ -211,8 +265,9 @@ const useLanguageData = () => {
 const Dashboard: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
   const [attendanceToken, setAttendanceToken] = useState<string>(
-    "5|aKv2AVPkCToZH8DzSAbix8UCMAomD2Sqil6wjzQAc53a5535"
+    "5|aKv2AVPkCToZH8DzSAbix8UCMAomD2Sqil6wjzQAc53a5535",
   );
   const [attendanceStats, setAttendanceStats] =
     useState<AttendanceStats | null>(null);
@@ -220,16 +275,21 @@ const Dashboard: React.FC = () => {
     AttendanceObject[]
   >([]);
   const [isLoadingAttendance, setIsLoadingAttendance] = useState(false);
+  const didFetchAttendanceRef = React.useRef(false);
 
   // Fetch attendance data
   useEffect(() => {
+    // Prevent double fetch in React 18 StrictMode
+    if (didFetchAttendanceRef.current) return;
+    didFetchAttendanceRef.current = true;
+
     const fetchAttendanceData = async () => {
       try {
         setIsLoadingAttendance(true);
         // Fetch with 'all' status to get counts
         const response = await apiService.getAttendanceData(
           "all",
-          attendanceToken
+          attendanceToken,
         );
         if (response.success) {
           setAttendanceStats(response.counts);
@@ -241,7 +301,7 @@ const Dashboard: React.FC = () => {
           setAttendanceToken(newToken);
           const retryResponse = await apiService.getAttendanceData(
             "all",
-            newToken
+            newToken,
           );
           if (retryResponse.success) {
             setAttendanceStats(retryResponse.counts);
@@ -254,7 +314,8 @@ const Dashboard: React.FC = () => {
     };
 
     fetchAttendanceData();
-  }, [attendanceToken]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Using React Query hooks
   const {
@@ -314,13 +375,6 @@ const Dashboard: React.FC = () => {
     internshipError ||
     passportError ||
     languageError;
-
-  // Calculate total employees including all branches
-  const totalEmployees = attendanceStats
-    ? attendanceStats.total_employees
-    : employeeData
-    ? employeeData.employees_full || 0
-    : 0;
 
   // Handler for internship card click
   const handleInternshipClick = () => {
@@ -624,7 +678,7 @@ const Dashboard: React.FC = () => {
               passportData && passportData.еxpiration_date
                 ? `${Math.round(
                     (passportData.coming_soon / passportData.еxpiration_date) *
-                      100
+                      100,
                   )}%`
                 : "0%"
             }
