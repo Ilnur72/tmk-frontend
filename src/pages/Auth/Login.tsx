@@ -46,7 +46,7 @@ const Login: React.FC = () => {
                   alt="Logo"
                 />
                 <div className="-intro-x mt-10 text-4xl font-medium leading-tight text-white">
-                  Har bir maʼdan
+                  Har bir maʼdan test
                   <br />
                   boʻlagini qadrlaymiz!
                 </div>
