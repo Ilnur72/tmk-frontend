@@ -1,4 +1,4 @@
-# name: Deploy React to Server
+name: Deploy React to Server
 
 on:
   push:
@@ -10,34 +10,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Repo checkout
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 2️⃣ Dependencies o‘rnatish
       - name: Install dependencies
         run: npm ci
 
-      # 3️⃣ Build
       - name: Build
         run: npm run build
 
-      # 4️⃣ (Optional) Remote folderni tozalash
-      - name: Clean remote folder
-        run: |
-          ssh -i ~/.ssh/ci_cd_key -o StrictHostKeyChecking=no sanjar@${{ secrets.SERVER_HOST }} \
-          "rm -rf /home/sanjar/tmk-frontend/*"
-
-      # 5️⃣ Buildni serverga upload qilish
       - name: Upload build to server
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.SERVER_HOST }}
-          username: sanjar
+          username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_SSH_PORT }}
-          source: "build/*"
+          source: "build/"
           target: "/home/sanjar/tmk-frontend"
-          overwrite: true       # eski fayllarni ustidan yozish
-          strip_components: 0
-          debug: true
