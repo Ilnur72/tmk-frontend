@@ -28,3 +28,5 @@ jobs:
           port: ${{ secrets.SERVER_SSH_PORT }}
           source: "build/"
           target: "/home/sanjar/tmk-frontend"
+          rm: true             # ❗ eski fayllarni o'chirish
+          overwrite: true      # ❗ yangi fayllarni yozish
