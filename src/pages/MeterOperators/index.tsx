@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import OperatorLogin from "./components/OperatorLogin";
 import DailyReadings from "./components/DailyReadings";
 import MyReadingsHistory from "./components/MyReadingsHistory";
-import ReadingsChart from "./components/ReadingsChart";
 import LanguageSwitcher from "../../components/UI/LanguageSwitcher";
 import { meterOperatorService } from "./services/meterOperatorService";
 import { User } from "../../types/energy";
@@ -90,11 +89,6 @@ const MeterOperators: React.FC = () => {
       name: t("meter_operators.readings_history.title"),
       icon: "📋",
     },
-    {
-      id: "readings-chart",
-      name: t("meter_operators.readings_chart.tab_title", "Diagramma"),
-      icon: "📊",
-    },
   ];
 
   const renderTabContent = () => {
@@ -103,8 +97,6 @@ const MeterOperators: React.FC = () => {
         return <DailyReadings operatorData={operatorData} />;
       case "my-history":
         return <MyReadingsHistory operatorData={operatorData} />;
-      case "readings-chart":
-        return <ReadingsChart operatorData={operatorData} />;
       default:
         return <DailyReadings operatorData={operatorData} />;
     }

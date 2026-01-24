@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "../../config/axios";
-import type { DashboardAnalyticsOverview } from "../../types/dashboard";
+import { useTranslation } from "react-i18next";
 import {
   TrendingUp,
   TrendingDown,
@@ -42,52 +41,91 @@ const GeneralDashboard: React.FC = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedPeriod, setSelectedPeriod] = useState("month");
-  const didFetchRef = React.useRef(false);
 
   useEffect(() => {
-    // Prevent double fetch in React 18 StrictMode (development only)
-    if (didFetchRef.current && selectedPeriod === "month") return;
-    didFetchRef.current = true;
-
     loadDashboardData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPeriod]);
 
   const loadDashboardData = async () => {
     try {
       setLoading(true);
 
-      const res = await axios.get<{
-        success: boolean;
-        data: DashboardAnalyticsOverview;
-      }>("/dashboard/overview");
-      const data = res.data?.data;
-
-      if (!data) {
-        throw new Error("Ma'lumot yuklanmadi");
-      }
-
-      // Map analytics data to state
-      const mapped: DashboardStats = {
-        totalEmployees: data.employees.total,
-        totalFactories: data.factories.total,
-        totalEnergy: data.het?.thisMonthConsumption || 0,
-        totalRevenue: data.finance.totalSources,
-        totalOrders: data.transport.moving,
-        totalAlerts: data.drivers.expiredLicenses,
+      // Mock ma'lumotlar - keyinchalik real API bilan almashtiriladi
+      const mockData: DashboardStats = {
+        totalEmployees: 1248,
+        totalFactories: 12,
+        totalEnergy: 85420,
+        totalRevenue: 2450000,
+        totalOrders: 3721,
+        totalAlerts: 8,
         monthlyGrowth: {
-          employees: 0,
-          revenue: data.finance.recentChanges,
-          energy: parseFloat(data.het?.changePercentage || "0") || 0,
-          orders: 0,
+          employees: 5.2,
+          revenue: 12.8,
+          energy: -3.4,
+          orders: 8.6,
         },
-        recentActivities: [],
-        topFactories: [],
-        energyConsumption: [],
-        salesData: [],
+        recentActivities: [
+          {
+            id: 1,
+            type: "order",
+            message: "Yangi buyurtma qabul qilindi #3721",
+            time: "5 daqiqa oldin",
+            user: "Akmal Usmonov",
+          },
+          {
+            id: 2,
+            type: "energy",
+            message: "Energiya iste'moli 15% kamaydi",
+            time: "12 daqiqa oldin",
+            user: "Sistem",
+          },
+          {
+            id: 3,
+            type: "employee",
+            message: "Yangi xodim qo'shildi",
+            time: "25 daqiqa oldin",
+            user: "HR Bo'limi",
+          },
+          {
+            id: 4,
+            type: "alert",
+            message: "Texnik xatolik aniqlandi",
+            time: "1 soat oldin",
+            user: "Texnik Xizmat",
+          },
+          {
+            id: 5,
+            type: "finance",
+            message: "To'lov tasdiqlandi",
+            time: "2 soat oldin",
+            user: "Moliya Bo'limi",
+          },
+        ],
+        topFactories: [
+          { id: 1, name: "Zavod №1", production: 15420, efficiency: 95.2 },
+          { id: 2, name: "Zavod №2", production: 12890, efficiency: 92.8 },
+          { id: 3, name: "Zavod №3", production: 11250, efficiency: 88.5 },
+          { id: 4, name: "Zavod №4", production: 9870, efficiency: 85.2 },
+        ],
+        energyConsumption: [
+          { month: "Yan", electricity: 12000, water: 8500, gas: 6200 },
+          { month: "Fev", electricity: 11800, water: 8200, gas: 6100 },
+          { month: "Mar", electricity: 13200, water: 9100, gas: 6800 },
+          { month: "Apr", electricity: 12900, water: 8900, gas: 6500 },
+          { month: "May", electricity: 14100, water: 9500, gas: 7200 },
+          { month: "Iyn", electricity: 13800, water: 9200, gas: 6900 },
+        ],
+        salesData: [
+          { product: "Mahsulot A", sales: 15000, growth: 12.5 },
+          { product: "Mahsulot B", sales: 12800, growth: 8.2 },
+          { product: "Mahsulot C", sales: 11200, growth: -2.1 },
+          { product: "Mahsulot D", sales: 9500, growth: 15.8 },
+        ],
       };
 
-      setStats(mapped);
+      // API ga'lat simulatsiya
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      setStats(mockData);
     } catch (error) {
       console.error("Dashboard ma'lumotlarini yuklashda xatolik:", error);
     } finally {
@@ -194,29 +232,22 @@ const GeneralDashboard: React.FC = () => {
                 Энергия истеъмоли
               </p>
               <p className="text-3xl font-bold text-gray-900">
-                {stats.totalEnergy > 0
-                  ? `${stats.totalEnergy.toLocaleString()} kVt·s`
-                  : "Маълумот йўқ"}
+                {stats.totalEnergy.toLocaleString()}
               </p>
-              {stats.totalEnergy > 0 && (
-                <p
-                  className={`text-sm flex items-center mt-1 ${
-                    stats.monthlyGrowth.energy > 0
-                      ? "text-red-600"
-                      : stats.monthlyGrowth.energy < 0
-                        ? "text-green-600"
-                        : "text-gray-600"
-                  }`}
-                >
-                  {stats.monthlyGrowth.energy > 0 ? (
-                    <TrendingUp className="w-4 h-4 mr-1" />
-                  ) : stats.monthlyGrowth.energy < 0 ? (
-                    <TrendingDown className="w-4 h-4 mr-1" />
-                  ) : null}
-                  {Math.abs(stats.monthlyGrowth.energy).toFixed(1)}% дан ўтган
-                  ой
-                </p>
-              )}
+              <p
+                className={`text-sm flex items-center mt-1 ${
+                  stats.monthlyGrowth.energy >= 0
+                    ? "text-red-600"
+                    : "text-green-600"
+                }`}
+              >
+                {stats.monthlyGrowth.energy >= 0 ? (
+                  <TrendingUp className="w-4 h-4 mr-1" />
+                ) : (
+                  <TrendingDown className="w-4 h-4 mr-1" />
+                )}
+                {Math.abs(stats.monthlyGrowth.energy)}% дан ўтган ой
+              </p>
             </div>
             <div className="p-3 bg-yellow-100 rounded-full">
               <Zap className="w-6 h-6 text-yellow-600" />
@@ -417,12 +448,12 @@ const GeneralDashboard: React.FC = () => {
                     activity.type === "order"
                       ? "bg-green-500"
                       : activity.type === "energy"
-                        ? "bg-yellow-500"
-                        : activity.type === "employee"
-                          ? "bg-blue-500"
-                          : activity.type === "alert"
-                            ? "bg-red-500"
-                            : "bg-purple-500"
+                      ? "bg-yellow-500"
+                      : activity.type === "employee"
+                      ? "bg-blue-500"
+                      : activity.type === "alert"
+                      ? "bg-red-500"
+                      : "bg-purple-500"
                   }`}
                 ></div>
                 <div>

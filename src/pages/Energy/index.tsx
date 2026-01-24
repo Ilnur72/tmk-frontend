@@ -4,8 +4,6 @@ import EnergyDashboard from "./EnergyDashboard";
 import WorkshopsList from "./components/WorkshopsList";
 import MetersList from "./components/MetersList";
 import MeterReadingsList from "./components/MeterReadingsList";
-import EnergyChart from "./components/EnergyChart";
-import ReadingsAnalytics from "./components/ReadingsAnalytics";
 // Import other components here when ready
 // import EnergyReports from './components/EnergyReports';
 
@@ -20,16 +18,6 @@ const Energy: React.FC = () => {
     { id: "workshops", name: t("energy.workshops"), icon: "🏭" },
     { id: "meters", name: t("energy.meters"), icon: "⚡" },
     { id: "readings", name: t("energy.readings"), icon: "📋" },
-    {
-      id: "energy-chart",
-      name: t("energy.energy_chart.tab_title", "Diagramma"),
-      icon: "📈",
-    },
-    {
-      id: "readings-analytics",
-      name: t("energy.readings_analytics.tab_title", "Ko'rsatkichlar tahlili"),
-      icon: "📊",
-    },
     { id: "reports", name: t("energy.reports"), icon: "📈" },
   ];
 
@@ -43,10 +31,6 @@ const Energy: React.FC = () => {
         return <MetersList factoryId={factoryId} />;
       case "readings":
         return <MeterReadingsList factoryId={factoryId} />;
-      case "energy-chart":
-        return <EnergyChart factoryId={factoryId} />;
-      case "readings-analytics":
-        return <ReadingsAnalytics factoryId={factoryId} />;
       case "reports":
         return (
           <div className="p-6">
@@ -54,7 +38,9 @@ const Energy: React.FC = () => {
               <h3 className="text-lg font-medium text-gray-900 mb-2">
                 {t("energy.reports")}
               </h3>
-              <p className="text-gray-500">{t("energy.reports_coming_soon")}</p>
+              <p className="text-gray-500">
+                Energy reports and analytics coming soon...
+              </p>
             </div>
           </div>
         );
@@ -73,7 +59,8 @@ const Energy: React.FC = () => {
               {t("energy.title")}
             </h1>
             <p className="mt-2 text-gray-600 max-md:text-sm">
-              {t("energy.description")}
+              Monitor energy consumption and view analytics across your
+              facilities
             </p>
           </div>
         </div>

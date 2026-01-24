@@ -42,20 +42,11 @@ const apiService = {
 
 // Custom hook for EARS data
 const useEARSData = () => {
-  const didFetchRef = React.useRef(false);
   return useQuery<EARSData[]>({
     queryKey: ["earsDashboard"],
     queryFn: apiService.getEARSDashboard,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
-    enabled: (() => {
-      if (didFetchRef.current) return false;
-      didFetchRef.current = true;
-      return true;
-    })(),
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   });
 };
 
@@ -84,7 +75,7 @@ const transformData = (data: EARSData[]): ChartData[] => {
 
   // Sort by date (oldest first for proper growth calculation)
   const sortedData = [...data].sort(
-    (a, b) => new Date(a.month).getTime() - new Date(b.month).getTime(),
+    (a, b) => new Date(a.month).getTime() - new Date(b.month).getTime()
   );
 
   return sortedData.map((item, index) => {
@@ -107,7 +98,7 @@ const transformData = (data: EARSData[]): ChartData[] => {
 // Date filter function
 const filterDataByDateRange = (
   data: ChartData[],
-  dateRange: DateRange | null,
+  dateRange: DateRange | null
 ): ChartData[] => {
   // Check if data is valid array
   if (!data || !Array.isArray(data)) return [];
@@ -237,8 +228,8 @@ const CustomTooltip: React.FC<any> = ({ active, payload, label }) => {
                   payload[1].value > 0
                     ? "text-green-600"
                     : payload[1].value < 0
-                      ? "text-red-600"
-                      : "text-gray-600"
+                    ? "text-red-600"
+                    : "text-gray-600"
                 }`}
               >
                 {payload[1].value > 0 ? "+" : ""}
@@ -279,7 +270,7 @@ const EmployeeGrowthChart: React.FC = () => {
       return allChartData;
     } else {
       const selectedOption = dateRangeOptions.find(
-        (opt) => opt.value === selectedRange,
+        (opt) => opt.value === selectedRange
       );
       if (selectedOption) {
         return filterDataByDateRange(allChartData, {
