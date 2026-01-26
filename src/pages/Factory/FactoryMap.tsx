@@ -441,9 +441,8 @@ const FactoryMap: React.FC = () => {
     // Add layer toggle control
     map.current.addControl(createLayerToggleControl() as any, "bottom-right");
 
-    // Load markers when map is ready
+    // Load object types when map is ready
     map.current.on("load", () => {
-      fetchFactories();
       fetchObjectTypes();
     });
 
@@ -466,9 +465,9 @@ const FactoryMap: React.FC = () => {
     });
   }, [sidebarCollapsed]);
 
-  // Filter factories when filters change
+  // Fetch factories only when map is loaded and category changes
   useEffect(() => {
-    // Refetch when category changes (backend filter)
+    if (!map.current) return;
     fetchFactories();
   }, [selectedCategory, fetchFactories]);
 
