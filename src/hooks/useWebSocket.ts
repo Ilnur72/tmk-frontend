@@ -1,5 +1,8 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { io, Socket } from "socket.io-client";
+import { API_URL } from "../config/const";
+
+const API_BASE_URL = API_URL;
 
 interface VehicleUpdateData {
   status: "success" | "no_data" | "error";
@@ -19,7 +22,7 @@ interface UseWebSocketOptions {
 
 export const useWebSocket = (options: UseWebSocketOptions = {}) => {
   const {
-    url = "ws://localhost:8085/tracking",
+    url = `ws://${API_BASE_URL}/tracking`,
     autoConnect = true,
     reconnectAttempts = 5,
     reconnectDelay = 2000,

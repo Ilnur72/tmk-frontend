@@ -9,7 +9,7 @@ import TransportListModal from "./TransportListModal";
 import { useWebSocket } from "../../hooks/useWebSocket";
 import { API_URL } from "../../config/const";
 
-const API_BASE_URL = API_URL || "http://localhost:8085";
+const API_BASE_URL = API_URL;
 
 interface Vehicle {
   id: number;
@@ -51,7 +51,7 @@ const VehicleTracking: React.FC = () => {
     requestVehicleDetails,
     enableRealTimeTracking,
   } = useWebSocket({
-    url: "ws://localhost:8085/tracking",
+    url: `ws://${API_BASE_URL}/tracking`,
     autoConnect: true,
     reconnectAttempts: 5,
     reconnectDelay: 2000,

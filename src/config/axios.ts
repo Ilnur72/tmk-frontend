@@ -29,9 +29,6 @@ axios.interceptors.request.use(
         config.url = `${config.url}${separator}lang=${currentLang}`;
       }
     }
-
-    console.log("🌐 API Request:", config.method?.toUpperCase(), config.url);
-
     return config;
   },
   (error) => {
@@ -42,10 +39,6 @@ axios.interceptors.request.use(
 // Add response interceptor to log responses
 axios.interceptors.response.use(
   (response) => {
-    console.log("✅ API Response:", response.config.url, {
-      status: response.status,
-      data: response.data,
-    });
     return response;
   },
   (error) => {

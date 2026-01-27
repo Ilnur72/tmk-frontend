@@ -296,7 +296,7 @@ const Auth: React.FC = () => {
                 className="google-signin-btn"
                 onClick={() => {
                   // Production server address ishlatish
-                  const apiUrl = API_URL || "http://localhost:8085";
+                  const apiUrl = API_URL;
                   const url = `${apiUrl}/partners/auth/google`;
 
                   window.location.href = url;
