@@ -15,6 +15,7 @@ const MetabaseDashboard: React.FC = () => {
         setLoading(true);
         setError(null);
 
+        console.log('[Metabase] Fetching dashboard URL from:', `${API_URL}/metabase-dashboard`);
         const response = await fetch(`${API_URL}/metabase-dashboard`);
         
         if (!response.ok) {
@@ -22,23 +23,25 @@ const MetabaseDashboard: React.FC = () => {
         }
 
         const data = await response.json();
+        console.log('[Metabase] API Response:', data);
         
         // Assuming API returns { url: "..." } or just the URL string
         let url = typeof data === 'string' ? data : data.url || data.dashboardUrl;
+        console.log('[Metabase] Extracted URL:', url);
         
         if (!url) {
           throw new Error("Dashboard URL not found in response");
         }
 
-        // Fix Mixed Content issue: Convert HTTP to HTTPS if current page is HTTPS
-        if (window.location.protocol === 'https:' && url.startsWith('http://')) {
-          console.warn('Converting HTTP URL to HTTPS to avoid Mixed Content error');
-          url = url.replace('http://', 'https://');
-        }
-
+        // Note: We're NOT converting HTTP to HTTPS anymore
+        // because the Metabase server doesn't have a valid SSL certificate
+        console.log('[Metabase] Current protocol:', window.location.protocol);
+        console.log('[Metabase] Dashboard URL protocol:', url.startsWith('https://') ? 'HTTPS' : 'HTTP');
+        console.log('[Metabase] Final dashboard URL:', url);
+        
         setDashboardUrl(url);
       } catch (err) {
-        console.error("Error fetching Metabase dashboard:", err);
+        console.error("[Metabase] Error fetching dashboard:", err);
         setError(err instanceof Error ? err.message : "Failed to load dashboard");
       } finally {
         setLoading(false);
@@ -97,6 +100,12 @@ const MetabaseDashboard: React.FC = () => {
         title="Metabase Dashboard"
         className="w-full h-full border-0"
         allow="fullscreen"
+        onLoad={() => {
+          console.log('[Metabase] iframe loaded successfully');
+        }}
+        onError={(e) => {
+          console.error('[Metabase] iframe failed to load:', e);
+        }}
       />
     </div>
   );
