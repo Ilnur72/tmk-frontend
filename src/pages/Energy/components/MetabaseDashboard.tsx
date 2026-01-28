@@ -24,10 +24,16 @@ const MetabaseDashboard: React.FC = () => {
         const data = await response.json();
         
         // Assuming API returns { url: "..." } or just the URL string
-        const url = typeof data === 'string' ? data : data.url || data.dashboardUrl;
+        let url = typeof data === 'string' ? data : data.url || data.dashboardUrl;
         
         if (!url) {
           throw new Error("Dashboard URL not found in response");
+        }
+
+        // Fix Mixed Content issue: Convert HTTP to HTTPS if current page is HTTPS
+        if (window.location.protocol === 'https:' && url.startsWith('http://')) {
+          console.warn('Converting HTTP URL to HTTPS to avoid Mixed Content error');
+          url = url.replace('http://', 'https://');
         }
 
         setDashboardUrl(url);
