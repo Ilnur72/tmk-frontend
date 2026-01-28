@@ -142,11 +142,11 @@
   },
   "sidebar": {
     "map": "Map",
-    "dashboard": "Dashboard",
+    "dashboard": "Summary data",
     "factory": "Factory",
     "production": "Production",
     "sales": "Sales",
-    "finance": "Finance",
+    "finance": "Stock Market",
     "employee": "Employees",
     "vehicle_tracking": "Vehicle Tracking",
     "applications": "Applications",
@@ -190,6 +190,8 @@
     "uzbek": "O'zbek"
   },
   "dashboard": {
+    "page_title": "Summary Dashboard",
+    "page_description": "Overview of all system information",
     "title": "TMK Management System",
     "welcome": "Welcome",
     "statistics": "Statistics",

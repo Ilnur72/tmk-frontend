@@ -1,1 +1,1 @@
-export { default } from "./GeneralDashboard";
+export { default } from "./DashboardWithMetabase";

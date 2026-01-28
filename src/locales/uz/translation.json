@@ -142,11 +142,11 @@
   },
   "sidebar": {
     "map": "Харита",
-    "dashboard": "Бош саҳифа",
+    "dashboard": "Umumiy ma'lumotlar",
     "factory": "Инвестиция лойиҳалари",
     "production": "Ишлаб чиқариш",
     "sales": "Сотув",
-    "finance": "Молия",
+    "finance": "Birja bozori",
     "employee": "Ходимлар",
     "vehicle_tracking": "Транспорт мониторинг",
     "applications": "Аризалар",
@@ -183,6 +183,8 @@
     "uzbek": "O'zbek"
   },
   "dashboard": {
+    "page_title": "Umumiy Dashboard",
+    "page_description": "Barcha tizim ma'lumotlarining umumiy ko'rinishi",
     "title": "ТМК Бошқарув тизими",
     "welcome": "Хуш келибсиз",
     "statistics": "Статистика",

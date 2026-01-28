@@ -142,11 +142,11 @@
   },
   "sidebar": {
     "map": "Карта",
-    "dashboard": "Главная",
+    "dashboard": "Сводные данные",
     "factory": "Инвестиционные проекты",
     "production": "Производство",
     "sales": "Продажи",
-    "finance": "Финансы",
+    "finance": "Фондовый рынок",
     "employee": "Сотрудники",
     "vehicle_tracking": "Мониторинг транспорта",
     "applications": "Заявки",
@@ -183,6 +183,8 @@
     "uzbek": "O'zbek"
   },
   "dashboard": {
+    "page_title": "Сводная панель",
+    "page_description": "Обзор всей информации системы",
     "title": "Система управления ТМК",
     "welcome": "Добро пожаловать",
     "statistics": "Статистика",

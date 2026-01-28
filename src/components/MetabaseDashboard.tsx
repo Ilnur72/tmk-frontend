@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { API_URL } from "../../../config/const";
+import { API_URL } from "../config/const";
 import { Loader2, AlertCircle } from "lucide-react";
 
-const MetabaseDashboard: React.FC = () => {
+interface MetabaseDashboardProps {
+  endpoint: string; // e.g., "/metabase/energy", "/metabase/sales"
+  title?: string;
+}
+
+const MetabaseDashboard: React.FC<MetabaseDashboardProps> = ({ endpoint, title }) => {
   const { t } = useTranslation();
   const [dashboardUrl, setDashboardUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -15,7 +20,7 @@ const MetabaseDashboard: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch(`${API_URL}/metabase-dashboard`);
+        const response = await fetch(`${API_URL}${endpoint}`);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -24,7 +29,7 @@ const MetabaseDashboard: React.FC = () => {
         const data = await response.json();
         
         // Assuming API returns { url: "..." } or just the URL string
-        let url = typeof data === 'string' ? data : data.url || data.dashboardUrl;
+        const url = typeof data === 'string' ? data : data.url || data.dashboardUrl;
         
         if (!url) {
           throw new Error("Dashboard URL not found in response");
@@ -32,7 +37,7 @@ const MetabaseDashboard: React.FC = () => {
 
         setDashboardUrl(url);
       } catch (err) {
-        console.error("[Metabase] Error fetching dashboard:", err);
+        console.error(`[Metabase] Error fetching dashboard from ${endpoint}:`, err);
         setError(err instanceof Error ? err.message : "Failed to load dashboard");
       } finally {
         setLoading(false);
@@ -40,7 +45,7 @@ const MetabaseDashboard: React.FC = () => {
     };
 
     fetchDashboardUrl();
-  }, []);
+  }, [endpoint]);
 
   if (loading) {
     return (
@@ -86,16 +91,19 @@ const MetabaseDashboard: React.FC = () => {
 
   return (
     <div className="h-[calc(100vh-200px)] w-full">
+      {title && (
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">{title}</h2>
+      )}
       <iframe
         src={dashboardUrl}
-        title="Metabase Dashboard"
-        className="w-full h-full border-0"
+        title={title || "Metabase Dashboard"}
+        className="w-full h-full border-0 rounded-lg shadow-sm"
         allow="fullscreen"
         onLoad={() => {
-          console.log('[Metabase] iframe loaded successfully');
+          console.log(`[Metabase] iframe loaded successfully for ${endpoint}`);
         }}
         onError={(e) => {
-          console.error('[Metabase] iframe failed to load:', e);
+          console.error(`[Metabase] iframe failed to load for ${endpoint}:`, e);
         }}
       />
     </div>

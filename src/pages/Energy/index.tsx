@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import MetabaseDashboard from "./components/MetabaseDashboard";
+import MetabaseDashboard from "../../components/MetabaseDashboard";
 // Commented out old components - keeping for future use
 // import EnergyDashboard from "./EnergyDashboard";
 // import WorkshopsList from "./components/WorkshopsList";
@@ -28,7 +28,7 @@ const Energy: React.FC = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case "diagramma":
-        return <MetabaseDashboard />;
+        return <MetabaseDashboard endpoint="/metabase/energy" />;
       // Commented out old cases - keeping for future use
       // case "dashboard":
       //   return <EnergyDashboard />;
@@ -52,7 +52,7 @@ const Energy: React.FC = () => {
       //     </div>
       //   );
       default:
-        return <MetabaseDashboard />;
+        return <MetabaseDashboard endpoint="/metabase/energy" />;
     }
   };
 

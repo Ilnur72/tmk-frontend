@@ -90,8 +90,8 @@ const AppRoutes: React.FC = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/factory-map" replace />} />
-      {/* <Route path="/dashboard" element={<Dashboard />} /> */}
+      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/factory" element={<Factory />} />
       <Route path="/factory-map" element={<FactoryMap />} />
       {/* Setting page only for admin and editor */}

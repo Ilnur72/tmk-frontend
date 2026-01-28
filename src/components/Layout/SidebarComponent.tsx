@@ -30,7 +30,7 @@ interface MenuItem {
 }
 
 const allMenuItems: MenuItem[] = [
-  // { href: "/dashboard", icon: Home, title: "sidebar.dashboard" },
+  { href: "/dashboard", icon: Home, title: "sidebar.dashboard" },
   { href: "/factory-map", icon: MapPin, title: "sidebar.map" },
   { href: "/factory", icon: Briefcase, title: "sidebar.factory" },
   { href: "/production", icon: GitPullRequest, title: "sidebar.production" },
