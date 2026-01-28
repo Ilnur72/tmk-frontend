@@ -14,7 +14,7 @@ import {
 } from "../types/energy";
 import { API_URL } from "../config/const";
 
-const BASE_URL = API_URL || "http://localhost:8085";
+const BASE_URL = API_URL;
 
 // Axios instance with auth header
 const apiClient = axios.create({

@@ -1,3 +1,15 @@
+// Analytics Dashboard API Types (v2.0)
+export interface DashboardAnalyticsOverview {
+  transport: any;
+  drivers: any;
+  energy: any;
+  solar: any;
+  factories: any;
+  het: any;
+  employees: any;
+  finance: any;
+  timestamp: string;
+}
 export interface DashboardData {
   employees_full: number;
   employees_office: number;

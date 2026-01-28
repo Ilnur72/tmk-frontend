@@ -99,7 +99,7 @@ const apiService = {
 
   async getOrganizationStats(): Promise<OrganizationData[]> {
     const response = await axios.get(
-      `${API_URL}/employers/tashkilot-statistika/`
+      `${API_URL}/employers/tashkilot-statistika/`,
     );
     return response.data;
   },
@@ -120,34 +120,6 @@ const apiService = {
   },
   async getLanguageData(): Promise<LanguageData[]> {
     const response = await axios.get(`/employers/langs`);
-    return response.data;
-  },
-
-  async getAttendanceToken(): Promise<string> {
-    try {
-      const response = await axios.post(
-        "https://citynet.synterra.uz/api/login",
-        { phone: "998901234567" }
-      );
-      return response.data.token;
-    } catch (error) {
-      // Return current token as fallback
-      return "5|aKv2AVPkCToZH8DzSAbix8UCMAomD2Sqil6wjzQAc53a5535";
-    }
-  },
-
-  async getAttendanceData(
-    status: string,
-    token: string
-  ): Promise<AttendanceResponse> {
-    const response = await axios.get(
-      `https://citynet.synterra.uz/api/reports/today-tmk?status=${status}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
     return response.data;
   },
 };
@@ -211,9 +183,7 @@ const useLanguageData = () => {
 const Dashboard: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [attendanceToken, setAttendanceToken] = useState<string>(
-    "5|aKv2AVPkCToZH8DzSAbix8UCMAomD2Sqil6wjzQAc53a5535"
-  );
+  const [status, setStatus] = useState<string>("all");
   const [attendanceStats, setAttendanceStats] =
     useState<AttendanceStats | null>(null);
   const [attendanceObjects, setAttendanceObjects] = useState<
@@ -226,35 +196,30 @@ const Dashboard: React.FC = () => {
     const fetchAttendanceData = async () => {
       try {
         setIsLoadingAttendance(true);
-        // Fetch with 'all' status to get counts
-        const response = await apiService.getAttendanceData(
-          "all",
-          attendanceToken
-        );
-        if (response.success) {
-          setAttendanceStats(response.counts);
-          setAttendanceObjects(response.objects);
+
+        const response = await axios.get("/employers/citynet/today-tmk", {
+          params: {
+            query: {
+              status, // all/present/absent
+              // object_id: objectId, // ixtiyoriy
+              // lang, // uz/ru/en
+            },
+          },
+        });
+
+        if (response.data.success) {
+          setAttendanceStats(response.data.counts);
+          setAttendanceObjects(response.data.objects);
         }
-      } catch (error: any) {
-        if (error.response?.status === 401) {
-          const newToken = await apiService.getAttendanceToken();
-          setAttendanceToken(newToken);
-          const retryResponse = await apiService.getAttendanceData(
-            "all",
-            newToken
-          );
-          if (retryResponse.success) {
-            setAttendanceStats(retryResponse.counts);
-            setAttendanceObjects(retryResponse.objects);
-          }
-        }
+      } catch (error) {
+        console.error("Attendance fetch failed", error);
       } finally {
         setIsLoadingAttendance(false);
       }
     };
 
     fetchAttendanceData();
-  }, [attendanceToken]);
+  }, [status]);
 
   // Using React Query hooks
   const {
@@ -319,8 +284,8 @@ const Dashboard: React.FC = () => {
   const totalEmployees = attendanceStats
     ? attendanceStats.total_employees
     : employeeData
-    ? employeeData.employees_full || 0
-    : 0;
+      ? employeeData.employees_full || 0
+      : 0;
 
   // Handler for internship card click
   const handleInternshipClick = () => {
@@ -427,7 +392,7 @@ const Dashboard: React.FC = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-          <StatCard
+          {/* <StatCard
             title={t("employee_dashboard.total_employees")}
             value={employeeData?.employees_full || 0}
             description={t("employee_dashboard.total_employees_desc")}
@@ -438,7 +403,7 @@ const Dashboard: React.FC = () => {
             value={employeeData?.employees_office || 0}
             description={t("employee_dashboard.central_office")}
             isLoading={isLoading}
-          />
+          /> */}
           {attendanceObjects.length > 0 ? (
             attendanceObjects.map((obj) => (
               <StatCard
@@ -624,7 +589,7 @@ const Dashboard: React.FC = () => {
               passportData && passportData.еxpiration_date
                 ? `${Math.round(
                     (passportData.coming_soon / passportData.еxpiration_date) *
-                      100
+                      100,
                   )}%`
                 : "0%"
             }

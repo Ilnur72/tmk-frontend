@@ -1,51 +1,58 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import EnergyDashboard from "./EnergyDashboard";
-import WorkshopsList from "./components/WorkshopsList";
-import MetersList from "./components/MetersList";
-import MeterReadingsList from "./components/MeterReadingsList";
+import MetabaseDashboard from "./components/MetabaseDashboard";
+// Commented out old components - keeping for future use
+// import EnergyDashboard from "./EnergyDashboard";
+// import WorkshopsList from "./components/WorkshopsList";
+// import MetersList from "./components/MetersList";
+// import MeterReadingsList from "./components/MeterReadingsList";
 // Import other components here when ready
 // import EnergyReports from './components/EnergyReports';
 
 const Energy: React.FC = () => {
   const { t } = useTranslation();
   const [factoryId] = useState(83); // Using existing factory ID from database (83-161)
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [activeTab, setActiveTab] = useState("diagramma");
 
-  // View-only tabs like Partners module - no authentication or management features
+  // New tabs - only Diagramma for now, old tabs commented out
   const tabs = [
-    { id: "dashboard", name: t("energy.dashboard"), icon: "📊" },
-    { id: "workshops", name: t("energy.workshops"), icon: "🏭" },
-    { id: "meters", name: t("energy.meters"), icon: "⚡" },
-    { id: "readings", name: t("energy.readings"), icon: "📋" },
-    { id: "reports", name: t("energy.reports"), icon: "📈" },
+    { id: "diagramma", name: "Diagramma", icon: "📊" },
+    // Commented out old tabs - keeping for future use
+    // { id: "dashboard", name: t("energy.dashboard"), icon: "📊" },
+    // { id: "workshops", name: t("energy.workshops"), icon: "🏭" },
+    // { id: "meters", name: t("energy.meters"), icon: "⚡" },
+    // { id: "readings", name: t("energy.readings"), icon: "📋" },
+    // { id: "reports", name: t("energy.reports"), icon: "📈" },
   ];
 
   const renderTabContent = () => {
     switch (activeTab) {
-      case "dashboard":
-        return <EnergyDashboard />;
-      case "workshops":
-        return <WorkshopsList factoryId={factoryId} />;
-      case "meters":
-        return <MetersList factoryId={factoryId} />;
-      case "readings":
-        return <MeterReadingsList factoryId={factoryId} />;
-      case "reports":
-        return (
-          <div className="p-6">
-            <div className="text-center">
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                {t("energy.reports")}
-              </h3>
-              <p className="text-gray-500">
-                Energy reports and analytics coming soon...
-              </p>
-            </div>
-          </div>
-        );
+      case "diagramma":
+        return <MetabaseDashboard />;
+      // Commented out old cases - keeping for future use
+      // case "dashboard":
+      //   return <EnergyDashboard />;
+      // case "workshops":
+      //   return <WorkshopsList factoryId={factoryId} />;
+      // case "meters":
+      //   return <MetersList factoryId={factoryId} />;
+      // case "readings":
+      //   return <MeterReadingsList factoryId={factoryId} />;
+      // case "reports":
+      //   return (
+      //     <div className="p-6">
+      //       <div className="text-center">
+      //         <h3 className="text-lg font-medium text-gray-900 mb-2">
+      //           {t("energy.reports")}
+      //         </h3>
+      //         <p className="text-gray-500">
+      //           Energy reports and analytics coming soon...
+      //         </p>
+      //       </div>
+      //     </div>
+      //   );
       default:
-        return <EnergyDashboard />;
+        return <MetabaseDashboard />;
     }
   };
 

@@ -38,6 +38,7 @@ import ModuleDashboard from "./pages/modules/Dashboard";
 import ModuleListingForm from "./pages/modules/ListingForm";
 import ModulePartnerProfile from "./pages/modules/PartnerProfile";
 import { useModulesAuth } from "./pages/modules/hooks/useModulesAuth";
+import Transport from "./pages/Transport/Transport";
 
 const LoginRoute: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -89,8 +90,8 @@ const AppRoutes: React.FC = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/" element={<Navigate to="/factory-map" replace />} />
+      {/* <Route path="/dashboard" element={<Dashboard />} /> */}
       <Route path="/factory" element={<Factory />} />
       <Route path="/factory-map" element={<FactoryMap />} />
       {/* Setting page only for admin and editor */}
@@ -114,7 +115,8 @@ const AppRoutes: React.FC = () => {
             path="/employers/today-attendance"
             element={<TodayAttendancePage />}
           />
-          <Route path="/techniques" element={<Techniques />} />
+          {/* <Route path="/techniques" element={<Techniques />} /> */}
+          <Route path="/transport" element={<Transport />} />
           <Route path="/cameras" element={<Camera />} />
           <Route path="/production" element={<Production />} />
           <Route path="/sales" element={<Sales />} />
@@ -122,6 +124,7 @@ const AppRoutes: React.FC = () => {
           <Route path="/partners" element={<Partners />} />
           <Route path="/applications" element={<Applications />} />
           <Route path="/energy" element={<Energy />} />
+          {/* <Route path="/punkt-esg" element={<ESGPunkt />} /> */}
         </>
       )}
 

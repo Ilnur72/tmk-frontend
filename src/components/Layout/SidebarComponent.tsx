@@ -14,19 +14,31 @@ import {
   Menu,
   X,
   MapPin,
+  Car,
+  
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../contexts/AuthContext";
 
-const allMenuItems = [
-  { href: "/dashboard", icon: Home, title: "sidebar.dashboard" },
+interface MenuItem {
+  href: string;
+  icon: React.ElementType;
+  title: string;
+  id?: string;
+  roles?: string[];
+  external?: boolean;
+}
+
+const allMenuItems: MenuItem[] = [
+  // { href: "/dashboard", icon: Home, title: "sidebar.dashboard" },
   { href: "/factory-map", icon: MapPin, title: "sidebar.map" },
   { href: "/factory", icon: Briefcase, title: "sidebar.factory" },
   { href: "/production", icon: GitPullRequest, title: "sidebar.production" },
   { href: "/sales", icon: BarChart, title: "sidebar.sales" },
   { href: "/finance", icon: BarChart2, title: "sidebar.finance" },
   { href: "/employers", icon: Users, title: "sidebar.employee" },
-  { href: "/techniques", icon: Codepen, title: "sidebar.techniques" },
+  // { href: "/techniques", icon: Codepen, title: "sidebar.techniques" },
+  { href: "/transport", icon: Car, title: "sidebar.transport" },
   { href: "/partners", icon: MapPin, title: "sidebar.partners" },
   {
     href: "/applications",
@@ -37,6 +49,12 @@ const allMenuItems = [
     href: "/energy",
     icon: BarChart,
     title: "sidebar.energy",
+  },
+  {
+    href: "https://uni005eu5.fusionsolar.huawei.com/uniportal/pvmswebsite/assets/build/cloud.html?app-id=smartpvms&instance-id=smartpvms&zone-id=d9c57506-219c-40d0-a3f0-fd39435a5a68#/home/list",
+    icon: BarChart,
+    title: "sidebar.punkt_esg",
+    external: true, // Flag to indicate external link
   },
   {
     href: "/setting",
@@ -136,6 +154,32 @@ const Sidebar = () => {
                 location.pathname.startsWith(item.href) ||
                 location.pathname.replace(/\/$/, "") ===
                   item.href.replace(/\/$/, "");
+              
+              // Handle external links
+              if (item.external) {
+                return (
+                  <li
+                    key={`mobile-${item.href}`}
+                    id={item.id ? `${item.id}-mobile` : undefined}
+                  >
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => closeMobileMenu()}
+                      className="menu flex items-center px-6 py-4 hover:bg-opacity-50 transition-colors"
+                    >
+                      <div className="menu__icon mr-4 text-white">
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <div className="menu__title text-sm font-medium text-white">
+                        {t(item.title)}
+                      </div>
+                    </a>
+                  </li>
+                );
+              }
+              
               return (
                 <li
                   key={`mobile-${item.href}`}
@@ -211,6 +255,26 @@ const Sidebar = () => {
               location.pathname.startsWith(item.href) ||
               location.pathname.replace(/\/$/, "") ===
                 item.href.replace(/\/$/, "");
+            
+            // Handle external links
+            if (item.external) {
+              return (
+                <li key={item.href} id={item.id}>
+                  <a
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="side-menu"
+                  >
+                    <div className="side-menu__icon">
+                      <Icon className="stroke-1.5 w-5 h-5" />
+                    </div>
+                    <div className="side-menu__title">{t(item.title)}</div>
+                  </a>
+                </li>
+              );
+            }
+            
             return (
               <li key={item.href} id={item.id}>
                 <NavLink

@@ -51,7 +51,7 @@ const VehicleTracking: React.FC = () => {
     requestVehicleDetails,
     enableRealTimeTracking,
   } = useWebSocket({
-    url: `ws://${API_BASE_URL}/tracking`,
+    url: `ws://localhost:8085/tracking`,
     autoConnect: true,
     reconnectAttempts: 5,
     reconnectDelay: 2000,
