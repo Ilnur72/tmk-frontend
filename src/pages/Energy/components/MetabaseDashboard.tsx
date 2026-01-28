@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { API_URL } from "../../../config/const";
 import { Loader2, AlertCircle } from "lucide-react";
 
 const MetabaseDashboard: React.FC = () => {
+  const { t } = useTranslation();
   const [dashboardUrl, setDashboardUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,7 +47,7 @@ const MetabaseDashboard: React.FC = () => {
       <div className="flex items-center justify-center h-[calc(100vh-200px)]">
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Loading Metabase Dashboard...</p>
+          <p className="text-gray-600">{t("energy.metabase.loading")}</p>
         </div>
       </div>
     );
@@ -57,14 +59,14 @@ const MetabaseDashboard: React.FC = () => {
         <div className="text-center max-w-md">
           <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            Failed to Load Dashboard
+            {t("energy.metabase.failed_to_load")}
           </h3>
-          <p className="text-gray-600 mb-4">{error}</p>
+          <p className="text-gray-600 mb-4">{t("energy.metabase.error_message")}</p>
           <button
             onClick={() => window.location.reload()}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Retry
+            {t("energy.metabase.retry")}
           </button>
         </div>
       </div>
@@ -76,7 +78,7 @@ const MetabaseDashboard: React.FC = () => {
       <div className="flex items-center justify-center h-[calc(100vh-200px)]">
         <div className="text-center">
           <AlertCircle className="w-12 h-12 text-yellow-600 mx-auto mb-4" />
-          <p className="text-gray-600">No dashboard URL available</p>
+          <p className="text-gray-600">{t("energy.metabase.no_url")}</p>
         </div>
       </div>
     );

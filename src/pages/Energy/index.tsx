@@ -16,7 +16,7 @@ const Energy: React.FC = () => {
 
   // New tabs - only Diagramma for now, old tabs commented out
   const tabs = [
-    { id: "diagramma", name: "Diagramma", icon: "📊" },
+    { id: "diagramma", name: t("energy.diagramma"), icon: "📊" },
     // Commented out old tabs - keeping for future use
     // { id: "dashboard", name: t("energy.dashboard"), icon: "📊" },
     // { id: "workshops", name: t("energy.workshops"), icon: "🏭" },

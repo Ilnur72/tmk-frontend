@@ -1052,11 +1052,19 @@
     "reports_coming_soon": "Energy reports and analytics coming soon...",
     "title": "Energy Management",
     "dashboard": "Dashboard",
+    "diagramma": "Diagram",
     "workshops": "Workshops",
     "meters": "Meters",
     "readings": "Meter Readings",
     "operators": "Meter Operators",
     "reports": "Reports",
+    "metabase": {
+      "loading": "Loading Metabase Dashboard...",
+      "failed_to_load": "Failed to Load Dashboard",
+      "error_message": "Could not load the dashboard. Please try again.",
+      "retry": "Retry",
+      "no_url": "No dashboard URL available"
+    },
     "workshop": {
       "name": "Workshop Name",
       "create": "Create Workshop",
