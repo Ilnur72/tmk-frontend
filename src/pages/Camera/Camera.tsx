@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import VideoModal from "../Factory/modal/VideoModal";
 import { CameraType } from "../Factory/types/factory";
-import { API_URL } from "../../config/const";
+import { API_URL, API_URL_UPLOAD } from "../../config/const";
 
 interface Factory {
   id: number;
@@ -104,7 +104,7 @@ const App: React.FC = () => {
                               onClick={() => setupCameraModal(camera)}
                             >
                               <img
-                                src={`${API_URL}/mnt/tmkupload/camera-screenshots/camera_${camera.id}.jpg`}
+                                src={`${API_URL_UPLOAD}/mnt/tmkupload/camera-screenshots/camera_${camera.id}.jpg`}
                                 alt={`Camera ${camera.model}`}
                                 className="w-full h-full object-cover"
                                 onError={(e) => {

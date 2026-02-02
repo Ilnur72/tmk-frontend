@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { X, Plus, Minus } from "lucide-react";
 import axios from "axios";
-import { API_URL } from "../../../config/const";
+import { API_URL, API_URL_UPLOAD } from "../../../config/const";
 import MapComponent from "../components/MapComponent";
 import { toast } from "react-toastify";
 import ImageViewer from "react-simple-image-viewer";
@@ -175,7 +175,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
         setPreviewImages(
           images.map(
             (image: string) =>
-              `${API_URL}/mnt/tmkupload/factory-images/${image}`,
+              `${API_URL_UPLOAD}/mnt/tmkupload/factory-images/${image}`,
           ),
         );
       }
@@ -238,7 +238,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
       // Update preview images
       const newPreviewImages = [
         ...existingImages.map(
-          (image) => `${API_URL}/mnt/tmkupload/factory-images/${image}`,
+          (image) => `${API_URL_UPLOAD}/mnt/tmkupload/factory-images/${image}`,
         ),
         ...newSelectedImages.map((file) => URL.createObjectURL(file)),
       ];
@@ -266,7 +266,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
       // Update preview images after removing selected image
       const newPreviewImages = [
         ...existingImages.map(
-          (image) => `${API_URL}/mnt/tmkupload/factory-images/${image}`,
+          (image) => `${API_URL_UPLOAD}/mnt/tmkupload/factory-images/${image}`,
         ),
         ...newSelectedImages.map((file) => URL.createObjectURL(file)),
       ];
@@ -287,7 +287,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
       // Previewni yangilash
       const newPreviewImages = [
         ...newExistingImages.map(
-          (image) => `${API_URL}/mnt/tmkupload/factory-images/${image}`,
+          (image) => `${API_URL_UPLOAD}/mnt/tmkupload/factory-images/${image}`,
         ),
         ...selectedImages.map((file) => URL.createObjectURL(file)),
       ];
@@ -753,7 +753,7 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
                                 onClick={() => openImageViewer(index)}
                               >
                                 <img
-                                  src={`${API_URL}/mnt/tmkupload/factory-images/${image}`}
+                                  src={`${API_URL_UPLOAD}/mnt/tmkupload/factory-images/${image}`}
                                   alt={`Existing ${index}`}
                                   className="w-20 h-20 object-cover rounded border"
                                 />

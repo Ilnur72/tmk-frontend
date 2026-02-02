@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Edit, Trash2, Settings, Eye } from "lucide-react";
 import Sortable from "sortablejs";
 import { FactoryInterface } from "../types/factory";
-import { API_URL } from "../../../config/const";
+import { API_URL, API_URL_UPLOAD } from "../../../config/const";
 import FactoryDetailsModal from "../modal/FactoryModal";
 
 interface ProjectCardProps {
@@ -71,7 +71,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
 
   const firstImage = getFirstImage(factory.images ?? "");
   const imageSrc = firstImage
-    ? `${API_URL}/mnt/tmkupload/factory-images/${firstImage}`
+    ? `${API_URL_UPLOAD}/mnt/tmkupload/factory-images/${firstImage}`
     : "/public/image/3.jpg";
 
   const DragHandle = () => (

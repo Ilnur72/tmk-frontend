@@ -1,3 +1,5 @@
+import { API_URL_UPLOAD } from "../../../config/const";
+
 interface ImageGalleryProps {
   images: string[];
   API_URL: string;
@@ -25,7 +27,7 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
         {images.map((image, index) => (
           <img
             key={index}
-            src={`${API_URL}/mnt/tmkupload/factory-images/${image}`}
+            src={`${API_URL_UPLOAD}/mnt/tmkupload/factory-images/${image}`}
             alt={`Full ${index}`}
             className={`max-h-[80vh] object-contain rounded ${
               index === selectedIndex ? "border-4 border-white" : ""

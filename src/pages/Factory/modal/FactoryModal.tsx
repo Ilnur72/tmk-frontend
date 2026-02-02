@@ -14,7 +14,7 @@ import {
 import { CameraType } from "../types/factory";
 import ImageModal from "./ImageModal";
 import VideoModal from "./VideoModal";
-import { API_URL } from "../../../config/const";
+import { API_URL, API_URL_UPLOAD } from "../../../config/const";
 
 interface FactoryDetailsModalProps {
   factory: any;
@@ -208,7 +208,7 @@ export default function FactoryDetailsModal({
                           onClick={() => openImageModal(img, index, images)}
                         >
                           <img
-                            src={`${API_URL}/mnt/tmkupload/factory-images/${img}`}
+                            src={`${API_URL_UPLOAD}/mnt/tmkupload/factory-images/${img}`}
                             alt={t("factory.details.image_alt", {
                               defaultValue: `Factory image ${index + 1}`,
                             })}
