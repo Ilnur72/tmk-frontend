@@ -153,7 +153,7 @@
     "cameras": "Cameras",
     "partners": "Partners",
     "energy": "Energy",
-    "punkt_esg": "ESG",
+    "punkt_esg": "ESG Monitoring",
     "setting": "Settings",
     "techniques": "Techniques",
     "transport": "Transports",
@@ -559,7 +559,11 @@
     }
   },
   "techniques": {
-    "title": "Techniques"
+    "title": "Vehicle Tracking",
+    "tabs": {
+      "tracking": "Real-time Tracking",
+      "analytics": "Dashboard Analytics"
+    }
   },
   "energy_management": {
     "title": "Energy Management System",

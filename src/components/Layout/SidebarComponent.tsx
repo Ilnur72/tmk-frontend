@@ -37,8 +37,8 @@ const allMenuItems: MenuItem[] = [
   { href: "/sales", icon: BarChart, title: "sidebar.sales" },
   { href: "/finance", icon: BarChart2, title: "sidebar.finance" },
   { href: "/employers", icon: Users, title: "sidebar.employee" },
-  // { href: "/techniques", icon: Codepen, title: "sidebar.techniques" },
   { href: "/transport", icon: Car, title: "sidebar.transport" },
+  // { href: "/transport", icon: Car, title: "sidebar.transport" },
   { href: "/partners", icon: MapPin, title: "sidebar.partners" },
   {
     href: "/applications",
@@ -50,11 +50,16 @@ const allMenuItems: MenuItem[] = [
     icon: BarChart,
     title: "sidebar.energy",
   },
+  // {
+  //   href: "https://uni005eu5.fusionsolar.huawei.com/uniportal/pvmswebsite/assets/build/cloud.html?app-id=smartpvms&instance-id=smartpvms&zone-id=d9c57506-219c-40d0-a3f0-fd39435a5a68#/home/list",
+  //   icon: BarChart,
+  //   title: "sidebar.punkt_esg",
+  //   external: true, // Flag to indicate external link
+  // },
   {
-    href: "https://uni005eu5.fusionsolar.huawei.com/uniportal/pvmswebsite/assets/build/cloud.html?app-id=smartpvms&instance-id=smartpvms&zone-id=d9c57506-219c-40d0-a3f0-fd39435a5a68#/home/list",
+    href: "/esg",
     icon: BarChart,
     title: "sidebar.punkt_esg",
-    external: true, // Flag to indicate external link
   },
   {
     href: "/setting",

@@ -27,6 +27,7 @@ import Partners from "./pages/Partners/Partners";
 import Applications from "./pages/Applications/Applications";
 import Energy from "./pages/Energy";
 import Dashboard from "./pages/Dashboard";
+import ESG from "./pages/ESG";
 
 // Energy Systems - mustaqil tizimlar
 import MeterOperators from "./pages/MeterOperators";
@@ -116,7 +117,7 @@ const AppRoutes: React.FC = () => {
             element={<TodayAttendancePage />}
           />
           {/* <Route path="/techniques" element={<Techniques />} /> */}
-          <Route path="/transport" element={<Transport />} />
+          <Route path="/transport" element={<Techniques />} />
           <Route path="/cameras" element={<Camera />} />
           <Route path="/production" element={<Production />} />
           <Route path="/sales" element={<Sales />} />
@@ -124,6 +125,7 @@ const AppRoutes: React.FC = () => {
           <Route path="/partners" element={<Partners />} />
           <Route path="/applications" element={<Applications />} />
           <Route path="/energy" element={<Energy />} />
+          <Route path="/esg" element={<ESG />} />
           {/* <Route path="/punkt-esg" element={<ESGPunkt />} /> */}
         </>
       )}

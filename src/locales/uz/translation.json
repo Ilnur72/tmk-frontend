@@ -153,7 +153,7 @@
     "cameras": "Камералар",
     "partners": "Ҳамкорлар",
     "energy": "Энергетика",
-    "punkt_esg": "ESG",
+    "punkt_esg": "ESG Monitoring",
     "setting": "Созламалар",
     "techniques": "Техникалар",
     "transport": "Транспортлар",
@@ -559,7 +559,11 @@
     }
   },
   "techniques": {
-    "title": "Техникалар"
+    "title": "Transport monitoring",
+    "tabs": {
+      "tracking": "Real vaqtda kuzatish",
+      "analytics": "Analitik panel"
+    }
   },
   "total_projects": "Жами лойиҳалар",
   "in_registration": "Расмийлаштириш жараёнида",

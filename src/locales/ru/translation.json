@@ -153,7 +153,7 @@
     "cameras": "Камеры",
     "partners": "Партнёры",
     "energy": "Энергетика",
-    "punkt_esg": "ESG",
+    "punkt_esg": "Мониторинг ESG",
     "setting": "Настройки",
     "techniques": "Техника",
     "transport": "Транспорты",
@@ -559,7 +559,11 @@
     }
   },
   "techniques": {
-    "title": "Техника"
+    "title": "Мониторинг транспорта",
+    "tabs": {
+      "tracking": "Отслеживание в реальном времени",
+      "analytics": "Аналитическая панель"
+    }
   },
   "total_projects": "Всего проектов",
   "in_registration": "В процессе регистрации",
