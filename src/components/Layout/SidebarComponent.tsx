@@ -72,27 +72,19 @@ const allMenuItems: MenuItem[] = [
 ];
 
 const Sidebar = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { logout, role } = useAuth();
   const location = useLocation();
   // Filter menu items based on user role
   const menuItems = useMemo(() => {
-    if (role === "viewer") {
-      // Viewer can only see dashboard, factory and map
-      return allMenuItems.filter(
-        (item) =>
-          item.href === "/dashboard" ||
-          item.href === "/factory-map" ||
-          item.href === "/factory"
-      );
-    }
-
     return allMenuItems.filter((item) => {
+      // If item has role restrictions, check if user's role is allowed
       if (item.roles) {
         return item.roles.includes(role || "user");
       }
+      // Otherwise, show to all users
       return true;
     });
   }, [role]);
@@ -298,6 +290,23 @@ const Sidebar = () => {
               </li>
             );
           })}
+          
+          {/* Language Selector */}
+          <li className="px-3 py-2">
+            <div className="text-white/70 text-xs uppercase mb-2 px-2">
+              {t("sidebar.language")}
+            </div>
+            <select
+              value={i18n.language}
+              onChange={(e) => i18n.changeLanguage(e.target.value)}
+              className="w-full bg-white/10 text-white border border-white/20 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-white/30 hover:bg-white/20 transition-colors cursor-pointer"
+            >
+              <option value="en" className="bg-primary text-white">🇬🇧 English</option>
+              <option value="ru" className="bg-primary text-white">🇷🇺 Русский</option>
+              <option value="uz" className="bg-primary text-white">🇺🇿 O'zbekcha</option>
+            </select>
+          </li>
+
           <li>
             <div className={`side-menu`} onClick={() => handleLogout()}>
               <div className={`side-menu__icon `}>

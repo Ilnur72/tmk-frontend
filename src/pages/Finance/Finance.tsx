@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { PlusIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "../../contexts/AuthContext";
 
 // Types
 import { MetalPrice } from "../../types/finance";
@@ -20,6 +21,7 @@ import PriceChartModal from "../../components/Finance/PriceChartModal";
 const Finance: React.FC = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const { role } = useAuth();
 
   // States
   const [isPriceUpdateModalOpen, setIsPriceUpdateModalOpen] = useState(false);
@@ -387,13 +389,15 @@ const Finance: React.FC = () => {
           {t("finance.title")}
         </h1>
         <div className="flex space-x-3">
-          <button
-            onClick={handleOpenSourceModal}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            <PlusIcon className="h-5 w-5 mr-2" />
-            {t("finance.add_source")}
-          </button>
+          {role !== "viewer" && (
+            <button
+              onClick={handleOpenSourceModal}
+              className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              <PlusIcon className="h-5 w-5 mr-2" />
+              {t("finance.add_source")}
+            </button>
+          )}
           <button
             onClick={refreshData}
             disabled={isLoading}

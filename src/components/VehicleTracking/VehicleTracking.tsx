@@ -198,7 +198,7 @@ const VehicleTracking: React.FC = () => {
         fetchManualData();
 
         // Intervalda davom etish
-        const interval = setInterval(fetchManualData, 30000);
+        const interval = setInterval(fetchManualData, 3000);
         setRefreshInterval(interval);
       }
 

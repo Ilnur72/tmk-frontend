@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Application } from "../../../types/application";
+import { useAuth } from "../../../contexts/AuthContext";
 
 interface ApplicationsTableProps {
   applications: Application[];
@@ -37,6 +38,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
   isLoading = false,
 }) => {
   const { t } = useTranslation();
+  const { role } = useAuth();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [commentModal, setCommentModal] = useState<{
     isOpen: boolean;
@@ -266,16 +268,18 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
                           <Eye className="h-4 w-4 mr-2" />
                           {t("applications.view_details")}
                         </button>
-                        <button
-                          onClick={() => {
-                            onEdit(application);
-                            setOpenDropdown(null);
-                          }}
-                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
-                        >
-                          <Edit className="h-4 w-4 mr-2" />
-                          {t("applications.edit")}
-                        </button>
+                        {role !== "viewer" && (
+                          <button
+                            onClick={() => {
+                              onEdit(application);
+                              setOpenDropdown(null);
+                            }}
+                            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                          >
+                            <Edit className="h-4 w-4 mr-2" />
+                            {t("applications.edit")}
+                          </button>
+                        )}
 
                         {/* Status change submenu */}
                         {onStatusChange && (
@@ -372,23 +376,27 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
                           </button>
                         )}
 
-                        <hr className="my-1" />
-                        <button
-                          onClick={() => {
-                            if (
-                              window.confirm(t("applications.confirm_delete"))
-                            ) {
-                              onDelete(application.id);
-                            }
-                            setOpenDropdown(null);
-                          }}
-                          className="flex items-center px-4 py-2 text-sm text-red-700 hover:bg-red-50 w-full text-left"
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          {t("ui.delete", {
-                            defaultValue: t("applications.delete"),
-                          })}
-                        </button>
+                        {role !== "viewer" && (
+                          <>
+                            <hr className="my-1" />
+                            <button
+                              onClick={() => {
+                                if (
+                                  window.confirm(t("applications.confirm_delete"))
+                                ) {
+                                  onDelete(application.id);
+                                }
+                                setOpenDropdown(null);
+                              }}
+                              className="flex items-center px-4 py-2 text-sm text-red-700 hover:bg-red-50 w-full text-left"
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              {t("ui.delete", {
+                                defaultValue: t("applications.delete"),
+                              })}
+                            </button>
+                          </>
+                        )}
                       </div>
                     </div>
                   )}

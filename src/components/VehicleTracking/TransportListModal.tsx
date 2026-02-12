@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { X, Edit, Save, User } from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface Driver {
   id?: number;
@@ -76,6 +77,7 @@ const TransportListModal: React.FC<TransportListModalProps> = ({
   vehicles,
   onUpdateVehicle,
 }) => {
+  const { role } = useAuth();
   const [editingVehicle, setEditingVehicle] = useState<number | null>(null);
   const [driverData, setDriverData] = useState<Driver>({
     firstName: "",
@@ -458,13 +460,15 @@ const TransportListModal: React.FC<TransportListModalProps> = ({
                             </button>
                           </div>
                         ) : (
-                          <button
-                            onClick={() => handleEdit(vehicle)}
-                            className="text-blue-600 hover:text-blue-900"
-                            title="Таҳрирлаш"
-                          >
-                            <Edit className="h-4 w-4" />
-                          </button>
+                          role !== "viewer" && (
+                            <button
+                              onClick={() => handleEdit(vehicle)}
+                              className="text-blue-600 hover:text-blue-900"
+                              title="Таҳрирлаш"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </button>
+                          )
                         )}
                       </td>
                     </tr>

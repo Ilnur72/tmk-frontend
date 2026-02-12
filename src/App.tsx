@@ -105,35 +105,27 @@ const AppRoutes: React.FC = () => {
         }
       />
 
-      {/* Other pages accessible by admin and user, but not viewer */}
-      {role !== "viewer" && (
-        <>
-          <Route path="/employers" element={<Employee />} />
-          <Route path="/employers/branches" element={<BranchesPage />} />
-          <Route path="/employers/internships" element={<InternshipPage />} />
-          <Route path="/employers/languages" element={<LanguagePage />} />
-          <Route
-            path="/employers/today-attendance"
-            element={<TodayAttendancePage />}
-          />
-          {/* <Route path="/techniques" element={<Techniques />} /> */}
-          <Route path="/transport" element={<Techniques />} />
-          <Route path="/cameras" element={<Camera />} />
-          <Route path="/production" element={<Production />} />
-          <Route path="/sales" element={<Sales />} />
-          <Route path="/finance" element={<Finance />} />
-          <Route path="/partners" element={<Partners />} />
-          <Route path="/applications" element={<Applications />} />
-          <Route path="/energy" element={<Energy />} />
-          <Route path="/esg" element={<ESG />} />
-          {/* <Route path="/punkt-esg" element={<ESGPunkt />} /> */}
-        </>
-      )}
+      {/* All pages accessible by all authenticated users */}
+      <Route path="/employers" element={<Employee />} />
+      <Route path="/employers/branches" element={<BranchesPage />} />
+      <Route path="/employers/internships" element={<InternshipPage />} />
+      <Route path="/employers/languages" element={<LanguagePage />} />
+      <Route
+        path="/employers/today-attendance"
+        element={<TodayAttendancePage />}
+      />
+      {/* <Route path="/techniques" element={<Techniques />} /> */}
+      <Route path="/transport" element={<Techniques />} />
+      <Route path="/cameras" element={<Camera />} />
+      <Route path="/production" element={<Production />} />
+      <Route path="/sales" element={<Sales />} />
+      <Route path="/finance" element={<Finance />} />
+      <Route path="/partners" element={<Partners />} />
+      <Route path="/applications" element={<Applications />} />
+      <Route path="/energy" element={<Energy />} />
+      <Route path="/esg" element={<ESG />} />
+      {/* <Route path="/punkt-esg" element={<ESGPunkt />} /> */}
 
-      {/* Viewer can only access dashboard and factory pages */}
-      {role === "viewer" && (
-        <Route path="*" element={<Navigate to="/dashboard" />} />
-      )}
     </Routes>
   );
 };
