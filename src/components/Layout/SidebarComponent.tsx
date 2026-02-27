@@ -31,7 +31,7 @@ interface MenuItem {
 
 const allMenuItems: MenuItem[] = [
   { href: "/dashboard", icon: Home, title: "sidebar.dashboard" },
-  { href: "/factory-map", icon: MapPin, title: "sidebar.map" },
+  { href: "/factorymap", icon: MapPin, title: "sidebar.map" },
   { href: "/factory", icon: Briefcase, title: "sidebar.factory" },
   { href: "/production", icon: GitPullRequest, title: "sidebar.production" },
   { href: "/sales", icon: BarChart, title: "sidebar.sales" },
@@ -148,9 +148,8 @@ const Sidebar = () => {
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive =
-                location.pathname.startsWith(item.href) ||
-                location.pathname.replace(/\/$/, "") ===
-                  item.href.replace(/\/$/, "");
+                location.pathname === item.href ||
+                location.pathname.startsWith(item.href + "/");
               
               // Handle external links
               if (item.external) {
@@ -249,9 +248,8 @@ const Sidebar = () => {
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive =
-              location.pathname.startsWith(item.href) ||
-              location.pathname.replace(/\/$/, "") ===
-                item.href.replace(/\/$/, "");
+              location.pathname === item.href ||
+              location.pathname.startsWith(item.href + "/");
             
             // Handle external links
             if (item.external) {

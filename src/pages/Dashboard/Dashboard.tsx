@@ -94,7 +94,6 @@ const GeneralDashboard: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      // Mock data - real API integration kerak bo'ladi
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       setStats({
@@ -143,47 +142,47 @@ const GeneralDashboard: React.FC = () => {
         {
           id: "1",
           type: "production",
-          title: "Yangi ishlab chiqarish buyurtmasi",
-          description: "Zavod #3 da 500 dona mahsulot ishlab chiqarildi",
-          timestamp: "2 daqiqa oldin",
+          title: "Янги ишлаб чиқариш буюртмаси",
+          description: "Завод №3 да 500 дона маҳсулот ишлаб чиқарилди",
+          timestamp: "2 дақиқа олдин",
           status: "success",
         },
         {
           id: "2",
           type: "energy",
-          title: "Energiya iste'moli oshdi",
-          description: "Bu oydagi energiya iste'moli 15% ga oshdi",
-          timestamp: "15 daqiqa oldin",
+          title: "Энергия истеъмоли ошди",
+          description: "Бу ойдаги энергия истеъмоли 15% га ошди",
+          timestamp: "15 дақиқа олдин",
           status: "warning",
         },
         {
           id: "3",
           type: "employee",
-          title: "Yangi xodim qo'shildi",
-          description: "Ahmad Karimov ishga qabul qilindi",
-          timestamp: "1 soat oldin",
+          title: "Янги ходим қўшилди",
+          description: "Аҳмад Каримов ишга қабул қилинди",
+          timestamp: "1 соат олдин",
           status: "info",
         },
         {
           id: "4",
           type: "sales",
-          title: "Katta sotish shartnomasi",
-          description: "500,000$ lik shartnoma imzolandi",
-          timestamp: "2 soat oldin",
+          title: "Катта сотиш шартномаси",
+          description: "500,000$ лик шартнома имзоланди",
+          timestamp: "2 соат олдин",
           status: "success",
         },
         {
           id: "5",
           type: "security",
-          title: "Xavfsizlik ogohlantirishi",
-          description: "Zavod #1 da harakatni aniqlash tizimi ishga tushdi",
-          timestamp: "3 soat oldin",
+          title: "Хавфсизлик огоҳлантириши",
+          description: "Завод №1 да ҳаракатни аниқлаш тизими ишга тушди",
+          timestamp: "3 соат олдин",
           status: "error",
         },
       ]);
     } catch (error: any) {
       console.error("Dashboard data loading error:", error);
-      setError("Dashboard ma'lumotlarini yuklashda xatolik");
+      setError("Дашборд маълумотларини юклашда хатолик");
     } finally {
       setLoading(false);
     }
@@ -232,7 +231,7 @@ const GeneralDashboard: React.FC = () => {
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-xl text-gray-600">Dashboard yuklanmoqda...</p>
+          <p className="text-xl text-gray-600">Дашборд юкланмоқда...</p>
         </div>
       </div>
     );
@@ -247,7 +246,7 @@ const GeneralDashboard: React.FC = () => {
             onClick={loadDashboardData}
             className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
           >
-            Qayta urinish
+            Қайта уриниш
           </button>
         </div>
       </div>
@@ -264,10 +263,10 @@ const GeneralDashboard: React.FC = () => {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">
-                Umumiy Dashboard
+                Умумий Дашборд
               </h1>
               <p className="text-gray-600 mt-1">
-                Barcha tizim ma'lumotlari bir joyda
+                Барча тизим маълумотлари бир жойда
               </p>
             </div>
             <div className="flex items-center space-x-4">
@@ -276,7 +275,7 @@ const GeneralDashboard: React.FC = () => {
                 className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 <RefreshCw className="w-4 h-4" />
-                <span>Yangilash</span>
+                <span>Янгилаш</span>
               </button>
               <div className="flex items-center space-x-2 text-gray-600">
                 <Bell className="w-5 h-5" />
@@ -297,14 +296,14 @@ const GeneralDashboard: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Jami Ishlab chiqarish
+                  Жами Ишлаб чиқариш
                 </p>
                 <p className="text-3xl font-bold text-gray-900">
                   {stats.totalProduction.toLocaleString()}
                 </p>
                 <p className="text-sm text-green-600 flex items-center mt-1">
                   <TrendingUp className="w-4 h-4 mr-1" />+
-                  {stats.productionGrowth}% dan o'tgan oy
+                  {stats.productionGrowth}% ўтган ойдан
                 </p>
               </div>
               <div className="p-3 bg-blue-100 rounded-full">
@@ -317,13 +316,13 @@ const GeneralDashboard: React.FC = () => {
           <div className="bg-white rounded-lg p-6 shadow-sm border">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Jami Sotish</p>
+                <p className="text-sm font-medium text-gray-600">Жами Сотиш</p>
                 <p className="text-3xl font-bold text-gray-900">
                   ${stats.totalSales.toLocaleString()}
                 </p>
                 <p className="text-sm text-green-600 flex items-center mt-1">
                   <TrendingUp className="w-4 h-4 mr-1" />+{stats.salesGrowth}%
-                  dan o'tgan oy
+                  ўтган ойдан
                 </p>
               </div>
               <div className="p-3 bg-green-100 rounded-full">
@@ -337,13 +336,13 @@ const GeneralDashboard: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Jami Xodimlar
+                  Жами Ходимлар
                 </p>
                 <p className="text-3xl font-bold text-gray-900">
                   {stats.totalEmployees.toLocaleString()}
                 </p>
                 <p className="text-sm text-gray-500 mt-1">
-                  {stats.activeEmployees} faol xodim
+                  {stats.activeEmployees} фаол ходим
                 </p>
               </div>
               <div className="p-3 bg-purple-100 rounded-full">
@@ -357,14 +356,14 @@ const GeneralDashboard: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Energiya Iste'moli
+                  Энергия Истеъмоли
                 </p>
                 <p className="text-3xl font-bold text-gray-900">
                   {stats.energyConsumption.toLocaleString()} kWh
                 </p>
                 <p className="text-sm text-green-600 flex items-center mt-1">
                   <TrendingDown className="w-4 h-4 mr-1" />-
-                  {stats.energySavings}% tejamkorlik
+                  {stats.energySavings}% тежамкорлик
                 </p>
               </div>
               <div className="p-3 bg-yellow-100 rounded-full">
@@ -380,19 +379,19 @@ const GeneralDashboard: React.FC = () => {
           <div className="bg-white rounded-lg p-6 shadow-sm border">
             <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
               <Factory className="w-5 h-5 mr-2" />
-              Zavodlar va Sexlar
+              Заводлар ва Сехлар
             </h3>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-gray-600">Jami zavodlar</span>
+                <span className="text-gray-600">Жами заводлар</span>
                 <span className="font-semibold">{stats.totalFactories}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-600">Faol sexlar</span>
+                <span className="text-gray-600">Фаол сехлар</span>
                 <span className="font-semibold">{stats.activeWorkshops}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-600">Kutilayotgan buyurtmalar</span>
+                <span className="text-gray-600">Кутилаётган буюртмалар</span>
                 <span className="font-semibold text-orange-600">
                   {stats.pendingOrders}
                 </span>
@@ -404,21 +403,21 @@ const GeneralDashboard: React.FC = () => {
           <div className="bg-white rounded-lg p-6 shadow-sm border">
             <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
               <FileText className="w-5 h-5 mr-2" />
-              Arizalar
+              Аризалар
             </h3>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-gray-600">Jami arizalar</span>
+                <span className="text-gray-600">Жами аризалар</span>
                 <span className="font-semibold">{stats.totalApplications}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-600">Kutilayotgan</span>
+                <span className="text-gray-600">Кутилаётган</span>
                 <span className="font-semibold text-yellow-600">
                   {stats.pendingApplications}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-600">Tasdiqlangan</span>
+                <span className="text-gray-600">Тасдиқланган</span>
                 <span className="font-semibold text-green-600">
                   {stats.approvedApplications}
                 </span>
@@ -430,18 +429,18 @@ const GeneralDashboard: React.FC = () => {
           <div className="bg-white rounded-lg p-6 shadow-sm border">
             <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
               <Camera className="w-5 h-5 mr-2" />
-              Xavfsizlik
+              Хавфсизлик
             </h3>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-gray-600">Faol kameralar</span>
+                <span className="text-gray-600">Фаол камералар</span>
                 <span className="font-semibold">
                   {stats.activeCameras}/{stats.totalCameras}
                 </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">
-                  Xavfsizlik ogohlantirishlari
+                  Хавфсизлик огоҳлантиришлари
                 </span>
                 <span
                   className={`font-semibold ${
@@ -452,7 +451,7 @@ const GeneralDashboard: React.FC = () => {
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-600">Tizim ishlashi</span>
+                <span className="text-gray-600">Тизим ишлаши</span>
                 <span className="font-semibold text-green-600">
                   {stats.systemUptime}%
                 </span>
@@ -467,12 +466,12 @@ const GeneralDashboard: React.FC = () => {
           <div className="bg-white rounded-lg p-6 shadow-sm border">
             <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
               <BarChart3 className="w-5 h-5 mr-2" />
-              Oylik Daromad
+              Ойлик Даромад
             </h3>
             <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
               <div className="text-center">
                 <BarChart3 className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-500">Chart integration kerak</p>
+                <p className="text-gray-500">Диаграмма интеграцияси керак</p>
                 <p className="text-2xl font-bold text-gray-900 mt-2">
                   ${stats.monthlyRevenue.toLocaleString()}
                 </p>
@@ -483,7 +482,7 @@ const GeneralDashboard: React.FC = () => {
           {/* Recent Activities */}
           <div className="bg-white rounded-lg p-6 shadow-sm border">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              So'nggi Faoliyat
+              Сўнгги Фаолият
             </h3>
             <div className="space-y-4 max-h-64 overflow-y-auto">
               {recentActivities.map((activity) => (
@@ -518,14 +517,14 @@ const GeneralDashboard: React.FC = () => {
           <div className="bg-white rounded-lg p-6 shadow-sm border">
             <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
               <UserCheck className="w-5 h-5 mr-2" />
-              Hamkorlar va Foydalanuvchilar
+              Ҳамкорлар ва Фойдаланувчилар
             </h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center">
                 <div className="p-4 bg-blue-50 rounded-lg mb-2">
                   <Users className="w-8 h-8 text-blue-600 mx-auto" />
                 </div>
-                <p className="text-sm text-gray-600">Jami Hamkorlar</p>
+                <p className="text-sm text-gray-600">Жами Ҳамкорлар</p>
                 <p className="text-2xl font-bold text-gray-900">
                   {stats.totalPartners}
                 </p>
@@ -534,7 +533,7 @@ const GeneralDashboard: React.FC = () => {
                 <div className="p-4 bg-green-50 rounded-lg mb-2">
                   <Eye className="w-8 h-8 text-green-600 mx-auto" />
                 </div>
-                <p className="text-sm text-gray-600">Kunlik Foydalanuvchilar</p>
+                <p className="text-sm text-gray-600">Кунлик Фойдаланувчилар</p>
                 <p className="text-2xl font-bold text-gray-900">
                   {stats.dailyUsers}
                 </p>
@@ -546,16 +545,16 @@ const GeneralDashboard: React.FC = () => {
           <div className="bg-white rounded-lg p-6 shadow-sm border">
             <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
               <Zap className="w-5 h-5 mr-2" />
-              Energiya Tafsilotlari
+              Энергия Тафсилотлари
             </h3>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-gray-600">Jami hisobgichlar</span>
+                <span className="text-gray-600">Жами ҳисобгичлар</span>
                 <span className="font-semibold">{stats.totalMeters}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">
-                  Tasdiqlanmagan ko'rsatkichlar
+                  Тасдиқланмаган кўрсаткичлар
                 </span>
                 <span className="font-semibold text-orange-600">
                   {stats.unverifiedReadings}
@@ -564,7 +563,7 @@ const GeneralDashboard: React.FC = () => {
               <div className="pt-2">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm text-gray-500">
-                    Energiya tejamkorligi
+                    Энергия тежамкорлиги
                   </span>
                   <span className="text-sm font-medium text-green-600">
                     {stats.energySavings}%

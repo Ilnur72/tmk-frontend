@@ -363,7 +363,7 @@ const Auth: React.FC = () => {
                 fontWeight: i18n.language === "uz" ? "bold" : "normal",
               }}
             >
-              🇺🇿 O'zbek
+              🇺🇿 Узбек
             </button>
           </div>
         </div>

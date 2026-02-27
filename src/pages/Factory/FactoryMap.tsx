@@ -109,6 +109,17 @@ const FactoryMap: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedObjectType, setSelectedObjectType] = useState<string>("");
   const [objectTypes, setObjectTypes] = useState<ObjectType[]>([]);
+  const [isTablet, setIsTablet] = useState(window.innerWidth <= 900);
+
+  // Track window size for responsive layout
+  useEffect(() => {
+    const handleResize = () => setIsTablet(window.innerWidth <= 900);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Sidebar width: 220px on tablet, 300px on desktop
+  const SIDEBAR_WIDTH = isTablet ? 220 : 300;
 
   // Cleanup any existing VehicleTracking map instances
   const cleanupVehicleTrackingMaps = useCallback(() => {
@@ -187,7 +198,7 @@ const FactoryMap: React.FC = () => {
     (coords: [number, number], fromSidebar = false) => {
       if (!map.current) return;
 
-      if (window.innerWidth <= 768 && fromSidebar && !sidebarCollapsed) {
+      if (window.innerWidth <= 900 && fromSidebar && !sidebarCollapsed) {
         toggleSidebar();
       }
 
@@ -234,12 +245,13 @@ const FactoryMap: React.FC = () => {
         // Add .png extension
         const imageName = `${iconName}.png`;
         el.src = `/image/${imageName}`;
-        el.style.width = "64px";
-        el.style.height = "64px";
+        const markerSize = isTablet ? "40px" : "64px";
+        el.style.width = markerSize;
+        el.style.height = markerSize;
         el.style.cursor = "pointer";
 
         // Create popup content (not for factory map page)
-        const isFactoryMap = window.location.pathname === "/factory-map";
+        const isFactoryMap = window.location.pathname === "/factorymap";
         let popup = null;
 
         if (!isFactoryMap) {
@@ -296,7 +308,7 @@ const FactoryMap: React.FC = () => {
           flyToMarker(factory.coords);
 
           // Show React modal for factory map page
-          const isFactoryMap = window.location.pathname === "/factory-map";
+          const isFactoryMap = window.location.pathname === "/factorymap";
 
           if (isFactoryMap) {
             showFactoryDetails(factory);
@@ -318,11 +330,11 @@ const FactoryMap: React.FC = () => {
         listData += `
         <div class="intro-x">
           <div class="box zoom-in mb-1 flex items-center px-1 py-1 cursor-pointer hover:bg-gray-50" onclick="${clickAction}">
-            <div class="image-fit h-10 w-10 flex-none overflow-hidden rounded-full">
-              <img src="/image/marker2.png" alt="marker">
+            <div class="image-fit flex-none overflow-hidden rounded-full" style="width:${isTablet ? "28px" : "40px"};height:${isTablet ? "28px" : "40px"};">
+              <img src="/image/marker2.png" alt="marker" style="width:100%;height:100%;object-fit:cover;">
             </div>
-            <div class="ml-4 mr-auto">
-              <div class="font-small">${index + 1}. ${factory.name}</div>
+            <div class="${isTablet ? "ml-2" : "ml-4"} mr-auto">
+              <div style="font-size:${isTablet ? "11px" : "13px"};line-height:1.4;">${index + 1}. ${factory.name}</div>
             </div>
           </div>
         </div>
@@ -344,7 +356,7 @@ const FactoryMap: React.FC = () => {
         }
       };
     },
-    [flyToMarker, showFactoryDetails, t],
+    [flyToMarker, showFactoryDetails, t, isTablet],
   );
 
   // Fetch object types from backend
@@ -458,12 +470,12 @@ const FactoryMap: React.FC = () => {
   useEffect(() => {
     if (!map.current) return;
 
-    const padding = sidebarCollapsed ? { left: 0 } : { left: 300 };
+    const padding = sidebarCollapsed ? { left: 0 } : { left: SIDEBAR_WIDTH };
     map.current.easeTo({
       padding,
       duration: 300,
     });
-  }, [sidebarCollapsed]);
+  }, [sidebarCollapsed, SIDEBAR_WIDTH]);
 
   // Fetch factories only when map is loaded and category changes
   useEffect(() => {
@@ -494,183 +506,190 @@ const FactoryMap: React.FC = () => {
           <div
             id="map"
             ref={mapContainer}
-            className="maplibregl-map max-md:my-2 max-md:w-full max-md:fixed rounded-[30px]"
+            className="maplibregl-map max-md:my-0 max-md:w-full max-md:fixed max-md:top-[45px] max-md:left-0 max-md:right-0 max-md:h-[calc(100vh-45px)] rounded-[30px] max-md:rounded-none"
           >
-            {/* Filters Section - positioned above map next to sidebar */}
+            {/* Filters Section */}
             <div
-              className="absolute z-10 transition-all duration-300 ease-in-out max-md:static max-md:mb-2 max-md:px-2 max-md:w-full pointer-events-none"
+              className="absolute z-10 transition-all duration-300 ease-in-out pointer-events-none"
               style={{
-                top: window.innerWidth > 768 ? "16px" : "auto",
-                left:
-                  window.innerWidth > 768
-                    ? sidebarCollapsed
-                      ? "20px"
-                      : "320px"
-                    : "auto",
+                top: "12px",
+                left: sidebarCollapsed
+                  ? "12px"
+                  : `${SIDEBAR_WIDTH + 12}px`,
               }}
             >
-              <div className="grid grid-cols-1 gap-2 max-md:gap-2 items-start">
-                {/* Filters */}
-                <div className="pointer-events-auto">
-                  <div className="backdrop-blur-md rounded-2xl shadow-md border border-gray-200/50 p-2.5 max-md:p-2 w-fit">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-md:gap-1.5">
-                      {/* Category Filter - Checkbox with Icons */}
-                      <div>
-                        <label className="block mb-1 text-sm font-semibold text-gray-700 max-md:text-[10px]">
-                          {t("factory.filters.category", "Loyiha kategoriyasi")}
-                          :
+              <div className="pointer-events-auto">
+                <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-lg border border-gray-200/60 p-2 w-fit">
+                  <div className={`flex ${isTablet ? "flex-col gap-1.5" : "flex-row gap-3"} items-start`}>
+                    {/* Category Filter */}
+                    <div>
+                      <label className={`block mb-1 font-semibold text-gray-700 ${isTablet ? "text-[10px]" : "text-xs"}`}>
+                        {t("factory.filters.category", "Loyiha kategoriyasi")}:
+                      </label>
+                      <div className="flex flex-wrap justify-start gap-2">
+                        {/* All button */}
+                        <label className="flex flex-col items-center gap-0.5 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="category"
+                            value=""
+                            checked={selectedCategory === ""}
+                            onChange={() => setSelectedCategory("")}
+                            className="w-3 h-3"
+                          />
+                          <div className={isTablet ? "text-base" : "text-lg"}>📋</div>
+                          <span className="text-[10px] text-gray-600">
+                            {t("factory.filters.all", "Barchasi")}
+                          </span>
                         </label>
-                        <div className="flex flex-wrap justify-center gap-2 max-md:gap-1">
-                          {/* All button */}
-                          <label className="flex flex-col items-center gap-0.5 cursor-pointer">
-                            <input
-                              type="radio"
-                              name="category"
-                              value=""
-                              checked={selectedCategory === ""}
-                              onChange={() => setSelectedCategory("")}
-                              className="w-3 h-3"
-                            />
-                            <div className="text-lg">📋</div>
-                            <span className="text-xs text-gray-600">
-                              {t("factory.filters.all", "Barchasi")}
-                            </span>
-                          </label>
 
-                          {/* Factory */}
-                          <label className="flex flex-col items-center gap-0.5 cursor-pointer">
-                            <input
-                              type="radio"
-                              name="category"
-                              value="factory"
-                              checked={selectedCategory === "factory"}
-                              onChange={() => setSelectedCategory("factory")}
-                              className="w-3 h-3"
-                            />
-                            <img
-                              src="/image/factory.png"
-                              alt="Factory"
-                              className="w-7 h-7"
-                            />
-                            <span className="text-xs text-gray-600">Metal</span>
-                          </label>
+                        {/* Factory */}
+                        <label className="flex flex-col items-center gap-0.5 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="category"
+                            value="factory"
+                            checked={selectedCategory === "factory"}
+                            onChange={() => setSelectedCategory("factory")}
+                            className="w-3 h-3"
+                          />
+                          <img
+                            src="/image/factory.png"
+                            alt="Factory"
+                            className={isTablet ? "w-5 h-5" : "w-7 h-7"}
+                          />
+                          <span className="text-[10px] text-gray-600">Metal</span>
+                        </label>
 
-                          {/* Mine */}
-                          <label className="flex flex-col items-center gap-0.5 cursor-pointer">
-                            <input
-                              type="radio"
-                              name="category"
-                              value="mine"
-                              checked={selectedCategory === "mine"}
-                              onChange={() => setSelectedCategory("mine")}
-                              className="w-3 h-3"
-                            />
-                            <img
-                              src="/image/mine.png"
-                              alt="Mine"
-                              className="w-7 h-7"
-                            />
-                            <span className="text-xs text-gray-600">Mine</span>
-                          </label>
+                        {/* Mine */}
+                        <label className="flex flex-col items-center gap-0.5 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="category"
+                            value="mine"
+                            checked={selectedCategory === "mine"}
+                            onChange={() => setSelectedCategory("mine")}
+                            className="w-3 h-3"
+                          />
+                          <img
+                            src="/image/mine.png"
+                            alt="Mine"
+                            className={isTablet ? "w-5 h-5" : "w-7 h-7"}
+                          />
+                          <span className="text-[10px] text-gray-600">Mine</span>
+                        </label>
 
-                          {/* Mine Cart */}
-                          <label className="flex flex-col items-center gap-0.5 cursor-pointer">
-                            <input
-                              type="radio"
-                              name="category"
-                              value="mine-cart"
-                              checked={selectedCategory === "mine-cart"}
-                              onChange={() => setSelectedCategory("mine-cart")}
-                              className="w-3 h-3"
-                            />
-                            <img
-                              src="/image/mine-cart.png"
-                              alt="Mine Cart"
-                              className="w-7 h-7"
-                            />
-                            <span className="text-xs text-gray-600">
-                              Market
-                            </span>
-                          </label>
-                        </div>
+                        {/* Mine Cart */}
+                        <label className="flex flex-col items-center gap-0.5 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="category"
+                            value="mine-cart"
+                            checked={selectedCategory === "mine-cart"}
+                            onChange={() => setSelectedCategory("mine-cart")}
+                            className="w-3 h-3"
+                          />
+                          <img
+                            src="/image/mine-cart.png"
+                            alt="Mine Cart"
+                            className={isTablet ? "w-5 h-5" : "w-7 h-7"}
+                          />
+                          <span className="text-[10px] text-gray-600">Market</span>
+                        </label>
                       </div>
+                    </div>
 
-                      {/* Object Type Filter - Custom Select */}
-                      <div>
-                        <Select
-                          label={t("factory.filters.objectType", "Obyekt tipi")}
-                          options={[
-                            {
-                              id: "",
-                              name: t("factory.filters.all", "Barchasi"),
-                            },
-                            ...objectTypes.map((type) => ({
-                              id: type.name,
-                              name: type.name,
-                            })),
-                          ]}
-                          value={selectedObjectType}
-                          onChange={(value) => setSelectedObjectType(value)}
-                        />
-                      </div>
+                    {/* Divider */}
+                    {!isTablet && <div className="w-px bg-gray-200 self-stretch" />}
+                    {isTablet && <div className="h-px bg-gray-200 w-full" />}
+
+                    {/* Object Type Filter */}
+                    <div className={isTablet ? "w-full" : "min-w-[140px]"}>
+                      <Select
+                        label={t("factory.filters.objectType", "Obyekt tipi")}
+                        options={[
+                          {
+                            id: "",
+                            name: t("factory.filters.all", "Barchasi"),
+                          },
+                          ...objectTypes.map((type) => ({
+                            id: type.name,
+                            name: type.name,
+                          })),
+                        ]}
+                        value={selectedObjectType}
+                        onChange={(value) => setSelectedObjectType(value)}
+                      />
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Weather Widget - fixed to right, independent of sidebar */}
+            {/* Weather Widget - desktop: top right; tablet: compact bottom-right */}
             <div
-              className="absolute z-10 max-md:hidden pointer-events-auto"
+              className="absolute z-10 pointer-events-auto transition-all duration-300"
               style={{
-                top: "16px",
-                right: "20px",
+                top: isTablet ? "auto" : "16px",
+                bottom: isTablet ? "40px" : "auto",
+                right: "12px",
               }}
             >
-              <div
-                className="rounded-3xl overflow-hidden"
-                style={{ width: "350px" }}
-              >
-                <div className="w-full scale-90 origin-top rounded-lg">
-                  <WeatherWidget />
-                </div>
-                {/* Weather Map Button */}
-                <div className="pb-1 px-5 border-t border-gray-100/50 justify-end flex">
-                  <button
-                    onClick={() => setShowWeatherMapModal(true)}
-                    className="w-full px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-primary hover:from-cyan-600 hover:to-primary text-white font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 text-sm group"
-                  >
-                    <svg
-                      className="w-4 h-4 transition-transform group-hover:scale-110"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+              {isTablet ? (
+                /* Compact weather button for tablet */
+                <button
+                  onClick={() => setShowWeatherMapModal(true)}
+                  className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-cyan-500 to-primary text-white font-medium rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-sm"
+                >
+                  <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+                  </svg>
+                  <span>Ob-havo</span>
+                </button>
+              ) : (
+                /* Full weather widget for desktop */
+                <div className="rounded-3xl overflow-hidden" style={{ width: "350px" }}>
+                  <div className="w-full scale-90 origin-top rounded-lg">
+                    <WeatherWidget />
+                  </div>
+                  <div className="pb-1 px-5 border-t border-gray-100/50 justify-end flex">
+                    <button
+                      onClick={() => setShowWeatherMapModal(true)}
+                      className="w-full px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-primary hover:from-cyan-600 hover:to-primary text-white font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 text-sm group"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
-                      />
-                    </svg>
-                    {t("factory.filters.map", "Karta")}
-                  </button>
+                      <svg
+                        className="w-4 h-4 transition-transform group-hover:scale-110"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+                        />
+                      </svg>
+                      {t("factory.filters.map", "Karta")}
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             <div
               id="left"
-              className={`sidebar  left ${sidebarCollapsed ? "collapsed" : ""}`}
+              className={`sidebar left ${sidebarCollapsed ? "collapsed" : ""}`}
               style={{
                 position: "absolute",
-                top: window.innerWidth <= 768 ? "45px" : 0,
-                left: sidebarCollapsed ? -300 : 0,
-                width: "300px",
-                height: window.innerWidth <= 768 ? "calc(100% - 80px)" : "100%",
+                top: 0,
+                left: sidebarCollapsed ? -SIDEBAR_WIDTH : 0,
+                width: `${SIDEBAR_WIDTH}px`,
+                height: "100%",
                 backgroundColor: "rgba(255, 255, 255, 0.95)",
                 backdropFilter: "blur(10px)",
-                transition: "left 0.3s ease, top 0.3s ease, height 0.3s ease",
+                transition: "left 0.3s ease",
                 zIndex: 1,
                 borderRadius: "0 20px 20px 0",
                 boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
@@ -688,25 +707,25 @@ const FactoryMap: React.FC = () => {
               </div>
             </div>
 
-            {/* Sidebar toggle button - har doim ko'rinadigan */}
+            {/* Sidebar toggle button */}
             <div
               className="sidebar-toggle factory-map rounded-rect left"
               style={{
                 position: "absolute",
-                top: window.innerWidth <= 768 ? "calc(50% + 40px)" : "50%",
-                left: sidebarCollapsed ? "10px" : "310px",
-                width: "40px",
-                height: "60px",
+                top: "50%",
+                left: sidebarCollapsed ? "10px" : `${SIDEBAR_WIDTH + 10}px`,
+                width: isTablet ? "32px" : "40px",
+                height: isTablet ? "48px" : "60px",
                 backgroundColor: "rgba(255, 255, 255, 0.9)",
                 borderRadius: "10px",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: "1.5em",
+                fontSize: isTablet ? "1.1em" : "1.5em",
                 transform: "translateY(-50%)",
                 boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)",
-                transition: "left 0.3s ease, top 0.3s ease",
+                transition: "left 0.3s ease",
                 zIndex: 1,
               }}
               onClick={toggleSidebar}

@@ -142,11 +142,11 @@
   },
   "sidebar": {
     "map": "Харита",
-    "dashboard": "Umumiy ma'lumotlar",
+    "dashboard": "Умумий маълумотлар",
     "factory": "Инвестиция лойиҳалари",
     "production": "Ишлаб чиқариш",
     "sales": "Сотув",
-    "finance": "Birja bozori",
+    "finance": "Биржа бозори",
     "employee": "Ходимлар",
     "vehicle_tracking": "Транспорт мониторинг",
     "applications": "Аризалар",
@@ -181,7 +181,7 @@
     "google_signin": "Google orqali davom etish",
     "english": "English",
     "russian": "Русский",
-    "uzbek": "O'zbek"
+    "uzbek": "Узбек"
   },
   "dashboard": {
     "page_title": "Umumiy Dashboard",
