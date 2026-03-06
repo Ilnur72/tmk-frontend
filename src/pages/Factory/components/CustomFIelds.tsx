@@ -116,7 +116,7 @@ const CustomFields: React.FC<CustomFieldsProps> = ({
         <button
           type="button"
           onClick={addCustomField}
-          className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-sm flex items-center gap-2"
+          className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-primary text-sm flex items-center gap-2"
         >
           <Plus size={16} /> Янги майдон қўшиш
         </button>

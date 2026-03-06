@@ -272,7 +272,7 @@ const GeneralDashboard: React.FC = () => {
             <div className="flex items-center space-x-4">
               <button
                 onClick={loadDashboardData}
-                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="flex items-center space-x-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 <RefreshCw className="w-4 h-4" />
                 <span>Янгилаш</span>

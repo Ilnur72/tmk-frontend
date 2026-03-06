@@ -123,7 +123,7 @@ const EnergyDashboard: React.FC<EnergyDashboardProps> = ({ factoryId }) => {
         </nav>
         <button
           onClick={fetchDashboardData}
-          className="px-2.5 py-1.5 md:px-4 md:py-2 bg-blue-600 text-white text-xs md:text-sm rounded-lg hover:bg-blue-700 transition-colors"
+          className="px-2.5 py-1.5 md:px-4 md:py-2 bg-primary text-white text-xs md:text-sm rounded-lg hover:bg-blue-700 transition-colors"
         >
           {t("energy.common.refresh")}
         </button>

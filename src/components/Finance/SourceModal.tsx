@@ -126,7 +126,7 @@ const SourceModal: React.FC<SourceModalProps> = ({
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md disabled:opacity-50"
+                    className="px-4 py-2 bg-primary text-white rounded-md disabled:opacity-50"
                   >
                     {isLoading
                       ? t("ui.loading", { defaultValue: t("finance.loading") })

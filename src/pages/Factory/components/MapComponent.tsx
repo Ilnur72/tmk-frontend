@@ -148,7 +148,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
         <button
           type="button"
           onClick={handleLocationSearch}
-          className="bg-primary text-white px-4 py-2 rounded hover:bg-blue-600 text-sm"
+          className="bg-primary text-white px-4 py-2 rounded hover:bg-primary text-sm"
         >
           Кидириш
         </button>

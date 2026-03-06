@@ -230,13 +230,13 @@ const TranslationsManager: React.FC = () => {
         >
           Apply to running app
         </button>
-        <button onClick={() => downloadJson("en")} className="bg-blue-600 text-white px-2.5 py-1 rounded text-xs">
+        <button onClick={() => downloadJson("en")} className="bg-primary text-white px-2.5 py-1 rounded text-xs">
           Download EN
         </button>
-        <button onClick={() => downloadJson("ru")} className="bg-blue-600 text-white px-2.5 py-1 rounded text-xs">
+        <button onClick={() => downloadJson("ru")} className="bg-primary text-white px-2.5 py-1 rounded text-xs">
           Download RU
         </button>
-        <button onClick={() => downloadJson("uz")} className="bg-blue-600 text-white px-2.5 py-1 rounded text-xs">
+        <button onClick={() => downloadJson("uz")} className="bg-primary text-white px-2.5 py-1 rounded text-xs">
           Download UZ
         </button>
       </div>

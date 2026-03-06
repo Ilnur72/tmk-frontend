@@ -161,7 +161,7 @@ const MetersList: React.FC<MetersListProps> = ({ factoryId }) => {
           disabled={!factoryId}
           className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
             factoryId
-              ? "bg-blue-600 text-white hover:bg-blue-700"
+              ? "bg-primary text-white hover:bg-blue-700"
               : "bg-gray-300 text-gray-500 cursor-not-allowed"
           }`}
           title={
