@@ -96,10 +96,10 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
 
   return (
     <>
-      <div className="intro-y col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+      <div className="intro-y col-span-6 lg:col-span-4 xl:col-span-3">
         <div className="box">
-          <div className="p-5">
-            <div className="image-fit h-40 overflow-hidden rounded-md before:absolute before:left-0 before:top-0 before:z-10 before:block before:h-full before:w-full before:bg-gradient-to-t before:from-black before:to-black/10 2xl:h-56 relative">
+          <div className="p-2 md:p-5">
+            <div className="image-fit h-28 md:h-40 overflow-hidden rounded-md before:absolute before:left-0 before:top-0 before:z-10 before:block before:h-full before:w-full before:bg-gradient-to-t before:from-black before:to-black/10 2xl:h-56 relative">
               <img
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
                 className="rounded-md"
@@ -132,21 +132,21 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                 </div>
               </div>
 
-              <div className="absolute bottom-0 z-10 px-5 pb-6 text-white">
+              <div className="absolute bottom-0 z-10 px-2 md:px-5 pb-3 md:pb-6 text-white text-xs md:text-sm font-medium leading-tight">
                 {factory.name}
               </div>
             </div>
 
-            <div className="mt-5 text-slate-600 dark:text-slate-500">
-              <div className="p-5">
+            <div className="mt-2 md:mt-5 text-slate-600 dark:text-slate-500">
+              <div className="px-1 md:p-5">
                 <div className="preview relative [&.hide]:overflow-hidden [&.hide]:h-0">
-                  <div className="w-full bg-slate-200 rounded dark:bg-black/20 h-4 my-2">
+                  <div className="w-full bg-slate-200 rounded dark:bg-black/20 h-3 my-1 md:h-4 md:my-2">
                     <div
                       role="progressbar"
                       aria-valuenow={factory.work_persent}
                       aria-valuemin={0}
                       aria-valuemax={100}
-                      className="bg-primary h-full rounded text-xs text-white flex justify-center items-center"
+                      className="bg-primary h-full rounded text-[10px] md:text-xs text-white flex justify-center items-center"
                       style={{
                         width: `${factory.work_persent}%`,
                         backgroundColor: "#00a0c6",

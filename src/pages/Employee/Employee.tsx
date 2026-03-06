@@ -355,15 +355,15 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-2 max-sm:pt-12">
-      <div className="w-full px-2 sm:px-2 lg:px-2">
-        <div className="text-center mb-8">
-          <button className="transition duration-200 border shadow-sm items-center justify-center py-2 px-3 rounded-md font-medium cursor-pointer focus:ring-4 focus:ring-blue-500 focus:ring-opacity-20 bg-primary border-primary hover:bg-opacity-80 text-white m-2 mb-2 mr-1 inline-block">
+    <div className="min-h-screen bg-gray-100 px-3 pt-3 md:px-4 md:pt-4">
+      <div className="w-full">
+        <div className="flex flex-wrap justify-center gap-2 mb-4">
+          <button className="transition duration-200 border shadow-sm items-center justify-center py-1.5 px-3 rounded-md text-sm font-medium cursor-pointer bg-primary border-primary text-white inline-flex">
             {t("employee_dashboard.general_info")}
           </button>
           <button
             onClick={() => navigate("/employers/today-attendance")}
-            className="transition duration-200 border shadow-sm items-center justify-center py-2 px-3 rounded-md font-medium cursor-pointer focus:ring-4 focus:ring-blue-500 focus:ring-opacity-20 bg-primary border-primary hover:bg-opacity-80 text-white m-2 mb-2 mr-1 inline-block"
+            className="transition duration-200 border shadow-sm items-center justify-center py-1.5 px-3 rounded-md text-sm font-medium cursor-pointer bg-primary border-primary text-white inline-flex"
           >
             {t("employee_dashboard.online_info")}
           </button>
@@ -377,21 +377,21 @@ const Dashboard: React.FC = () => {
         )}
 
         {/* Header Section */}
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-lg font-medium text-gray-900">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+          <h2 className="text-sm md:text-lg font-medium text-gray-900">
             {t("employee_dashboard.today_attendance_status")}
           </h2>
           <a
             href="employers/branches"
-            className="flex items-center text-blue-600 hover:text-blue-700 gap-2"
+            className="flex items-center text-blue-600 hover:text-blue-700 gap-1 text-xs md:text-sm"
           >
             {t("employee_dashboard.all_branches_info")}
-            <List className="h-5 w-5" />
+            <List className="h-4 w-4" />
           </a>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 md:gap-6 mb-4 md:mb-8">
           {/* <StatCard
             title={t("employee_dashboard.total_employees")}
             value={employeeData?.employees_full || 0}
@@ -521,7 +521,7 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6 mb-4 md:mb-8">
           <div className="lg:col-span-1">
             <GrowthsChart />
           </div>
@@ -532,7 +532,7 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Additional Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 xl:grid-cols-3 gap-3 md:gap-6">
           {/* <AdditionalStatsCard
             title={t("employee_dashboard.active_inactive")}
             value="13500"

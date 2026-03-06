@@ -20,7 +20,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <SidebarComponent />
 
         <main
-          className={`md:max-w-auto min-h-screen min-w-0 max-w-full flex-1 rounded-[30px] bg-slate-100  before:block before:h-px before:w-full before:content-[''] dark:bg-darkmode-700 xl:p-4`}
+          className={`md:max-w-auto min-h-screen min-w-0 max-w-full flex-1 rounded-[30px] bg-slate-100 before:block before:h-px before:w-full before:content-[''] dark:bg-darkmode-700 xl:p-4 max-md:pt-[45px] max-md:rounded-none`}
         >
           {children}
         </main>

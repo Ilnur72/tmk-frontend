@@ -501,13 +501,12 @@ const FactoryMap: React.FC = () => {
 
   return (
     <>
-      <div className="grid grid-cols-12 gap-6">
-        <div className="col-span-12 rounded ">
-          <div
-            id="map"
-            ref={mapContainer}
-            className="maplibregl-map max-md:my-0 max-md:w-full max-md:fixed max-md:top-[45px] max-md:left-0 max-md:right-0 max-md:h-[calc(100vh-45px)] rounded-[30px] max-md:rounded-none"
-          >
+      <div className="max-md:h-[calc(100vh-45px)] md:h-screen overflow-hidden max-md:fixed max-md:inset-0 max-md:top-[45px]">
+        <div
+          id="map"
+          ref={mapContainer}
+          className="maplibregl-map w-full h-full md:rounded-[30px]"
+        >
             {/* Filters Section */}
             <div
               className="absolute z-10 transition-all duration-300 ease-in-out pointer-events-none"
@@ -732,9 +731,8 @@ const FactoryMap: React.FC = () => {
             >
               {sidebarCollapsed ? "→" : "←"}
             </div>
-          </div>
-        </div>
       </div>
+    </div>
 
       {/* Factory Details Modal */}
       <FactoryModal

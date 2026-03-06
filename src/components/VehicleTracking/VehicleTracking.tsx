@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import axios from "axios";
-import { Activity, Wifi, Zap, ZapOff } from "lucide-react";
+import { Activity, Wifi, Zap, ZapOff, ChevronLeft, ChevronRight, List } from "lucide-react";
 import VehicleDetailModal from "./VehicleDetailModal";
 import TransportListModal from "./TransportListModal";
 import { useWebSocket } from "../../hooks/useWebSocket";
@@ -65,10 +65,9 @@ const VehicleTracking: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTransportListOpen, setIsTransportListOpen] = useState(false);
   const [fallbackMode, setFallbackMode] = useState(false);
-  const [isRealTimeEnabled, setIsRealTimeEnabled] = useState(true); // Real-time boshqarish
-  const [refreshInterval, setRefreshInterval] = useState<NodeJS.Timeout | null>(
-    null
-  ); // Manual refresh interval
+  const [isRealTimeEnabled, setIsRealTimeEnabled] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => window.innerWidth >= 768);
+  const [refreshInterval, setRefreshInterval] = useState<NodeJS.Timeout | null>(null);
 
   // Cache ma'lumotlari uchun ref (render'da ishlamaydi)
   const cacheRef = useRef<{
@@ -641,117 +640,92 @@ const VehicleTracking: React.FC = () => {
   }, [vehicles, activeVehicleId, updateMarkerStyle, focusOnVehicle]);
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      <div className="bg-white shadow-lg w-96 max-md:w-80 max-sm:w-72 max-xs:w-64 flex flex-col min-w-0">
-        <div className="p-4 max-sm:p-3 max-xs:p-2 border-b border-gray-200">
-          <h2 className="text-xl max-md:text-lg max-sm:text-base font-semibold text-gray-800 flex items-center justify-between">
-            <div className="flex items-center gap-2 max-sm:gap-1 min-w-0">
-              <Activity className="h-6 w-6 max-sm:h-5 max-sm:w-5 text-blue-600 flex-shrink-0" />
-              <span className="truncate">{t("vehicle_tracking.title")}</span>
+    <div className="flex h-[calc(100vh-45px)] md:h-screen bg-gray-100 overflow-hidden">
+      {/* Sidebar */}
+      <div
+        className={`relative bg-white shadow-lg flex flex-col min-w-0 transition-all duration-300 ${
+          isSidebarOpen ? "w-72 md:w-80" : "w-0 overflow-hidden"
+        }`}
+      >
+        {/* Header */}
+        <div className="px-2 py-1.5 border-b border-gray-200 min-w-[288px] md:min-w-[320px]">
+          <div className="flex items-center justify-between gap-1">
+            <div className="flex items-center gap-1 min-w-0">
+              <Activity className="h-3.5 w-3.5 text-blue-600 flex-shrink-0" />
+              <span className="text-xs font-semibold text-gray-800 truncate">{t("vehicle_tracking.title")}</span>
             </div>
-            <button
-              onClick={toggleRealTime}
-              className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-colors ${
-                isRealTimeEnabled
-                  ? "bg-green-100 text-green-800 hover:bg-green-200"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-              }`}
-              title={
-                isRealTimeEnabled
-                  ? t("vehicle_tracking.realtime_on_tooltip")
-                  : t("vehicle_tracking.realtime_off_tooltip")
-              }
-            >
-              {isRealTimeEnabled ? (
-                <Zap className="h-3 w-3" />
-              ) : (
-                <ZapOff className="h-3 w-3" />
+            <div className="flex items-center gap-1.5 flex-shrink-0">
+              {lastUpdate && (
+                <span className="text-[9px] text-gray-400">
+                  {lastUpdate.toLocaleTimeString()}
+                </span>
               )}
-            </button>
-          </h2>
-          {lastUpdate && (
-            <p className="text-xs text-gray-500 mt-1">
-              {t("vehicle_tracking.last_update")}:{" "}
-              {lastUpdate.toLocaleTimeString()}
-            </p>
-          )}
-        </div>
-
-        <div className="p-4 max-sm:p-3 max-xs:p-2 border-b border-gray-200">
-          <div className="grid grid-cols-2 gap-4 max-sm:gap-2">
-            <div className="bg-blue-50 rounded-lg p-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-blue-600 font-medium">
-                    {t("vehicle_tracking.total")}{" "}
-                    {!isRealTimeEnabled && (
-                      <span className="text-xs">
-                        ({t("vehicle_tracking.manual")})
-                      </span>
-                    )}
-                  </p>
-                  <p className="text-2xl font-bold text-blue-700">
-                    {vehicles.length} / {stats.total}
-                  </p>
-                </div>
-                <Activity className="h-8 w-8 text-blue-600" />
-              </div>
+              <button
+                onClick={toggleRealTime}
+                className={`flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium transition-colors ${
+                  isRealTimeEnabled
+                    ? "bg-green-100 text-green-800 hover:bg-green-200"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                {isRealTimeEnabled ? <Zap className="h-2.5 w-2.5" /> : <ZapOff className="h-2.5 w-2.5" />}
+              </button>
             </div>
-            <div className="bg-green-50 rounded-lg p-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-green-600 font-medium">
-                    {t("vehicle_tracking.online")}
-                  </p>
-                  <p className="text-2xl font-bold text-green-700">
-                    {stats.online}
-                  </p>
-                </div>
-                <Wifi className="h-8 w-8 text-green-600" />
-              </div>
+          </div>
+
+          {/* Stats compact row */}
+          <div className="flex gap-2 mt-1">
+            <div className="flex items-center gap-1 bg-blue-50 rounded px-2 py-1 flex-1">
+              <Activity className="h-3 w-3 text-blue-500 flex-shrink-0" />
+              <span className="text-[10px] text-blue-600">{t("vehicle_tracking.total")}:</span>
+              <span className="text-xs font-bold text-blue-700">{vehicles.length}/{stats.total}</span>
+            </div>
+            <div className="flex items-center gap-1 bg-green-50 rounded px-2 py-1 flex-1">
+              <Wifi className="h-3 w-3 text-green-500 flex-shrink-0" />
+              <span className="text-[10px] text-green-600">{t("vehicle_tracking.online")}:</span>
+              <span className="text-xs font-bold text-green-700">{stats.online}</span>
             </div>
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto no-scrollbar min-w-[288px] md:min-w-[320px]">
           {loading ? (
             <div className="flex items-center justify-center h-32">
               <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
             </div>
           ) : (
-            <div className="space-y-2 p-4">
+            <div className="space-y-1.5 p-2">
               {vehicles.map((vehicle: Vehicle) => {
                 const isActive = activeVehicleId === vehicle.id;
                 return (
                   <div
                     key={vehicle.id}
-                    onClick={() => focusOnVehicle(vehicle.id)} // ✅ Pass ID instead of object
-                    className={`rounded-lg p-3 cursor-pointer border transition-all duration-200 ${
+                    onClick={() => focusOnVehicle(vehicle.id)}
+                    className={`rounded-lg p-2 cursor-pointer border transition-all duration-200 ${
                       isActive
                         ? "bg-blue-50 border-blue-300 ring-2 ring-blue-200"
                         : "bg-gray-50 hover:bg-gray-100 border-gray-200"
                     }`}
                   >
-                    <h3 className="font-medium text-gray-800 text-sm">
+                    <h3 className="font-medium text-gray-800 text-xs">
                       {vehicle.name}
                     </h3>
-                    <div className="flex items-center gap-2 mt-1">
+                    <div className="flex items-center gap-1.5 mt-0.5">
                       <div
-                        className={`w-2 h-2 rounded-full ${
+                        className={`w-1.5 h-1.5 rounded-full ${
                           vehicle.status.isOnline
                             ? "bg-green-500"
                             : "bg-red-500"
                         }`}
                       />
-                      <span className="text-xs">
+                      <span className="text-[10px]">
                         {vehicle.status.isOnline
                           ? t("vehicle_tracking.online")
                           : t("vehicle_tracking.offline")}
                       </span>
-                    </div>
-                    <div className="text-xs text-gray-500 mt-1">
-                      {t("vehicle_tracking.speed")}: {vehicle.position.speed}{" "}
-                      km/h
+                      <span className="text-[10px] text-gray-500 ml-auto">
+                        {vehicle.position.speed} km/h
+                      </span>
                     </div>
                   </div>
                 );
@@ -762,6 +736,15 @@ const VehicleTracking: React.FC = () => {
       </div>
 
       <div className="flex-1 relative min-w-0">
+        {/* Sidebar toggle button */}
+        <button
+          onClick={() => setIsSidebarOpen((v) => !v)}
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-md border border-gray-200 rounded-r-lg p-1.5 text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+          title={isSidebarOpen ? "Yopish" : "Ochish"}
+        >
+          {isSidebarOpen ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+        </button>
+
         <div ref={mapContainer} className="w-full h-full" />
         {loading && (
           <div className="absolute inset-0 bg-gray-100 bg-opacity-75 flex items-center justify-center">

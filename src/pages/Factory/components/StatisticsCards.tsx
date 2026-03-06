@@ -50,29 +50,29 @@ const StatisticsCards: React.FC<StatisticsCardsProps> = ({
       {/* Total Projects */}
       <div
         onClick={() => onFilterChange("")}
-        className="intro-y col-span-12 sm:col-span-6 xl:col-span-3 cursor-pointer"
+        className="intro-y col-span-6 xl:col-span-3 cursor-pointer"
       >
         <div className="relative zoom-in before:box before:absolute before:inset-x-3 before:mt-3 before:h-full before:bg-slate-50 before:content-['']">
-          <div className="box p-5">
+          <div className="box p-3 md:p-5">
             <div className="flex">
               <ShoppingCart
-                className="stroke-1.5 h-[28px] w-[28px] text-primary"
+                className="stroke-1.5 h-5 w-5 md:h-[28px] md:w-[28px] text-primary"
                 style={{ color: "#00a0c6" }}
               />
               <div className="ml-auto">
                 <div className="tooltip cursor-pointer flex items-center rounded-full bg-success py-[3px] pl-2 pr-1 text-xs font-medium text-white">
                   33%
-                  <ChevronUp className="stroke-1.5 ml-0.5 h-4 w-4" />
+                  <ChevronUp className="stroke-1.5 ml-0.5 h-3 w-3 md:h-4 md:w-4" />
                 </div>
               </div>
             </div>
             <div
               id="total-count"
-              className="mt-6 text-3xl font-medium leading-8"
+              className="mt-3 md:mt-6 text-xl md:text-3xl font-medium leading-8"
             >
               {total}
             </div>
-            <div className="mt-1 text-base text-slate-500">
+            <div className="mt-1 text-xs md:text-base text-slate-500">
               {t("total_projects")}
             </div>
           </div>
@@ -82,23 +82,23 @@ const StatisticsCards: React.FC<StatisticsCardsProps> = ({
       {/* Registration */}
       <div
         onClick={() => onFilterChange("REGISTRATION")}
-        className="intro-y col-span-12 sm:col-span-6 xl:col-span-3 cursor-pointer"
+        className="intro-y col-span-6 xl:col-span-3 cursor-pointer"
       >
         <div className="relative zoom-in before:box before:absolute before:inset-x-3 before:mt-3 before:h-full before:bg-slate-50 before:content-['']">
-          <div className="box p-5">
+          <div className="box p-3 md:p-5">
             <div className="flex">
-              <Monitor className="stroke-1.5 h-[28px] w-[28px] text-warning" />
+              <Monitor className="stroke-1.5 h-5 w-5 md:h-[28px] md:w-[28px] text-warning" />
               <div className="ml-auto">
                 <div className="tooltip cursor-pointer flex items-center rounded-full bg-success py-[3px] pl-2 pr-1 text-xs font-medium text-white">
                   22%
-                  <ChevronUp className="stroke-1.5 ml-0.5 h-4 w-4" />
+                  <ChevronUp className="stroke-1.5 ml-0.5 h-3 w-3 md:h-4 md:w-4" />
                 </div>
               </div>
             </div>
-            <div className="mt-6 text-3xl font-medium leading-8">
+            <div className="mt-3 md:mt-6 text-xl md:text-3xl font-medium leading-8">
               {counts.registrationCount}
             </div>
-            <div className="mt-1 text-base text-slate-500">
+            <div className="mt-1 text-xs md:text-base text-slate-500">
               {t("in_registration")}
             </div>
           </div>
@@ -108,23 +108,23 @@ const StatisticsCards: React.FC<StatisticsCardsProps> = ({
       {/* Construction */}
       <div
         onClick={() => onFilterChange("CONSTRUCTION")}
-        className="intro-y col-span-12 sm:col-span-6 xl:col-span-3 cursor-pointer"
+        className="intro-y col-span-6 xl:col-span-3 cursor-pointer"
       >
         <div className="relative zoom-in before:box before:absolute before:inset-x-3 before:mt-3 before:h-full before:bg-slate-50 before:content-['']">
-          <div className="box p-5">
+          <div className="box p-3 md:p-5">
             <div className="flex">
               <ConstructionIcon />
               <div className="ml-auto">
                 <div className="tooltip cursor-pointer flex items-center rounded-full bg-success py-[3px] pl-2 pr-1 text-xs font-medium text-white">
                   12%
-                  <ChevronUp className="stroke-1.5 ml-0.5 h-4 w-4" />
+                  <ChevronUp className="stroke-1.5 ml-0.5 h-3 w-3 md:h-4 md:w-4" />
                 </div>
               </div>
             </div>
-            <div className="mt-6 text-3xl font-medium leading-8">
+            <div className="mt-3 md:mt-6 text-xl md:text-3xl font-medium leading-8">
               {counts.constructionCount}
             </div>
-            <div className="mt-1 text-base text-slate-500">
+            <div className="mt-1 text-xs md:text-base text-slate-500">
               {t("in_construction")}
             </div>
           </div>
@@ -134,23 +134,23 @@ const StatisticsCards: React.FC<StatisticsCardsProps> = ({
       {/* Started */}
       <div
         onClick={() => onFilterChange("STARTED")}
-        className="intro-y col-span-12 sm:col-span-6 xl:col-span-3 cursor-pointer"
+        className="intro-y col-span-6 xl:col-span-3 cursor-pointer"
       >
         <div className="relative zoom-in before:box before:absolute before:inset-x-3 before:mt-3 before:h-full before:bg-slate-50 before:content-['']">
-          <div className="box p-5">
+          <div className="box p-3 md:p-5">
             <div className="flex">
-              <CreditCard className="stroke-1.5 h-[28px] w-[28px] text-pending" />
+              <CreditCard className="stroke-1.5 h-5 w-5 md:h-[28px] md:w-[28px] text-pending" />
               <div className="ml-auto">
                 <div className="tooltip cursor-pointer flex items-center rounded-full bg-danger py-[3px] pl-2 pr-1 text-xs font-medium text-white">
                   2%
-                  <ChevronDown className="stroke-1.5 ml-0.5 h-4 w-4" />
+                  <ChevronDown className="stroke-1.5 ml-0.5 h-3 w-3 md:h-4 md:w-4" />
                 </div>
               </div>
             </div>
-            <div className="mt-6 text-3xl font-medium leading-8">
+            <div className="mt-3 md:mt-6 text-xl md:text-3xl font-medium leading-8">
               {counts.startedCount}
             </div>
-            <div className="mt-1 text-base text-slate-500">{t("launched")}</div>
+            <div className="mt-1 text-xs md:text-base text-slate-500">{t("launched")}</div>
           </div>
         </div>
       </div>

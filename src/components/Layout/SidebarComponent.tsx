@@ -144,7 +144,7 @@ const Sidebar = () => {
             </button>
           </div>
 
-          <ul className="py-2">
+          <ul className="py-2 overflow-y-auto no-scrollbar" style={{ maxHeight: "calc(100vh - 56px)" }}>
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive =
@@ -163,12 +163,12 @@ const Sidebar = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={() => closeMobileMenu()}
-                      className="menu flex items-center px-6 py-4 hover:bg-opacity-50 transition-colors"
+                      className="menu flex items-center px-3 py-2.5 hover:bg-opacity-50 transition-colors"
                     >
-                      <div className="menu__icon mr-4 text-white">
-                        <Icon className="w-5 h-5" />
+                      <div className="menu__icon mr-3 text-white">
+                        <Icon className="w-4 h-4" />
                       </div>
-                      <div className="menu__title text-sm font-medium text-white">
+                      <div className="menu__title text-xs font-medium text-white">
                         {t(item.title)}
                       </div>
                     </a>
@@ -185,18 +185,18 @@ const Sidebar = () => {
                     to={item.href}
                     onClick={() => closeMobileMenu()}
                     className={({ isActive }) =>
-                      `menu flex items-center px-6 py-4 hover:bg-opacity-50 transition-colors ${
+                      `menu flex items-center px-3 py-2.5 hover:bg-opacity-50 transition-colors ${
                         isActive ? "bg-white border-r-4 border-primary" : ""
                       }`
                     }
                     end={item.href === "/"}
                   >
                     <div
-                      className={`menu__icon mr-4 ${
+                      className={`menu__icon mr-3 ${
                         isActive ? "text-primary" : "text-white"
                       }`}
                     >
-                      <Icon className={`w-5 h-5`} />
+                      <Icon className={`w-4 h-4`} />
                     </div>
                     <div
                       className={`menu__title text-sm font-medium ${

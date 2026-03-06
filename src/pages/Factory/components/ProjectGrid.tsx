@@ -37,7 +37,7 @@ const ProjectGrid: React.FC<ProjectGridProps> = ({
   }
 
   return (
-    <div id="factory-data-wrapper" className="mt-5 grid grid-cols-12 gap-6">
+    <div id="factory-data-wrapper" className="mt-4 grid grid-cols-12 gap-3 md:gap-6">
       {factories.map((factory) => (
         <ProjectCard
           key={factory.id}

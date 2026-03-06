@@ -207,11 +207,11 @@ const Factory: React.FC = () => {
 
   const { t } = useTranslation();
   return (
-    <div className="min-h-screen min-w-0 max-w-full flex-1 rounded-[30px] bg-slate-100 px-4 max-sm:py-8 dark:bg-darkmode-700 md:px-[22px]">
-      <div className="grid grid-cols-12 gap-6">
-        <div className="col-span-12 mt-8">
-          <div className="intro-y lg:flex items-center justify-between">
-            <h2 className="mr-5 text-xl font-bold">
+    <div className="min-h-screen min-w-0 max-w-full flex-1 rounded-[30px] bg-slate-100 px-3 py-4 md:px-[22px] dark:bg-darkmode-700">
+      <div className="grid grid-cols-12 gap-4">
+        <div className="col-span-12 mt-2 md:mt-8">
+          <div className="intro-y flex flex-wrap items-center justify-between gap-2">
+            <h2 className="text-base md:text-xl font-bold">
               {t("investment_project_monitoring")}
             </h2>
             <div className="flex items-center gap-3">

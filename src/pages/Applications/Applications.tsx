@@ -211,26 +211,26 @@ const Applications: React.FC = () => {
 
   return (
     <div
-      className="p-6 flex flex-col max-md:pt-[50px]"
+      className="px-3 pt-3 pb-4 md:p-6 flex flex-col max-md:pt-[50px]"
       style={{ minHeight: "calc(100vh - 120px)" }}
     >
-      <div className="sm:flex sm:items-center sm:justify-between flex-shrink-0">
+      <div className="flex items-center justify-between gap-2 mb-3 md:mb-0 flex-shrink-0">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-lg md:text-2xl font-bold text-gray-900">
             {t("applications.title")}
           </h1>
-          <p className="mt-2 text-sm text-gray-700">
+          <p className="text-xs md:text-sm text-gray-700">
             {t("applications.subtitle")}
           </p>
         </div>
-        <div className="mt-4 sm:mt-0">
+        <div>
           <button
             onClick={() => refetch()}
             disabled={isLoading}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
+            className="inline-flex items-center px-2.5 py-1.5 md:px-4 md:py-2 border border-gray-300 rounded-md shadow-sm text-xs md:text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none disabled:opacity-50"
           >
             <RefreshCw
-              className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
+              className={`h-3.5 w-3.5 mr-1.5 ${isLoading ? "animate-spin" : ""}`}
             />
             {t("applications.refresh")}
           </button>
@@ -238,143 +238,57 @@ const Applications: React.FC = () => {
       </div>
 
       {/* Statistics */}
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5 mt-8 mb-8 flex-shrink-0">
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="h-6 w-6 rounded-full bg-gray-100 flex items-center justify-center">
-                  <div className="h-3 w-3 rounded-full bg-gray-400"></div>
+      <div className="grid grid-cols-5 gap-1.5 md:gap-5 mt-3 md:mt-8 mb-3 md:mb-8 flex-shrink-0">
+        {[
+          { color: "gray", label: t("applications.total"), value: applicationStats.total },
+          { color: "green", label: t("applications.approved"), value: applicationStats.approved },
+          { color: "yellow", label: t("applications.pending"), value: applicationStats.pending },
+          { color: "blue", label: t("applications.in_review"), value: applicationStats.inReview },
+          { color: "red", label: t("applications.rejected"), value: applicationStats.rejected },
+        ].map(({ color, label, value }) => (
+          <div key={label} className="bg-white overflow-hidden shadow rounded-lg">
+            <div className="p-2 md:p-5">
+              <div className="flex items-center gap-1.5 md:gap-3">
+                <div className="flex-shrink-0">
+                  <div className={`h-4 w-4 md:h-6 md:w-6 rounded-full bg-${color}-100 flex items-center justify-center`}>
+                    <div className={`h-2 w-2 md:h-3 md:w-3 rounded-full bg-${color}-400`} />
+                  </div>
                 </div>
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    {t("applications.total")}
-                  </dt>
-                  <dd className="text-lg font-medium text-gray-900">
-                    {applicationStats.total}
-                  </dd>
-                </dl>
+                <div className="min-w-0">
+                  <dt className="text-[9px] md:text-sm font-medium text-gray-500 truncate">{label}</dt>
+                  <dd className="text-sm md:text-lg font-medium text-gray-900">{value}</dd>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="h-6 w-6 rounded-full bg-green-100 flex items-center justify-center">
-                  <div className="h-3 w-3 rounded-full bg-green-400"></div>
-                </div>
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    {t("applications.approved")}
-                  </dt>
-                  <dd className="text-lg font-medium text-gray-900">
-                    {applicationStats.approved}
-                  </dd>
-                </dl>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="h-6 w-6 rounded-full bg-yellow-100 flex items-center justify-center">
-                  <div className="h-3 w-3 rounded-full bg-yellow-400"></div>
-                </div>
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    {t("applications.pending")}
-                  </dt>
-                  <dd className="text-lg font-medium text-gray-900">
-                    {applicationStats.pending}
-                  </dd>
-                </dl>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="h-6 w-6 rounded-full bg-blue-100 flex items-center justify-center">
-                  <div className="h-3 w-3 rounded-full bg-blue-400"></div>
-                </div>
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    {t("applications.in_review")}
-                  </dt>
-                  <dd className="text-lg font-medium text-gray-900">
-                    {applicationStats.inReview}
-                  </dd>
-                </dl>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="h-6 w-6 rounded-full bg-red-100 flex items-center justify-center">
-                  <div className="h-3 w-3 rounded-full bg-red-400"></div>
-                </div>
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    {t("applications.rejected")}
-                  </dt>
-                  <dd className="text-lg font-medium text-gray-900">
-                    {applicationStats.rejected}
-                  </dd>
-                </dl>
-              </div>
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
 
       {/* Filters */}
-      <div className="bg-white shadow rounded-lg mb-6 flex-shrink-0">
-        <div className="px-6 py-4">
-          <div className="flex flex-col sm:flex-row gap-4">
+      <div className="bg-white shadow rounded-lg mb-3 md:mb-6 flex-shrink-0">
+        <div className="px-3 py-2 md:px-6 md:py-4">
+          <div className="flex flex-col sm:flex-row gap-2 md:gap-4">
             {/* Search */}
             <div className="flex-1">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
                 <input
                   type="text"
                   placeholder={t("applications.search_placeholder")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:outline-none "
+                  className="pl-9 pr-4 py-1.5 text-xs md:text-sm w-full border border-gray-300 rounded-md focus:outline-none"
                 />
               </div>
             </div>
 
             {/* Status Filter */}
-            <div className="flex items-center space-x-2">
-              <Filter className="h-4 w-4 text-gray-400" />
+            <div className="flex items-center space-x-1.5">
+              <Filter className="h-3.5 w-3.5 text-gray-400 flex-shrink-0" />
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none "
+                className="border border-gray-300 rounded-md px-2 py-1.5 text-xs md:text-sm focus:outline-none"
               >
                 <option value="all">{t("applications.all_statuses")}</option>
                 <option value="pending">{t("applications.pending")}</option>
@@ -385,12 +299,12 @@ const Applications: React.FC = () => {
             </div>
 
             {/* Region Filter */}
-            <div className="flex items-center space-x-2">
-              <MapPin className="h-4 w-4 text-gray-400" />
+            <div className="flex items-center space-x-1.5">
+              <MapPin className="h-3.5 w-3.5 text-gray-400 flex-shrink-0" />
               <select
                 value={regionFilter}
                 onChange={(e) => setRegionFilter(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none "
+                className="border border-gray-300 rounded-md px-2 py-1.5 text-xs md:text-sm focus:outline-none"
               >
                 <option value="all">{t("applications.all_regions")}</option>
                 {regions.map((region) => (
@@ -403,7 +317,7 @@ const Applications: React.FC = () => {
           </div>
 
           {/* Results info */}
-          <div className="mt-4 text-sm text-gray-600">
+          <div className="mt-2 text-[10px] md:text-sm text-gray-600">
             {t("applications.showing_results", {
               filtered: filteredApplications.length,
               total: applications.length,

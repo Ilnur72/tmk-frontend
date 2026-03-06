@@ -12,7 +12,6 @@ const Production: React.FC = () => {
           {t("production.title")}
         </h1>
       </div>
-
       <MetabaseDashboard endpoint="/metabase/production" />
     </div>
   );

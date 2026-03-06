@@ -85,24 +85,24 @@ const MetalTable: React.FC<MetalTableProps> = ({
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-2 py-2 md:px-6 md:py-3 text-left text-[10px] md:text-xs font-medium text-gray-500 uppercase tracking-wider">
                 {t("finance.metal_name")}
               </th>
               {sourceNames.map((sourceName) => (
                 <th
                   key={sourceName}
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-2 py-2 md:px-6 md:py-3 text-left text-[10px] md:text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
                   {sourceName}
                 </th>
               ))}
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-2 py-2 md:px-6 md:py-3 text-left text-[10px] md:text-xs font-medium text-gray-500 uppercase tracking-wider">
                 {t("finance.change")}
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-2 py-2 md:px-6 md:py-3 text-left text-[10px] md:text-xs font-medium text-gray-500 uppercase tracking-wider">
                 {t("finance.last_updated")}
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-2 py-2 md:px-6 md:py-3 text-left text-[10px] md:text-xs font-medium text-gray-500 uppercase tracking-wider">
                 {t("finance.actions")}
               </th>
             </tr>
@@ -113,7 +113,7 @@ const MetalTable: React.FC<MetalTableProps> = ({
                 key={`${item.elementName}-${index}`}
                 className="hover:bg-gray-50 group"
               >
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <td className="px-2 py-2 md:px-6 md:py-4 whitespace-nowrap text-xs md:text-sm font-medium text-gray-900">
                   {item.elementName}
                 </td>
                 {sourceNames.map((sourceName) => {
@@ -121,7 +121,7 @@ const MetalTable: React.FC<MetalTableProps> = ({
                   return (
                     <td
                       key={sourceName}
-                      className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                      className="px-2 py-2 md:px-6 md:py-4 whitespace-nowrap text-xs md:text-sm text-gray-900"
                     >
                       {sourceData ? (
                         <div className="space-y-1">
@@ -174,9 +174,9 @@ const MetalTable: React.FC<MetalTableProps> = ({
                     </td>
                   );
                 })}
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                <td className="px-2 py-2 md:px-6 md:py-4 whitespace-nowrap text-xs md:text-sm">
                   <span
-                    className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                    className={`inline-flex px-1.5 py-0.5 md:px-2 md:py-1 text-[10px] md:text-xs font-semibold rounded-full ${
                       Number(item.changePercent || 0) >= 0
                         ? "bg-green-100 text-green-800"
                         : "bg-red-100 text-red-800"
@@ -186,10 +186,10 @@ const MetalTable: React.FC<MetalTableProps> = ({
                     {Number(item.changePercent || 0).toFixed(2)}%
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td className="px-2 py-2 md:px-6 md:py-4 whitespace-nowrap text-[10px] md:text-sm text-gray-900">
                   {formatDate(item.lastUpdated)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <td className="px-2 py-2 md:px-6 md:py-4 whitespace-nowrap text-xs md:text-sm font-medium">
                   <div className="flex space-x-2">
                     <button
                       onClick={(e) => {

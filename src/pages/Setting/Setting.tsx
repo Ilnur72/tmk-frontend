@@ -294,74 +294,50 @@ const Setting: React.FC = () => {
   }
 
   return (
-    <div className="md:max-w-auto min-h-screen min-w-0 max-w-full flex-1 rounded-[30px] bg-slate-100 max-sm:pt-16">
-      <div className="flex items-center space-x-4">
+    <div className="md:max-w-auto min-h-screen min-w-0 max-w-full flex-1 rounded-[30px] bg-slate-100 max-sm:pt-16 px-2 md:px-4">
+      <div className="flex items-center space-x-4 pt-2">
         <LanguageSwitcher />
       </div>
       {/* Parameters Section */}
-      <div className="bg-white rounded-lg shadow p-3 overflow-x-auto mt-6">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-4 gap-3">
-          <h2 className="text-lg sm:text-xl md:text-3xl font-bold flex items-center gap-2">
-            <Settings className="w-8 h-8" />
+      <div className="bg-white rounded-lg shadow p-2 md:p-3 overflow-x-auto mt-3 md:mt-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-2 gap-2">
+          <h2 className="text-base md:text-xl font-bold flex items-center gap-1.5">
+            <Settings className="w-5 h-5" />
             {t("setting.parameters_list")}
           </h2>
           <button
             onClick={() => setIsCreateParamModalOpen(true)}
-            className="bg-primary hover:opacity-80 text-white font-medium text-sm md:text-base px-4 py-2 rounded w-full sm:w-auto flex items-center gap-2"
+            className="bg-primary hover:opacity-80 text-white font-medium text-xs md:text-sm px-2.5 py-1.5 rounded w-full sm:w-auto flex items-center gap-1.5"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-3.5 h-3.5" />
             {t("setting.add_parameter")}
           </button>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full text-sm">
+          <table className="min-w-full text-xs md:text-sm">
             <thead>
               <tr className="border-b">
-                <th className="py-2 text-left text-xs sm:text-sm md:text-base font-medium">
-                  #
-                </th>
-                <th className="py-2 text-left text-xs sm:text-sm md:text-base font-medium">
-                  {t("setting.name")}
-                </th>
-                <th className="py-2 text-left text-xs sm:text-sm md:text-base font-medium">
-                  {t("setting.type")}
-                </th>
-                <th className="py-2 text-left text-xs sm:text-sm md:text-base font-medium">
-                  {t("setting.actions")}
-                </th>
+                <th className="py-1.5 text-left font-medium">#</th>
+                <th className="py-1.5 text-left font-medium">{t("setting.name")}</th>
+                <th className="py-1.5 text-left font-medium">{t("setting.type")}</th>
+                <th className="py-1.5 text-left font-medium">{t("setting.actions")}</th>
               </tr>
             </thead>
             <tbody>
               {parameters.length > 0 ? (
                 parameters.map((parameter, index) => (
                   <tr key={parameter.id} className="border-b hover:bg-slate-50">
-                    <td className="py-2 text-xs sm:text-sm md:text-base">
-                      {index + 1}
-                    </td>
-                    <td className="py-2 text-xs sm:text-sm md:text-base">
-                      {parameter.name}
-                    </td>
-                    <td className="py-2 text-xs sm:text-sm md:text-base">
-                      {parameter.type}
-                    </td>
-                    <td className="py-2">
+                    <td className="py-1.5">{index + 1}</td>
+                    <td className="py-1.5">{parameter.name}</td>
+                    <td className="py-1.5">{parameter.type}</td>
+                    <td className="py-1.5">
                       <div className="flex gap-1">
-                        <button
-                          onClick={() => openEditParameter(parameter)}
-                          className="text-primary hover:opacity-80 transition-colors"
-                          title={t("setting.edit")}
-                        >
-                          <Edit className="w-5 h-5" />
+                        <button onClick={() => openEditParameter(parameter)} className="text-primary hover:opacity-80 transition-colors" title={t("setting.edit")}>
+                          <Edit className="w-4 h-4" />
                         </button>
-                        <button
-                          onClick={() =>
-                            openDeleteModal(parameter.id, "parameter")
-                          }
-                          className="text-red-600 hover:text-red-800 transition-colors"
-                          title={t("setting.delete")}
-                        >
-                          <Trash2 className="w-5 h-5" />
+                        <button onClick={() => openDeleteModal(parameter.id, "parameter")} className="text-red-600 hover:text-red-800 transition-colors" title={t("setting.delete")}>
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </td>
@@ -369,10 +345,7 @@ const Setting: React.FC = () => {
                 ))
               ) : (
                 <tr>
-                  <td
-                    colSpan={4}
-                    className="py-4 text-center text-slate-400 text-xs sm:text-sm md:text-base"
-                  >
+                  <td colSpan={4} className="py-3 text-center text-slate-400 text-xs">
                     {t("setting.no_parameters_found")}
                   </td>
                 </tr>
@@ -387,120 +360,71 @@ const Setting: React.FC = () => {
       </div>
 
       {/* Cameras Section */}
-      <div className="bg-white rounded-lg shadow p-3 sm:p-6 mt-6">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
-          <h2 className="text-lg sm:text-xl md:text-3xl font-semibold flex items-center gap-2">
-            <Camera className="w-8 h-8" />
+      <div className="bg-white rounded-lg shadow p-2 md:p-3 mt-3 md:mt-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-2 md:mb-4 gap-2">
+          <h2 className="text-base md:text-xl font-semibold flex items-center gap-1.5">
+            <Camera className="w-5 h-5" />
             {t("setting.cameras_list")}
           </h2>
           <button
             onClick={() => setIsCameraModalOpen(true)}
-            className="bg-primary hover:opacity-80 text-white font-medium text-sm md:text-base px-4 py-2 rounded w-full sm:w-auto flex items-center gap-2"
+            className="bg-primary hover:opacity-80 text-white font-medium text-xs md:text-sm px-2.5 py-1.5 rounded w-full sm:w-auto flex items-center gap-1.5"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-3.5 h-3.5" />
             {t("setting.add_camera")}
           </button>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full table-auto">
+          <table className="min-w-full table-auto text-xs md:text-sm">
             <thead>
               <tr className="border-b">
-                <th className="py-3 px-2 text-left text-xs sm:text-sm md:text-base font-medium w-12">
-                  #
-                </th>
-                <th className="py-3 px-2 text-left text-xs sm:text-sm md:text-base font-medium min-w-[120px]">
-                  {t("setting.model")}
-                </th>
-                <th className="py-3 px-2 text-left text-xs sm:text-sm md:text-base font-medium min-w-[250px] max-w-[300px]">
-                  {t("setting.stream_link")}
-                </th>
-                <th className="py-3 px-2 text-left text-xs sm:text-sm md:text-base font-medium min-w-[100px]">
-                  {t("setting.ip_address")}
-                </th>
-                <th className="py-3 px-2 text-left text-xs sm:text-sm md:text-base font-medium w-20">
-                  {t("setting.login")}
-                </th>
-                <th className="py-3 px-2 text-left text-xs sm:text-sm md:text-base font-medium w-24">
-                  {t("setting.password")}
-                </th>
-                <th className="py-3 px-2 text-left text-xs sm:text-sm md:text-base font-medium w-16">
-                  PTZ
-                </th>
-                <th className="py-3 px-2 text-left text-xs sm:text-sm md:text-base font-medium min-w-[80px]">
-                  {t("setting.status")}
-                </th>
-                <th className="py-3 px-2 text-left text-xs sm:text-sm md:text-base font-medium w-20">
-                  {t("setting.actions")}
-                </th>
+                <th className="py-1.5 px-1.5 text-left font-medium w-10">#</th>
+                <th className="py-1.5 px-1.5 text-left font-medium min-w-[100px]">{t("setting.model")}</th>
+                <th className="py-1.5 px-1.5 text-left font-medium min-w-[200px] max-w-[260px]">{t("setting.stream_link")}</th>
+                <th className="py-1.5 px-1.5 text-left font-medium min-w-[90px]">{t("setting.ip_address")}</th>
+                <th className="py-1.5 px-1.5 text-left font-medium w-16">{t("setting.login")}</th>
+                <th className="py-1.5 px-1.5 text-left font-medium w-16">{t("setting.password")}</th>
+                <th className="py-1.5 px-1.5 text-left font-medium w-12">PTZ</th>
+                <th className="py-1.5 px-1.5 text-left font-medium min-w-[70px]">{t("setting.status")}</th>
+                <th className="py-1.5 px-1.5 text-left font-medium w-16">{t("setting.actions")}</th>
               </tr>
             </thead>
             <tbody>
               {cameras.length > 0 ? (
                 cameras.map((camera, index) => (
                   <tr key={camera.id} className="border-b hover:bg-slate-50">
-                    <td className="py-3 px-2 text-xs sm:text-sm md:text-base">
-                      {index + 1}
+                    <td className="py-1.5 px-1.5">{index + 1}</td>
+                    <td className="py-1.5 px-1.5">
+                      <div className="truncate" title={camera.model}>{camera.model}</div>
                     </td>
-                    <td className="py-3 px-2 text-xs sm:text-sm md:text-base">
-                      <div className="truncate" title={camera.model}>
-                        {camera.model}
+                    <td className="py-1.5 px-1.5">
+                      <div className="break-all leading-tight" title={camera.stream_link}>
+                        <span className="text-blue-600">{camera.stream_link}</span>
                       </div>
                     </td>
-                    <td className="py-3 px-2 text-xs sm:text-sm md:text-base">
-                      <div
-                        className="break-all leading-tight"
-                        title={camera.stream_link}
-                      >
-                        <span className="text-blue-600">
-                          {camera.stream_link}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="py-3 px-2 text-xs sm:text-sm md:text-base">
-                      {camera.ip_address}
-                    </td>
-                    <td className="py-3 px-2 text-xs sm:text-sm md:text-base">
-                      {camera.login}
-                    </td>
-                    <td className="py-3 px-2 text-xs sm:text-sm md:text-base text-gray-400">
-                      *****
-                    </td>
-                    <td className="py-3 px-2 text-xs sm:text-sm md:text-base text-center">
-                      <span
-                        className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${
-                          camera.has_ptz
-                            ? "bg-green-100 text-green-800"
-                            : "bg-gray-100 text-gray-600"
-                        }`}
-                      >
+                    <td className="py-1.5 px-1.5">{camera.ip_address}</td>
+                    <td className="py-1.5 px-1.5">{camera.login}</td>
+                    <td className="py-1.5 px-1.5 text-gray-400">*****</td>
+                    <td className="py-1.5 px-1.5 text-center">
+                      <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] ${
+                        camera.has_ptz ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-600"
+                      }`}>
                         {camera.has_ptz ? t("setting.yes") : t("setting.no")}
                       </span>
                     </td>
-                    <td className="py-3 px-2 text-xs sm:text-sm md:text-base">
-                      <span
-                        className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${getStatusColor(
-                          camera.status
-                        )}`}
-                      >
+                    <td className="py-1.5 px-1.5">
+                      <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] ${getStatusColor(camera.status)}`}>
                         {getStatusText(camera.status)}
                       </span>
                     </td>
-                    <td className="py-3 px-2">
+                    <td className="py-1.5 px-1.5">
                       <div className="flex gap-1">
-                        <button
-                          onClick={() => openEditCamera(camera)}
-                          className="text-primary hover:opaciry transition-colors"
-                          title={t("setting.edit")}
-                        >
-                          <Edit className="w-5 h-5" />
+                        <button onClick={() => openEditCamera(camera)} className="text-primary hover:opacity-80 transition-colors" title={t("setting.edit")}>
+                          <Edit className="w-4 h-4" />
                         </button>
-                        <button
-                          onClick={() => openDeleteModal(camera.id, "camera")}
-                          className="text-red-600 hover:text-red-800 transition-colors"
-                          title={t("setting.delete")}
-                        >
-                          <Trash2 className="w-5 h-5" />
+                        <button onClick={() => openDeleteModal(camera.id, "camera")} className="text-red-600 hover:text-red-800 transition-colors" title={t("setting.delete")}>
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </td>
@@ -508,16 +432,11 @@ const Setting: React.FC = () => {
                 ))
               ) : (
                 <tr>
-                  <td
-                    colSpan={9}
-                    className="py-8 text-center text-slate-400 text-xs sm:text-sm md:text-base"
-                  >
+                  <td colSpan={9} className="py-6 text-center text-slate-400 text-xs">
                     <div className="flex flex-col items-center gap-2">
-                      <Camera className="w-12 h-12 text-slate-300" />
+                      <Camera className="w-10 h-10 text-slate-300" />
                       <span>{t("setting.no_cameras_found")}</span>
-                      <small className="text-slate-300">
-                        {t("setting.add_camera_hint")}
-                      </small>
+                      <small className="text-slate-300">{t("setting.add_camera_hint")}</small>
                     </div>
                   </td>
                 </tr>

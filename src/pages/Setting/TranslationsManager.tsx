@@ -223,33 +223,22 @@ const TranslationsManager: React.FC = () => {
         </table>
       </div>
 
-      <div className="mt-4 flex flex-col sm:flex-row gap-2">
+      <div className="mt-3 flex flex-wrap gap-2">
         <button
           onClick={applyToRuntime}
-          className="bg-green-600 text-white px-3 py-2 rounded text-sm font-medium w-full sm:w-auto"
+          className="bg-green-600 text-white px-2.5 py-1 rounded text-xs font-medium"
         >
           Apply to running app
         </button>
-        <div className="flex flex-col sm:flex-row gap-2 flex-1">
-          <button
-            onClick={() => downloadJson("en")}
-            className="bg-blue-600 text-white px-3 py-2 rounded text-sm w-full sm:flex-1"
-          >
-            Download EN
-          </button>
-          <button
-            onClick={() => downloadJson("ru")}
-            className="bg-blue-600 text-white px-3 py-2 rounded text-sm w-full sm:flex-1"
-          >
-            Download RU
-          </button>
-          <button
-            onClick={() => downloadJson("uz")}
-            className="bg-blue-600 text-white px-3 py-2 rounded text-sm w-full sm:flex-1"
-          >
-            Download UZ
-          </button>
-        </div>
+        <button onClick={() => downloadJson("en")} className="bg-blue-600 text-white px-2.5 py-1 rounded text-xs">
+          Download EN
+        </button>
+        <button onClick={() => downloadJson("ru")} className="bg-blue-600 text-white px-2.5 py-1 rounded text-xs">
+          Download RU
+        </button>
+        <button onClick={() => downloadJson("uz")} className="bg-blue-600 text-white px-2.5 py-1 rounded text-xs">
+          Download UZ
+        </button>
       </div>
     </div>
   );

@@ -32,24 +32,22 @@ const Techniques: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="flex flex-col bg-gray-50 h-[calc(100vh-45px)] md:h-screen overflow-hidden">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="px-6 py-4">
-          <h1 className="text-2xl font-bold text-gray-900">
+      <div className="bg-white border-b border-gray-200 flex-shrink-0">
+        <div className="flex items-center gap-4 px-3 py-2 md:px-6 md:py-3">
+          <h1 className="text-sm md:text-xl font-bold text-gray-900">
             {t("techniques.title")}
           </h1>
-        </div>
 
-        {/* Tabs */}
-        <div className="px-6">
-          <nav className="flex space-x-8" aria-label="Tabs">
+          {/* Tabs inline with header on mobile */}
+          <nav className="flex space-x-4" aria-label="Tabs">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`
-                  py-4 px-1 border-b-2 font-medium text-sm transition-colors
+                  py-1 px-1 border-b-2 font-medium text-xs md:text-sm transition-colors whitespace-nowrap
                   ${
                     activeTab === tab.id
                       ? "border-blue-500 text-blue-600"
@@ -57,7 +55,7 @@ const Techniques: React.FC = () => {
                   }
                 `}
               >
-                <span className="mr-2">{tab.icon}</span>
+                <span className="mr-1">{tab.icon}</span>
                 {tab.name}
               </button>
             ))}
@@ -66,7 +64,9 @@ const Techniques: React.FC = () => {
       </div>
 
       {/* Tab Content */}
-      <div className="p-6">{renderTabContent()}</div>
+      <div className={`flex-1 overflow-hidden ${activeTab === "tracking" ? "" : "p-3 md:p-6"}`}>
+        {renderTabContent()}
+      </div>
     </div>
   );
 };

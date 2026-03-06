@@ -382,31 +382,31 @@ const Finance: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 px-3 pt-3 md:px-6 md:pt-5">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">
+      <div className="flex flex-wrap justify-between items-center gap-2">
+        <h1 className="text-lg md:text-2xl font-bold text-gray-900">
           {t("finance.title")}
         </h1>
-        <div className="flex space-x-3">
+        <div className="flex gap-2">
           {role !== "viewer" && (
             <button
               onClick={handleOpenSourceModal}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="inline-flex items-center px-2 py-1.5 md:px-4 md:py-2 border border-gray-300 text-xs md:text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none"
             >
-              <PlusIcon className="h-5 w-5 mr-2" />
-              {t("finance.add_source")}
+              <PlusIcon className="h-4 w-4 md:mr-2" />
+              <span className="hidden md:inline">{t("finance.add_source")}</span>
             </button>
           )}
           <button
             onClick={refreshData}
             disabled={isLoading}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
+            className="inline-flex items-center px-2 py-1.5 md:px-4 md:py-2 border border-transparent text-xs md:text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none disabled:opacity-50"
           >
             <ArrowPathIcon
-              className={`h-5 w-5 mr-2 ${isLoading ? "animate-spin" : ""}`}
+              className={`h-4 w-4 md:mr-2 ${isLoading ? "animate-spin" : ""}`}
             />
-            {t("finance.refresh")}
+            <span className="hidden md:inline">{t("finance.refresh")}</span>
           </button>
         </div>
       </div>
