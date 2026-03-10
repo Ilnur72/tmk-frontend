@@ -731,8 +731,8 @@ const FactoryMap: React.FC = () => {
             >
               {sidebarCollapsed ? "→" : "←"}
             </div>
+        </div>
       </div>
-    </div>
 
       {/* Factory Details Modal */}
       <FactoryModal

@@ -161,7 +161,7 @@ const PartnerModal: React.FC<PartnerModalProps> = ({
                     value={formData.name}
                     onChange={handleInputChange}
                     readOnly={isReadOnly}
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                       errors.name ? "border-red-300" : "border-gray-300"
                     } ${isReadOnly ? "bg-gray-50" : ""}`}
                     placeholder="Ҳамкор исми"
@@ -183,7 +183,7 @@ const PartnerModal: React.FC<PartnerModalProps> = ({
                     value={formData.email}
                     onChange={handleInputChange}
                     readOnly={isReadOnly}
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                       errors.email ? "border-red-300" : "border-gray-300"
                     } ${isReadOnly ? "bg-gray-50" : ""}`}
                     placeholder="example@email.com"
@@ -205,7 +205,7 @@ const PartnerModal: React.FC<PartnerModalProps> = ({
                     value={formData.phone}
                     onChange={handleInputChange}
                     readOnly={isReadOnly}
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                       errors.phone ? "border-red-300" : "border-gray-300"
                     } ${isReadOnly ? "bg-gray-50" : ""}`}
                     placeholder="+998 90 123 45 67"
@@ -227,7 +227,7 @@ const PartnerModal: React.FC<PartnerModalProps> = ({
                     value={formData.company}
                     onChange={handleInputChange}
                     readOnly={isReadOnly}
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 border-gray-300 ${
+                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300 ${
                       isReadOnly ? "bg-gray-50" : ""
                     }`}
                     placeholder="Компания номи"
@@ -245,7 +245,7 @@ const PartnerModal: React.FC<PartnerModalProps> = ({
                     value={formData.position}
                     onChange={handleInputChange}
                     readOnly={isReadOnly}
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 border-gray-300 ${
+                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300 ${
                       isReadOnly ? "bg-gray-50" : ""
                     }`}
                     placeholder="Лавозими"
@@ -264,7 +264,7 @@ const PartnerModal: React.FC<PartnerModalProps> = ({
                     value={formData.website}
                     onChange={handleInputChange}
                     readOnly={isReadOnly}
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                       errors.website ? "border-red-300" : "border-gray-300"
                     } ${isReadOnly ? "bg-gray-50" : ""}`}
                     placeholder="https://example.com"
@@ -287,7 +287,7 @@ const PartnerModal: React.FC<PartnerModalProps> = ({
                     onChange={handleInputChange}
                     readOnly={isReadOnly}
                     rows={3}
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 border-gray-300 ${
+                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300 ${
                       isReadOnly ? "bg-gray-50" : ""
                     }`}
                     placeholder="Қўшимча маълумотлар..."
@@ -349,7 +349,7 @@ const PartnerModal: React.FC<PartnerModalProps> = ({
                 type="button"
                 onClick={handleSubmit}
                 disabled={isLoading}
-                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
                   <div className="flex items-center">
@@ -366,7 +366,7 @@ const PartnerModal: React.FC<PartnerModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
               >
                 Ёпиш
               </button>
@@ -378,7 +378,7 @@ const PartnerModal: React.FC<PartnerModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:w-auto sm:text-sm"
+                className="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:w-auto sm:text-sm"
               >
                 Ёпиш
               </button>

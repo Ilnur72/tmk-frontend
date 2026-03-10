@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Search, Filter, RefreshCw, MapPin } from "lucide-react";
+import { Search, Filter, RefreshCw, MapPin, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import ApplicationModal from "./components/ApplicationModal";
 import ApplicationsTable from "./components/ApplicationsTable";
 import {
@@ -16,14 +17,24 @@ import { showToast } from "../../utils/toast";
 
 const Applications: React.FC = () => {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const partnerIdFromUrl = searchParams.get("partnerId") || "";
+
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [regionFilter, setRegionFilter] = useState<string>("all");
+  const [partnerFilter, setPartnerFilter] = useState<string>(partnerIdFromUrl);
   const [modalState, setModalState] = useState({
     isOpen: false,
     mode: "view" as "edit" | "view",
     application: null as Application | null,
   });
+
+  // Sync partnerFilter if URL param changes
+  useEffect(() => {
+    setPartnerFilter(partnerIdFromUrl);
+  }, [partnerIdFromUrl]);
 
   const queryClient = useQueryClient();
 
@@ -164,9 +175,20 @@ const Applications: React.FC = () => {
       statusFilter === "all" || application.status === statusFilter;
     const matchesRegion =
       regionFilter === "all" || application.region === regionFilter;
+    const matchesPartner =
+      !partnerFilter || application.partnerId === partnerFilter;
 
-    return matchesSearch && matchesStatus && matchesRegion;
+    return matchesSearch && matchesStatus && matchesRegion && matchesPartner;
   });
+
+  // Partner name for banner
+  const activePartnerName = partnerFilter
+    ? (applications.find((a) => a.partnerId === partnerFilter)?.partner
+        ?.contactPerson ||
+      applications.find((a) => a.partnerId === partnerFilter)?.partner
+        ?.companyName ||
+      partnerFilter)
+    : null;
 
   // Get unique regions for filter
   const regions = Array.from(
@@ -236,6 +258,24 @@ const Applications: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Partner filter banner */}
+      {activePartnerName && (
+        <div className="flex items-center gap-2 mb-3 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg text-xs md:text-sm text-blue-800">
+          <span className="font-medium">Hamkor bo'yicha filtr:</span>
+          <span>{activePartnerName}</span>
+          <button
+            onClick={() => {
+              setPartnerFilter("");
+              navigate("/applications");
+            }}
+            className="ml-auto flex items-center gap-1 text-blue-500 hover:text-blue-900"
+          >
+            <X className="h-3.5 w-3.5" />
+            Tozalash
+          </button>
+        </div>
+      )}
 
       {/* Statistics */}
       <div className="grid grid-cols-5 gap-1.5 md:gap-5 mt-3 md:mt-8 mb-3 md:mb-8 flex-shrink-0">

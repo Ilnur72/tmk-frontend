@@ -190,8 +190,8 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
                     <div className="flex-shrink-0 h-8 w-8">
-                      <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center">
-                        <Building className="h-4 w-4 text-indigo-600" />
+                      <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                        <Building className="h-4 w-4 text-blue-500" />
                       </div>
                     </div>
                     <div className="ml-3">
@@ -227,7 +227,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
                       <Mail className="h-4 w-4 mr-2 text-gray-400" />
                       <a
                         href={`mailto:${application.contactEmail}`}
-                        className="hover:text-indigo-600"
+                        className="hover:text-blue-500"
                       >
                         {application.contactEmail}
                       </a>

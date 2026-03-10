@@ -24,7 +24,6 @@ import LanguagePage from "./pages/Employee/components/LanguagePage";
 import TodayAttendancePage from "./pages/Employee/components/TodayAttendancePage";
 import Finance from "./pages/Finance/Finance";
 import Partners from "./pages/Partners/Partners";
-import Applications from "./pages/Applications/Applications";
 import Energy from "./pages/Energy";
 import Dashboard from "./pages/Dashboard";
 import ESG from "./pages/ESG";
@@ -121,7 +120,7 @@ const AppRoutes: React.FC = () => {
       <Route path="/sales" element={<Sales />} />
       <Route path="/finance" element={<Finance />} />
       <Route path="/partners" element={<Partners />} />
-      <Route path="/applications" element={<Applications />} />
+      <Route path="/applications" element={<Navigate to="/partners?tab=arizalar" replace />} />
       <Route path="/energy" element={<Energy />} />
       <Route path="/esg" element={<ESG />} />
       {/* <Route path="/punkt-esg" element={<ESGPunkt />} /> */}

@@ -397,7 +397,7 @@ export default function FactoryDetailsModal({
                           ([childKey, childValue]: [string, any]) => (
                             <div
                               key={childKey}
-                              className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4 hover:from-blue-100 hover:to-indigo-100 transition-all duration-200"
+                              className="bg-gradient-to-r from-blue-50 to-blue-50 border border-blue-200 rounded-lg p-4 hover:from-blue-100 hover:to-blue-100 transition-all duration-200"
                             >
                               <div className="text-center">
                                 <div className="text-sm font-medium text-gray-700 mb-2">

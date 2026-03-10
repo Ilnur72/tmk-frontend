@@ -41,11 +41,6 @@ const allMenuItems: MenuItem[] = [
   // { href: "/transport", icon: Car, title: "sidebar.transport" },
   { href: "/partners", icon: MapPin, title: "sidebar.partners" },
   {
-    href: "/applications",
-    icon: GitPullRequest,
-    title: "sidebar.applications",
-  },
-  {
     href: "/energy",
     icon: BarChart,
     title: "sidebar.energy",

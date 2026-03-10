@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Edit,
   Trash2,
@@ -11,6 +12,7 @@ import {
   User,
   MoreVertical,
   Eye,
+  FileText,
 } from "lucide-react";
 import { Partner } from "../../../types/partner";
 
@@ -33,6 +35,7 @@ const PartnersTable: React.FC<PartnersTableProps> = ({
   onView,
   isLoading = false,
 }) => {
+  const navigate = useNavigate();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   const getStatusBadge = (status: string) => {
@@ -143,8 +146,8 @@ const PartnersTable: React.FC<PartnersTableProps> = ({
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
                     <div className="flex-shrink-0 h-10 w-10">
-                      <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                        <User className="h-6 w-6 text-indigo-600" />
+                      <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                        <User className="h-6 w-6 text-primary" />
                       </div>
                     </div>
                     <div className="ml-4">
@@ -188,7 +191,7 @@ const PartnersTable: React.FC<PartnersTableProps> = ({
                           href={partner.website}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="hover:text-indigo-600"
+                          className="hover:text-blue-500"
                         >
                           Веб-сайт
                         </a>
@@ -217,6 +220,16 @@ const PartnersTable: React.FC<PartnersTableProps> = ({
                   {openDropdown === partner.id && (
                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border">
                       <div className="py-1">
+                        <button
+                          onClick={() => {
+                            navigate(`/applications?partnerId=${partner.id}`);
+                            setOpenDropdown(null);
+                          }}
+                          className="flex items-center px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 w-full text-left"
+                        >
+                          <FileText className="h-4 w-4 mr-2" />
+                          Аризалар
+                        </button>
                         <button
                           onClick={() => {
                             onView(partner);
