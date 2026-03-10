@@ -3,10 +3,9 @@ import { useTranslation } from "react-i18next";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import axios from "axios";
-import { Activity, Wifi, Zap, ZapOff, ChevronLeft, ChevronRight, List } from "lucide-react";
+import { Activity, Wifi, Zap, ZapOff, ChevronLeft, ChevronRight } from "lucide-react";
 import VehicleDetailModal from "./VehicleDetailModal";
 import TransportListModal from "./TransportListModal";
-import { useWebSocket } from "../../hooks/useWebSocket";
 import { API_URL } from "../../config/const";
 
 const API_BASE_URL = API_URL;
@@ -41,21 +40,7 @@ const VehicleTracking: React.FC = () => {
   const markersRef = useRef<Map<number, maplibregl.Marker>>(new Map());
   const fallbackIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // WebSocket hook according to FRONTEND_DEVELOPER_GUIDE.md
-  const {
-    isConnected,
-    vehicles: wsVehicles,
-    lastUpdate,
-    error: wsError,
-    connectionStatus,
-    requestVehicleDetails,
-    enableRealTimeTracking,
-  } = useWebSocket({
-    url: `ws://localhost:8085/tracking`,
-    autoConnect: true,
-    reconnectAttempts: 5,
-    reconnectDelay: 2000,
-  });
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
 
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [stats, setStats] = useState<VehicleStats>({ total: 0, online: 0 });
@@ -64,10 +49,8 @@ const VehicleTracking: React.FC = () => {
   const [activeVehicleId, setActiveVehicleId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTransportListOpen, setIsTransportListOpen] = useState(false);
-  const [fallbackMode, setFallbackMode] = useState(false);
   const [isRealTimeEnabled, setIsRealTimeEnabled] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(() => window.innerWidth >= 768);
-  const [refreshInterval, setRefreshInterval] = useState<NodeJS.Timeout | null>(null);
 
   // Cache ma'lumotlari uchun ref (render'da ishlamaydi)
   const cacheRef = useRef<{
@@ -103,11 +86,6 @@ const VehicleTracking: React.FC = () => {
         }
       }
 
-      // Request vehicle details if connected
-      if (isConnected && requestVehicleDetails) {
-        requestVehicleDetails(vehicleId);
-      }
-
       // Set active vehicle for highlighting
       setActiveVehicleId(vehicleId);
 
@@ -118,92 +96,13 @@ const VehicleTracking: React.FC = () => {
         setIsModalOpen(true);
       }
     },
-    [vehicles, isConnected, requestVehicleDetails]
+    [vehicles]
   );
 
-  // ✅ Real-time boshqarish funksiyasi
+  // Real-time yoqish/o'chirish
   const toggleRealTime = useCallback(() => {
-    setIsRealTimeEnabled((prev) => {
-      const newValue = !prev;
-
-      if (newValue) {
-        // Real-time yoqildi - interval'ni to'xtatish
-        if (refreshInterval) {
-          clearInterval(refreshInterval);
-          setRefreshInterval(null);
-        }
-      } else {
-        const fetchManualData = async () => {
-          try {
-            // Direct API call to avoid dependency issues
-            const [vehiclesResponse, statsResponse] = await Promise.all([
-              Promise.race([
-                axios.get(`${API_BASE_URL}/api/vehicles/realtime`, {
-                  timeout: 1000,
-                }),
-                new Promise((_, reject) =>
-                  setTimeout(() => reject(new Error("Vehicles timeout")), 1000)
-                ),
-              ]),
-              Promise.race([
-                axios.get(`${API_BASE_URL}/api/vehicles/stats`, {
-                  timeout: 1000,
-                }),
-                new Promise((_, reject) =>
-                  setTimeout(() => reject(new Error("Stats timeout")), 1000)
-                ),
-              ]),
-            ]);
-
-            const vehiclesData = (vehiclesResponse as any).data?.success
-              ? (vehiclesResponse as any).data.data
-              : (vehiclesResponse as any).data;
-            const statsData = (statsResponse as any).data?.success
-              ? (statsResponse as any).data.data
-              : (statsResponse as any).data;
-
-            if (vehiclesData) {
-              const processedVehicles = vehiclesData.map((vehicle: any) => ({
-                ...vehicle,
-                position: vehicle.position || {
-                  latitude: 41.2995,
-                  longitude: 69.2401,
-                  speed: 0,
-                },
-                status: vehicle.status || { isOnline: false },
-                sensors: vehicle.sensors || {},
-              }));
-
-              setVehicles(processedVehicles);
-              cacheRef.current.vehicles = processedVehicles;
-            }
-
-            if (statsData) {
-              const newStats = {
-                total: statsData?.total || 0,
-                online: statsData?.online || 0,
-              };
-              setStats(newStats);
-              cacheRef.current.stats = newStats;
-            }
-
-            cacheRef.current.lastUpdate = Date.now();
-          } catch (error) {
-            console.error("Manual refresh failed:", error);
-          }
-        };
-
-        // Darhol birinchi marta ma'lumot olish
-        fetchManualData();
-
-        // Intervalda davom etish
-        const interval = setInterval(fetchManualData, 3000);
-        setRefreshInterval(interval);
-      }
-
-      return newValue;
-    });
-  }, [refreshInterval]);
+    setIsRealTimeEnabled((prev) => !prev);
+  }, []);
 
   // Haydovchi ma'lumotlarini yangilash (hozircha localStorage da saqlaymiz)
   const handleUpdateVehicleDriver = useCallback(
@@ -385,77 +284,52 @@ const VehicleTracking: React.FC = () => {
     }
   }, []); // No dependencies to avoid refresh loops
 
-  // 🔥 MAIN EFFECT: Handle WebSocket data vs fallback with real-time toggle
+  // 🔁 REST API polling — har 5 soniyada yangilanib turadi
   useEffect(() => {
-    if (
-      isConnected &&
-      wsVehicles &&
-      wsVehicles.length > 0 &&
-      isRealTimeEnabled
-    ) {
-      setVehicles(wsVehicles);
-      setStats({
-        total: wsVehicles.length,
-        online: wsVehicles.filter((v: any) => v.status?.isOnline).length,
-      });
-      setLoading(false);
+    if (!isRealTimeEnabled) return;
 
-      // Stop fallback polling since WebSocket is working
-      if (fallbackIntervalRef.current) {
-        clearInterval(fallbackIntervalRef.current);
-        fallbackIntervalRef.current = null;
-        setFallbackMode(false);
-      }
+    const poll = async () => {
+      try {
+        const [vehiclesResponse, statsResponse] = await Promise.all([
+          axios.get(`${API_BASE_URL}/api/vehicles/realtime`, { timeout: 5000 }),
+          axios.get(`${API_BASE_URL}/api/vehicles/stats`, { timeout: 5000 }),
+        ]);
 
-      // Stop manual refresh since WebSocket is active
-      if (refreshInterval) {
-        clearInterval(refreshInterval);
-        setRefreshInterval(null);
-      }
+        const vehiclesData = vehiclesResponse.data?.success
+          ? vehiclesResponse.data.data
+          : vehiclesResponse.data;
+        const statsData = statsResponse.data?.success
+          ? statsResponse.data.data
+          : statsResponse.data;
 
-      // 🎯 Enable real-time position tracking
-      enableRealTimeTracking();
-    } else if (
-      (connectionStatus === "connection_error" ||
-        connectionStatus === "error") &&
-      !isConnected &&
-      !fallbackIntervalRef.current &&
-      isRealTimeEnabled // Fallback faqat real-time enabled bo'lsa ishlasin
-    ) {
-      setFallbackMode(true);
-
-      fallbackIntervalRef.current = setInterval(async () => {
-        try {
-          const [vehiclesResponse, statsResponse] = await Promise.all([
-            axios.get(`${API_BASE_URL}/api/vehicles/realtime`),
-            axios.get(`${API_BASE_URL}/api/vehicles/stats`),
-          ]);
-
-          const vehiclesData = vehiclesResponse.data?.success
-            ? vehiclesResponse.data.data
-            : vehiclesResponse.data;
-          const statsData = statsResponse.data?.success
-            ? statsResponse.data.data
-            : statsResponse.data;
-
-          setVehicles(vehiclesData || []);
-          setStats({
-            total: statsData?.total || 0,
-            online: statsData?.online || 0,
-          });
-        } catch (error) {
-          console.error("❌ REST API fallback error:", error);
+        if (vehiclesData) {
+          const processed = vehiclesData.map((v: any) => ({
+            ...v,
+            position: v.position || { latitude: 41.2995, longitude: 69.2401, speed: 0 },
+            status: v.status || { isOnline: false },
+            sensors: v.sensors || {},
+          }));
+          setVehicles(processed);
+          cacheRef.current.vehicles = processed;
         }
-      }, 10000); // Reduced to 10 seconds for more responsive fallback
-    }
-  }, [
-    isConnected,
-    wsVehicles,
-    connectionStatus,
-    enableRealTimeTracking,
-    isRealTimeEnabled,
-    refreshInterval,
-  ]);
+        if (statsData) {
+          const s = { total: statsData?.total || 0, online: statsData?.online || 0 };
+          setStats(s);
+          cacheRef.current.stats = s;
+        }
+        setLastUpdate(new Date());
+        cacheRef.current.lastUpdate = Date.now();
+        setLoading(false);
+      } catch (err) {
+        console.error("Polling error:", err);
+        setLoading(false);
+      }
+    };
+
+    poll(); // darhol birinchi marta
+    const interval = setInterval(poll, 5000);
+    return () => clearInterval(interval);
+  }, [isRealTimeEnabled]);
 
   // Map initialization (once only)
   useEffect(() => {
@@ -484,32 +358,19 @@ const VehicleTracking: React.FC = () => {
         fallbackIntervalRef.current = null;
       }
 
-      // ⚡ Cleanup manual refresh interval
-      if (refreshInterval) {
-        clearInterval(refreshInterval);
-        setRefreshInterval(null);
-      }
-
       if (map.current) {
         map.current.remove();
         map.current = null;
       }
     };
-  }, [refreshInterval]); // Include refreshInterval for cleanup
+  }, []); // no refreshInterval dependency needed
 
-  // ⚡ OPTIMIZED: Smart data fetching strategy
+  // Manual mode: bir marta fetch qilish
   useEffect(() => {
-    // Fetch if manual mode or no WebSocket data and cache is empty or stale
-    if (!isRealTimeEnabled || (!isConnected && !wsVehicles)) {
-      const now = Date.now();
-      const lastUpdate = cacheRef.current.lastUpdate || 0;
-
-      // Fetch immediately if no cache, or after 2 minutes if stale
-      if (!cacheRef.current.vehicles || now - lastUpdate > 120000) {
-        fetchVehicles();
-      }
+    if (!isRealTimeEnabled) {
+      fetchVehicles();
     }
-  }, [isConnected, wsVehicles, fetchVehicles, isRealTimeEnabled]);
+  }, [isRealTimeEnabled, fetchVehicles]);
 
   // Helper function to update marker styling
   const updateMarkerStyle = useCallback(
