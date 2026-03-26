@@ -49,7 +49,7 @@ const MetabaseDashboard: React.FC<MetabaseDashboardProps> = ({ endpoint, title }
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-[calc(100vh-200px)]">
+      <div className="flex items-center justify-center h-[calc(100vh-64px)]">
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
           <p className="text-gray-600">{t("energy.metabase.loading")}</p>
@@ -60,7 +60,7 @@ const MetabaseDashboard: React.FC<MetabaseDashboardProps> = ({ endpoint, title }
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-[calc(100vh-200px)]">
+      <div className="flex items-center justify-center h-[calc(100vh-64px)]">
         <div className="text-center max-w-md">
           <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -80,7 +80,7 @@ const MetabaseDashboard: React.FC<MetabaseDashboardProps> = ({ endpoint, title }
 
   if (!dashboardUrl) {
     return (
-      <div className="flex items-center justify-center h-[calc(100vh-200px)]">
+      <div className="flex items-center justify-center h-[calc(100vh-64px)]">
         <div className="text-center">
           <AlertCircle className="w-12 h-12 text-yellow-600 mx-auto mb-4" />
           <p className="text-gray-600">{t("energy.metabase.no_url")}</p>
@@ -90,7 +90,7 @@ const MetabaseDashboard: React.FC<MetabaseDashboardProps> = ({ endpoint, title }
   }
 
   return (
-    <div className="h-[calc(100vh-200px)] w-full">
+    <div className="h-[calc(100vh-64px)] w-full">
       {title && (
         <h2 className="text-xl font-semibold text-gray-900 mb-4">{title}</h2>
       )}
