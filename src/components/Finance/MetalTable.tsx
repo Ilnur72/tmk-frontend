@@ -36,6 +36,7 @@ interface MetalTableProps {
   searchQuery?: string;
   selectedSourceFilter?: string;
   sources: any[];
+  isViewer?: boolean;
 }
 
 const MetalTable: React.FC<MetalTableProps> = ({
@@ -49,6 +50,7 @@ const MetalTable: React.FC<MetalTableProps> = ({
   searchQuery,
   selectedSourceFilter,
   sources,
+  isViewer = false,
 }) => {
   const { t } = useTranslation();
   const formatCurrency = (amount: number | string) => {
@@ -140,16 +142,18 @@ const MetalTable: React.FC<MetalTableProps> = ({
                             >
                               {formatCurrency(sourceData.currentPrice || 0)}
                             </div>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onPriceUpdate(item, sourceName, sourceData);
-                              }}
-                              className="text-blue-600 hover:text-blue-900 opacity-0 group-hover:opacity-100 transition-opacity"
-                              title={t("finance.update_price")}
-                            >
-                              <CurrencyDollarIcon className="h-4 w-4" />
-                            </button>
+                            {!isViewer && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onPriceUpdate(item, sourceName, sourceData);
+                                }}
+                                className="text-blue-600 hover:text-blue-900 opacity-0 group-hover:opacity-100 transition-opacity"
+                                title={t("finance.update_price")}
+                              >
+                                <CurrencyDollarIcon className="h-4 w-4" />
+                              </button>
+                            )}
                           </div>
                           {sourceData.changePercent !== undefined &&
                             sourceData.changePercent !== null &&
@@ -202,16 +206,18 @@ const MetalTable: React.FC<MetalTableProps> = ({
                       <EyeIcon className="h-5 w-5" />
                     </button>
 
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onDelete(item);
-                      }}
-                      className="text-red-600 hover:text-red-900"
-                      title={t("finance.delete")}
-                    >
-                      <TrashIcon className="h-5 w-5" />
-                    </button>
+                    {!isViewer && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDelete(item);
+                        }}
+                        className="text-red-600 hover:text-red-900"
+                        title={t("finance.delete")}
+                      >
+                        <TrashIcon className="h-5 w-5" />
+                      </button>
+                    )}
                   </div>
                 </td>
               </tr>

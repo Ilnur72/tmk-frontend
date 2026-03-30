@@ -94,7 +94,8 @@ const AgeStatistics: React.FC = () => {
     };
 
     fetchAgeData();
-  }, [t]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const renderCustomLabel = ({
     cx,
