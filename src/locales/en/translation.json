@@ -429,6 +429,10 @@
   "camera": {
     "title": "Cameras",
     "cameras_list": "Cameras List",
+    "preview": "Preview",
+    "model": "Model",
+    "status": "Status",
+    "action": "Video",
     "status_active": "Active",
     "status_inactive": "Inactive",
     "status_maintenance": "Maintenance",

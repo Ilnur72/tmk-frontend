@@ -422,6 +422,10 @@
   "camera": {
     "title": "Камеры",
     "cameras_list": "Список камер",
+    "preview": "Превью",
+    "model": "Модель",
+    "status": "Статус",
+    "action": "Видео",
     "status_active": "Активная",
     "status_inactive": "Неактивная",
     "status_maintenance": "Техническое обслуживание",

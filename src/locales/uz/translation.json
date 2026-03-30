@@ -422,6 +422,10 @@
   "camera": {
     "title": "Камералар",
     "cameras_list": "Камералар рўйхати",
+    "preview": "Кўриниш",
+    "model": "Модель",
+    "status": "Ҳолат",
+    "action": "Видео",
     "status_active": "Фаол",
     "status_inactive": "Фаол эмас",
     "status_maintenance": "Техник хизмат",
