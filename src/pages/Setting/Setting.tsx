@@ -914,24 +914,6 @@ const Setting: React.FC = () => {
                 </div>
                 <div className="mb-4">
                   <label className="block text-gray-700 mb-1">
-                    {t("setting.stream_link")}
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={cameraForm.stream_link}
-                    onChange={(e) =>
-                      setCameraForm((prev) => ({
-                        ...prev,
-                        stream_link: e.target.value,
-                      }))
-                    }
-                    className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder={t("setting.stream_link_placeholder")}
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-gray-700 mb-1">
                     Stream UUID
                   </label>
                   <input
@@ -997,42 +979,6 @@ const Setting: React.FC = () => {
                     }
                     className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="0"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-gray-700 mb-1">
-                    {t("setting.login")}
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={cameraForm.login}
-                    onChange={(e) =>
-                      setCameraForm((prev) => ({
-                        ...prev,
-                        login: e.target.value,
-                      }))
-                    }
-                    className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder={t("setting.login_placeholder")}
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-gray-700 mb-1">
-                    {t("setting.password")}
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={cameraForm.password}
-                    onChange={(e) =>
-                      setCameraForm((prev) => ({
-                        ...prev,
-                        password: e.target.value,
-                      }))
-                    }
-                    className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder={t("setting.password_placeholder")}
                   />
                 </div>
                 <div className="mb-4">
