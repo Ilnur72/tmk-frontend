@@ -223,8 +223,8 @@ export default function VideoModal({ isOpen, onClose, camera }: VideoModalProps)
   if (!isOpen || !camera) return null;
 
   const screenshotUrl = camera.screenshot_url
-    ? `${API_URL_UPLOAD}/tmkupload/${camera.screenshot_url}`
-    : `${API_URL_UPLOAD}/tmkupload/camera-screenshots/camera_${camera.id}.jpg`;
+    ? `${API_URL_UPLOAD}/mnt/tmkupload/${camera.screenshot_url}`
+    : `${API_URL_UPLOAD}/mnt/tmkupload/camera-screenshots/camera_${camera.id}.jpg`;
 
   return (
     <div

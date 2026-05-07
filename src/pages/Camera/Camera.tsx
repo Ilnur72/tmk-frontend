@@ -110,7 +110,7 @@ const App: React.FC = () => {
                                 onClick={() => setupCameraModal(camera)}
                               >
                                 <img
-                                  src={camera.screenshot_url ? `${API_URL_UPLOAD}/tmkupload/${camera.screenshot_url}` : `${API_URL_UPLOAD}/tmkupload/camera-screenshots/camera_${camera.id}.jpg`}
+                                  src={camera.screenshot_url ? `${API_URL_UPLOAD}/mnt/tmkupload/${camera.screenshot_url}` : `${API_URL_UPLOAD}/mnt/tmkupload/camera-screenshots/camera_${camera.id}.jpg`}
                                   alt={camera.model}
                                   className="w-full h-full object-cover"
                                   onError={(e) => {
