@@ -17,9 +17,12 @@ interface CameraInterface {
   factory_id?: number;
   model: string;
   stream_link: string;
+  stream_uuid: string;
+  webrtc_server: string;
   ip_address: string;
   login: string;
   password: string;
+  channel: number;
   has_ptz: boolean;
   status: "active" | "inactive" | "maintenance" | "broken";
 }
@@ -65,9 +68,12 @@ const Setting: React.FC = () => {
     factory_id: "",
     model: "",
     stream_link: "",
+    stream_uuid: "",
+    webrtc_server: "",
     ip_address: "",
     login: "",
     password: "",
+    channel: 1,
     status: "active" as CameraInterface["status"],
     has_ptz: false,
   });
@@ -154,21 +160,19 @@ const Setting: React.FC = () => {
     setLoading(true);
 
     try {
-      const formData = new FormData();
-      Object.entries(cameraForm).forEach(([key, value]) => {
-        formData.append(key, value.toString());
-      });
-
-      const response = await axios.post("/cameras/", formData);
+      const response = await axios.post("/cameras/", cameraForm);
 
       setCameras((prev) => [...prev, response.data.data]);
       setCameraForm({
         factory_id: "",
         model: "",
         stream_link: "",
+        stream_uuid: "",
+        webrtc_server: "",
         ip_address: "",
         login: "",
         password: "",
+        channel: 0,
         status: "active",
         has_ptz: false,
       });
@@ -250,9 +254,12 @@ const Setting: React.FC = () => {
       factory_id: camera.factory_id?.toString() || "",
       model: camera.model,
       stream_link: camera.stream_link,
+      stream_uuid: camera.stream_uuid || "",
+      webrtc_server: camera.webrtc_server || "",
       ip_address: camera.ip_address,
       login: camera.login,
       password: camera.password,
+      channel: camera.channel || 1,
       status: camera.status,
       has_ptz: camera.has_ptz,
     });
@@ -367,7 +374,22 @@ const Setting: React.FC = () => {
             {t("setting.cameras_list")}
           </h2>
           <button
-            onClick={() => setIsCameraModalOpen(true)}
+            onClick={() => {
+              setCameraForm({
+                factory_id: "",
+                model: "",
+                stream_link: "",
+                stream_uuid: "",
+                webrtc_server: "",
+                ip_address: "",
+                login: "",
+                password: "",
+                channel: 0,
+                status: "active",
+                has_ptz: false,
+              });
+              setIsCameraModalOpen(true);
+            }}
             className="bg-primary hover:opacity-80 text-white font-medium text-xs md:text-sm px-2.5 py-1.5 rounded w-full sm:w-auto flex items-center gap-1.5"
           >
             <Plus className="w-3.5 h-3.5" />
@@ -682,6 +704,40 @@ const Setting: React.FC = () => {
                 </div>
                 <div className="mb-4">
                   <label className="block text-gray-700 mb-1">
+                    Stream UUID
+                  </label>
+                  <input
+                    type="text"
+                    value={cameraForm.stream_uuid}
+                    onChange={(e) =>
+                      setCameraForm((prev) => ({
+                        ...prev,
+                        stream_uuid: e.target.value,
+                      }))
+                    }
+                    className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700 mb-1">
+                    WebRTC Server
+                  </label>
+                  <input
+                    type="text"
+                    value={cameraForm.webrtc_server}
+                    onChange={(e) =>
+                      setCameraForm((prev) => ({
+                        ...prev,
+                        webrtc_server: e.target.value,
+                      }))
+                    }
+                    className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="https://pm.bgsoft.uz:8443"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700 mb-1">
                     {t("setting.ip_address")}
                   </label>
                   <input
@@ -695,6 +751,24 @@ const Setting: React.FC = () => {
                     }
                     className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder={t("setting.ip_address_placeholder")}
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700 mb-1">
+                    Channel
+                  </label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={cameraForm.channel}
+                    onChange={(e) =>
+                      setCameraForm((prev) => ({
+                        ...prev,
+                        channel: parseInt(e.target.value) ?? 0,
+                      }))
+                    }
+                    className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="0"
                   />
                 </div>
                 <div className="mb-4">
@@ -858,6 +932,40 @@ const Setting: React.FC = () => {
                 </div>
                 <div className="mb-4">
                   <label className="block text-gray-700 mb-1">
+                    Stream UUID
+                  </label>
+                  <input
+                    type="text"
+                    value={cameraForm.stream_uuid}
+                    onChange={(e) =>
+                      setCameraForm((prev) => ({
+                        ...prev,
+                        stream_uuid: e.target.value,
+                      }))
+                    }
+                    className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700 mb-1">
+                    WebRTC Server
+                  </label>
+                  <input
+                    type="text"
+                    value={cameraForm.webrtc_server}
+                    onChange={(e) =>
+                      setCameraForm((prev) => ({
+                        ...prev,
+                        webrtc_server: e.target.value,
+                      }))
+                    }
+                    className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="https://pm.bgsoft.uz:8443"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700 mb-1">
                     {t("setting.ip_address")}
                   </label>
                   <input
@@ -871,6 +979,24 @@ const Setting: React.FC = () => {
                     }
                     className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder={t("setting.ip_address_placeholder")}
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700 mb-1">
+                    Channel
+                  </label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={cameraForm.channel}
+                    onChange={(e) =>
+                      setCameraForm((prev) => ({
+                        ...prev,
+                        channel: parseInt(e.target.value) ?? 0,
+                      }))
+                    }
+                    className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="0"
                   />
                 </div>
                 <div className="mb-4">

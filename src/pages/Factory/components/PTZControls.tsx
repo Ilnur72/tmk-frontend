@@ -14,42 +14,28 @@ export default function PTZControls({
   const { t } = useTranslation();
   const [activeControl, setActiveControl] = useState<string | null>(null);
 
-  const sendPTZCommand = (command: string, pan: number, tilt: number) => {
-    let xmlData: string;
-    if (command === "control") {
-      xmlData = `<?xml version="1.0" encoding="UTF-8"?><PTZData><pan>${pan}</pan><tilt>${tilt}</tilt></PTZData>`;
-    } else {
-      xmlData = `<?xml version="1.0" encoding="UTF-8"?><PTZData><zoom>${pan}</zoom></PTZData>`;
-    }
-
-    const ptzCommand: PTZCommand = {
-      cameraId: camera.id,
-      zoom: command,
-      xml: xmlData,
-      ip: camera.ip_address,
-    };
-
-    onSendCommand(ptzCommand);
+  const sendPTZCommand = (pan: number, tilt: number, zoom: number) => {
+    onSendCommand({ cameraId: camera.id, pan, tilt, zoom });
   };
 
   const handleControlStart = (direction: string, pan: number, tilt: number) => {
     setActiveControl(direction);
-    sendPTZCommand("control", pan, tilt);
+    sendPTZCommand(pan, tilt, 0);
   };
 
   const handleControlStop = () => {
     setActiveControl(null);
-    sendPTZCommand("control", 0, 0);
+    sendPTZCommand(0, 0, 0);
   };
 
   const handleZoomStart = (direction: "in" | "out") => {
     setActiveControl(direction);
-    sendPTZCommand("zoom", direction === "in" ? 60 : -60, 0);
+    sendPTZCommand(0, 0, direction === "in" ? 60 : -60);
   };
 
   const handleZoomStop = () => {
     setActiveControl(null);
-    sendPTZCommand("zoom", 0, 0);
+    sendPTZCommand(0, 0, 0);
   };
 
   // PTZ direction control handlers

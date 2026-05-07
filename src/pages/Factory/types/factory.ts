@@ -37,18 +37,20 @@ export interface CameraType {
   model: string;
   ip_address: string;
   stream_link?: string;
+  stream_uuid?: string;
+  webrtc_server?: string;
+  channel?: number;
   has_ptz: boolean;
   status: "active" | "inactive" | "maintenance" | "broken";
+  screenshot_url?: string;
+  screenshot_camera_id?: number;
 }
 
 export interface PTZCommand {
   cameraId: number;
-  type?: string;
-  zoom: string;
-  pan?: string;
-  tilt?: string;
-  xml: string;
-  ip: string;
+  pan: number;
+  tilt: number;
+  zoom: number;
 }
 
 export interface FactoryCounts {

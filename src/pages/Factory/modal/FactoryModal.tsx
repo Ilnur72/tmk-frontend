@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { CameraType } from "../types/factory";
 import ImageModal from "./ImageModal";
-import VideoModal from "./VideoModal";
+import VideoModal from "../../Camera/components/VideoModal";
 import { API_URL, API_URL_UPLOAD } from "../../../config/const";
 
 interface FactoryDetailsModalProps {
@@ -102,7 +102,7 @@ export default function FactoryDetailsModal({
   };
 
   const parseCoordinates = (
-    coords: [number, number] | string | undefined
+    coords: [number, number] | string | undefined,
   ): string => {
     if (!coords) return t("factory.no_coordinates");
     try {
@@ -121,7 +121,7 @@ export default function FactoryDetailsModal({
   const openImageModal = (
     imageName: string,
     index: number,
-    images: string[]
+    images: string[],
   ) => {
     setCurrentImages(images);
     setCurrentImageIndex(index);
@@ -301,7 +301,7 @@ export default function FactoryDetailsModal({
                       </span>
                       <span
                         className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusBadgeColor(
-                          factory.status
+                          factory.status,
                         )}`}
                       >
                         {getStatusText(factory.status)}
@@ -313,7 +313,7 @@ export default function FactoryDetailsModal({
                       </span>
                       <span
                         className={`px-3 py-1 rounded-full text-sm font-medium ${getImportanceBadgeColor(
-                          factory.importance
+                          factory.importance,
                         )}`}
                       >
                         {getImportanceText(factory.importance)}
@@ -349,7 +349,7 @@ export default function FactoryDetailsModal({
                             </div>
                             <div className="text-gray-600">{value}</div>
                           </div>
-                        )
+                        ),
                       )}
                     </div>
                   </div>
@@ -388,7 +388,7 @@ export default function FactoryDetailsModal({
                           }
 
                           return null;
-                        }
+                        },
                       )}
 
                       {/* Child obyektlarini alohida ko'rsatish */}
@@ -408,7 +408,7 @@ export default function FactoryDetailsModal({
                                 </div>
                               </div>
                             </div>
-                          )
+                          ),
                         )}
                     </div>
                   </div>
@@ -432,14 +432,14 @@ export default function FactoryDetailsModal({
                           status === 1
                             ? "bg-green-100 text-green-800"
                             : status === 2
-                            ? "bg-red-100 text-red-800"
-                            : "bg-gray-100 text-gray-800";
+                              ? "bg-red-100 text-red-800"
+                              : "bg-gray-100 text-gray-800";
                         const statusText =
                           status === 1
                             ? t("factory.param_status.good")
                             : status === 2
-                            ? t("factory.param_status.bad")
-                            : t("factory.param_status.normal");
+                              ? t("factory.param_status.bad")
+                              : t("factory.param_status.normal");
                         const statusIcon =
                           status === 1 ? "✓" : status === 2 ? "✗" : "○";
 
@@ -471,7 +471,7 @@ export default function FactoryDetailsModal({
                                 <div className="text-xs text-gray-400 mt-1">
                                   Янгиланган:{" "}
                                   {new Date(
-                                    param.latestLog.date_update
+                                    param.latestLog.date_update,
                                   ).toLocaleDateString("uz-UZ")}
                                 </div>
                               )}
