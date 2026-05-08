@@ -259,7 +259,7 @@ const Setting: React.FC = () => {
       ip_address: camera.ip_address,
       login: camera.login,
       password: camera.password,
-      channel: camera.channel || 1,
+      channel: camera.channel,
       status: camera.status,
       has_ptz: camera.has_ptz,
     });
