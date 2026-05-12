@@ -108,8 +108,18 @@ export default function CameraStreamCell({ camera, onClick }: Props) {
       {/* Hover overlay — expand icon */}
       <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center">
         <div className="opacity-0 group-hover:opacity-100 transition-opacity w-9 h-9 rounded-full bg-white bg-opacity-80 flex items-center justify-center">
-          <svg className="w-4 h-4 text-gray-800" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+          <svg
+            className="w-4 h-4 text-gray-800"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+            />
           </svg>
         </div>
       </div>
@@ -130,7 +140,10 @@ export default function CameraStreamCell({ camera, onClick }: Props) {
 
       {/* Error indicator */}
       {error && (
-        <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500" title="Stream mavjud emas" />
+        <div
+          className="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500"
+          title="Stream mavjud emas"
+        />
       )}
     </div>
   );

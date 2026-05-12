@@ -15,7 +15,6 @@ interface Factory {
 const App: React.FC = () => {
   const { t } = useTranslation();
   const [factories, setFactories] = useState<Factory[]>([]);
-  const [viewMode, setViewMode] = useState<"cards" | "live">("cards");
 
   const [modalOpen, setModalOpen] = useState(false);
   const [currentCamera, setCurrentCamera] = useState<CameraType | null>(null);
@@ -72,16 +71,19 @@ const App: React.FC = () => {
     }
   };
 
+  const [liveOpen, setLiveOpen] = useState(false);
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && modalOpen) {
-        closeModal();
+      if (event.key === "Escape") {
+        if (liveOpen) setLiveOpen(false);
+        else if (modalOpen) closeModal();
       }
     };
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [modalOpen]);
+  }, [modalOpen, liveOpen]);
 
   return (
     <>
@@ -94,12 +96,7 @@ const App: React.FC = () => {
             </h2>
             <div className="flex items-center gap-1 bg-white rounded-lg p-1 shadow-sm border">
               <button
-                onClick={() => setViewMode("cards")}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                  viewMode === "cards"
-                    ? "bg-primary text-white"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors bg-primary text-white"
               >
                 <svg
                   className="w-3.5 h-3.5"
@@ -111,28 +108,20 @@ const App: React.FC = () => {
                 {t("camera.cards_view")}
               </button>
               <button
-                onClick={() => setViewMode("live")}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                  viewMode === "live"
-                    ? "bg-primary text-white"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
+                onClick={() => setLiveOpen(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors text-gray-500 hover:text-gray-700"
               >
-                <span
-                  className={`w-1.5 h-1.5 rounded-full ${viewMode === "live" ? "bg-red-400 animate-pulse" : "bg-gray-400"}`}
-                />
+                <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
                 {t("camera.live_view")}
               </button>
             </div>
           </div>
 
           {/* Cards view */}
-          {viewMode === "cards" && (
-            <>
-              {factories.map(
-                (factory, factoryIndex) =>
-                  factory.cameras.length > 0 && (
-                    <div key={factoryIndex} className="mb-6">
+          {factories.map(
+            (factory, factoryIndex) =>
+              factory.cameras.length > 0 && (
+                <div key={factoryIndex} className="mb-6">
                       <h3 className="text-sm font-semibold text-primary mb-2 px-1">
                         {factory.name}
                       </h3>
@@ -201,29 +190,50 @@ const App: React.FC = () => {
                       </div>
                     </div>
                   ),
-              )}
-            </>
           )}
 
           {/* Live grid view */}
-          {viewMode === "live" && (
-            <div
-              className="grid gap-0.5 bg-black rounded-xl overflow-hidden"
-              style={{
-                gridTemplateColumns: `repeat(${Math.ceil(Math.sqrt(allCameras.length))}, 1fr)`,
-              }}
-            >
-              {allCameras.map((camera) => (
-                <CameraStreamCell
-                  key={camera.id}
-                  camera={camera}
-                  onClick={setupCameraModal}
-                />
-              ))}
-            </div>
-          )}
         </div>
       </div>
+
+      {/* Live modal — full screen */}
+      {liveOpen && (
+        <div className="fixed inset-0 z-[9999] bg-black flex flex-col">
+          {/* Topbar */}
+          <div className="flex items-center justify-between px-4 py-2 bg-black/80 border-b border-white/10 flex-shrink-0">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+              <span className="text-white text-sm font-medium">{t("camera.live_view")}</span>
+              <span className="text-gray-400 text-xs">— {allCameras.length} {t("camera.title") || "kamera"}</span>
+            </div>
+            <button
+              onClick={() => setLiveOpen(false)}
+              className="flex items-center gap-1.5 text-gray-300 hover:text-white text-xs px-3 py-1.5 rounded-md border border-white/20 hover:border-white/40 transition-colors"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              {t("ui.close") || "Yopish"}
+            </button>
+          </div>
+          {/* Grid */}
+          <div
+            className="flex-1 grid gap-0.5 overflow-hidden"
+            style={{
+              gridTemplateColumns: `repeat(${Math.ceil(Math.sqrt(allCameras.length))}, 1fr)`,
+              gridTemplateRows: `repeat(${Math.ceil(allCameras.length / Math.ceil(Math.sqrt(allCameras.length)))}, 1fr)`,
+            }}
+          >
+            {allCameras.map((camera) => (
+              <CameraStreamCell
+                key={camera.id}
+                camera={camera}
+                onClick={(cam) => { setLiveOpen(false); setupCameraModal(cam); }}
+              />
+            ))}
+          </div>
+        </div>
+      )}
 
       {modalOpen && currentCamera && (
         <VideoModal
