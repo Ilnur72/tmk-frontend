@@ -5,11 +5,13 @@ import { CameraType, PTZCommand } from "../types/factory";
 interface PTZControlsProps {
   camera: CameraType;
   onSendCommand: (command: PTZCommand) => void;
+  overlay?: boolean;
 }
 
 export default function PTZControls({
   camera,
   onSendCommand,
+  overlay = false,
 }: PTZControlsProps) {
   const { t } = useTranslation();
   const [activeControl, setActiveControl] = useState<string | null>(null);
@@ -76,11 +78,11 @@ export default function PTZControls({
   };
 
   return (
-    <div className="flex flex-col gap-2 md:gap-4">
+    <div className={`flex flex-col ${overlay ? "gap-1" : "gap-2 md:gap-4"}`}>
       {/* PTZ Controls */}
       <div className="flex justify-center items-center">
-        <div className="bg-white p-2 md:p-4 rounded-lg shadow-lg w-full max-w-sm md:max-w-none">
-          <h4 className="text-sm md:text-lg font-semibold  text-gray-800 text-center">
+        <div className={overlay ? "p-2" : "bg-white p-2 md:p-4 rounded-lg shadow-lg w-full max-w-sm md:max-w-none"}>
+          <h4 className={`text-sm font-semibold text-center ${overlay ? "text-white" : "md:text-lg text-gray-800"}`}>
             {t("camera.camera_control")}
           </h4>
           <div className="flex flex-col items-center">
@@ -342,7 +344,7 @@ export default function PTZControls({
       </div>
 
       {/* Camera Info */}
-      <div className="w-full">
+      {!overlay && <div className="w-full">
         <div className="bg-white rounded-lg p-2 md:p-4 h-full">
           <h5 className="font-semibold mb-2 md:mb-3 text-gray-800 text-sm md:text-base">
             {t("camera.camera_info")}
@@ -368,7 +370,7 @@ export default function PTZControls({
             </div>
           </div>
         </div>
-      </div>
+      </div>}
     </div>
   );
 }

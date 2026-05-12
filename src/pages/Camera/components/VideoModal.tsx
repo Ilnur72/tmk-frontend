@@ -228,126 +228,136 @@ export default function VideoModal({ isOpen, onClose, camera }: VideoModalProps)
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-75 z-[10000] flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black bg-opacity-80 z-[10000] flex items-center justify-center p-2"
       onClick={onClose}
     >
-      <div className="relative max-w-full max-h-full w-full" onClick={(e) => e.stopPropagation()}>
-        <div className="bg-white rounded-lg overflow-hidden shadow-2xl flex flex-col" style={{ height: "95vh", maxWidth: "98vw" }}>
-
-          {/* Header */}
-          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white flex-shrink-0">
-            <h3 className="text-lg font-medium">
-              {camera.brand} {camera.model} - {t("camera.camera_view")}
-            </h3>
-            <button onClick={onClose} className="text-white hover:text-gray-200 transition-colors">
-              <X className="w-6 h-6" />
-              <span className="sr-only">{t("ui.close", { defaultValue: t("modal.close") })}</span>
-            </button>
+      <div
+        className="relative w-full h-full max-w-[98vw] max-h-[96vh] rounded-xl overflow-hidden shadow-2xl bg-black"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Video — fills entire modal */}
+        {camera.stream_uuid && camera.webrtc_server ? (
+          <>
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              className="w-full h-full object-cover"
+            />
+            {streamError && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-white gap-2">
+                <span className="text-5xl">📷</span>
+                <p className="text-sm text-gray-300">{streamError}</p>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-white gap-2">
+            <span className="text-5xl">📷</span>
+            <p className="text-sm text-gray-400">stream_uuid yoki webrtc_server kiritilmagan</p>
           </div>
+        )}
 
-          {/* Body */}
-          <div className="flex flex-col lg:flex-row flex-1 min-h-0 overflow-hidden">
+        {/* Top gradient bar — header info */}
+        <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-4 py-3 bg-gradient-to-b from-black/70 to-transparent pointer-events-none">
+          <h3 className="text-white text-sm font-medium drop-shadow">
+            {camera.brand} {camera.model} — {t("camera.camera_view")}
+          </h3>
+        </div>
 
-            {/* Video */}
-            <div className="flex-1 bg-black flex items-center justify-center min-h-[300px] lg:min-h-[400px] relative">
-              {camera.stream_uuid && camera.webrtc_server ? (
-                <>
-                  <video
-                    ref={videoRef}
-                    autoPlay
-                    playsInline
-                    muted
-                    className="w-full h-full object-cover"
-                  />
-                  {streamError && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center text-white gap-2">
-                      <span className="text-4xl">📷</span>
-                      <p className="text-sm text-gray-300">{streamError}</p>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className="flex flex-col items-center justify-center text-white gap-2 w-full h-full">
-                  <span className="text-4xl">📷</span>
-                  <p className="text-sm text-gray-400">stream_uuid yoki webrtc_server kiritilmagan</p>
-                </div>
-              )}
+        {/* Close button — top right */}
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 z-10 flex items-center justify-center w-8 h-8 rounded-full bg-black/50 text-white hover:bg-black/80 transition-colors backdrop-blur-sm"
+        >
+          <X className="w-4 h-4" />
+          <span className="sr-only">{t("ui.close", { defaultValue: t("modal.close") })}</span>
+        </button>
 
-              {/* Mini preview — PTZ kameralar uchun */}
-              {camera.has_ptz && (
-                <div
-                  ref={miniRef}
-                  className="absolute bottom-3 right-3 select-none overflow-hidden rounded shadow-lg"
-                  style={{ width: 200, height: 125, cursor: ptz3dLoading ? "wait" : "crosshair" }}
-                  onMouseDown={handleMiniMouseDown}
-                  onMouseMove={handleMiniMouseMove}
-                  onMouseUp={handleMiniMouseUp}
-                  onMouseLeave={(e) => { if (drag) handleMiniMouseUp(e); }}
-                >
-                  <img
-                    src={screenshotUrl}
-                    alt="preview"
-                    className="w-full h-full pointer-events-none"
-                    style={{ objectFit: "fill" }}
-                    draggable={false}
-                  />
+        {/* PTZ Controls overlay — bottom-left */}
+        {camera.has_ptz && (
+          <div
+            className="absolute bottom-3 left-3 z-10 rounded-xl overflow-hidden"
+            style={{
+              background: "rgba(0,0,0,0.55)",
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
+              border: "1px solid rgba(255,255,255,0.12)",
+            }}
+          >
+            <PTZControls camera={camera} onSendCommand={sendPTZCommand} overlay />
+          </div>
+        )}
 
-                  {/* Drag to'rtburchagi */}
-                  {drag && (
-                    <div
-                      className="absolute pointer-events-none"
-                      style={{
-                        left: `${Math.min(drag.startX, drag.endX) * 100}%`,
-                        top: `${Math.min(drag.startY, drag.endY) * 100}%`,
-                        width: `${Math.abs(drag.endX - drag.startX) * 100}%`,
-                        height: `${Math.abs(drag.endY - drag.startY) * 100}%`,
-                        border: "2px solid rgba(231,62,62,0.95)",
-                        zIndex: 5,
-                      }}
-                    >
-                      {[["0%","0%"],["50%","0%"],["100%","0%"],["100%","50%"],
-                        ["100%","100%"],["50%","100%"],["0%","100%"],["0%","50%"]
-                      ].map(([left, top], i) => (
-                        <div key={i} style={{
-                          position: "absolute", left, top,
-                          transform: "translate(-50%,-50%)",
-                          width: 6, height: 6,
-                          background: "rgba(231,62,62,0.95)",
-                          borderRadius: "50%",
-                        }} />
-                      ))}
-                    </div>
-                  )}
+        {/* Mini preview — PTZ kameralar uchun, bottom-right */}
+        {camera.has_ptz && (
+          <div
+            ref={miniRef}
+            className="absolute bottom-3 right-3 z-10 select-none overflow-hidden rounded-lg shadow-xl"
+            style={{
+              width: 210,
+              height: 130,
+              cursor: ptz3dLoading ? "wait" : "crosshair",
+              border: "1px solid rgba(255,255,255,0.2)",
+            }}
+            onMouseDown={handleMiniMouseDown}
+            onMouseMove={handleMiniMouseMove}
+            onMouseUp={handleMiniMouseUp}
+            onMouseLeave={(e) => { if (drag) handleMiniMouseUp(e); }}
+          >
+            <img
+              src={screenshotUrl}
+              alt="preview"
+              className="w-full h-full pointer-events-none"
+              style={{ objectFit: "fill" }}
+              draggable={false}
+            />
 
-                  {/* Loading spinner */}
-                  {ptz3dLoading && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 pointer-events-none">
-                      <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    </div>
-                  )}
+            {/* Drag rectangle */}
+            {drag && (
+              <div
+                className="absolute pointer-events-none"
+                style={{
+                  left: `${Math.min(drag.startX, drag.endX) * 100}%`,
+                  top: `${Math.min(drag.startY, drag.endY) * 100}%`,
+                  width: `${Math.abs(drag.endX - drag.startX) * 100}%`,
+                  height: `${Math.abs(drag.endY - drag.startY) * 100}%`,
+                  border: "2px solid rgba(231,62,62,0.95)",
+                  zIndex: 5,
+                }}
+              >
+                {[["0%","0%"],["50%","0%"],["100%","0%"],["100%","50%"],
+                  ["100%","100%"],["50%","100%"],["0%","100%"],["0%","50%"]
+                ].map(([left, top], i) => (
+                  <div key={i} style={{
+                    position: "absolute", left, top,
+                    transform: "translate(-50%,-50%)",
+                    width: 6, height: 6,
+                    background: "rgba(231,62,62,0.95)",
+                    borderRadius: "50%",
+                  }} />
+                ))}
+              </div>
+            )}
 
-                  {/* Yordam matni */}
-                  {!ptz3dLoading && !drag && (
-                    <div className="absolute bottom-1 left-0 right-0 text-center pointer-events-none">
-                      <span className="text-white text-[9px] bg-black bg-opacity-50 px-1.5 py-0.5 rounded">
-                        Zoom uchun tanlang
-                      </span>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
+            {/* Loading spinner */}
+            {ptz3dLoading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40 pointer-events-none">
+                <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              </div>
+            )}
 
-            {/* PTZ Controls */}
-            {camera.has_ptz && (
-              <div className="lg:w-80 bg-gray-100 border-t lg:border-t-0 lg:border-l flex-shrink-0 overflow-y-auto max-h-[40vh] lg:max-h-none">
-                <div className="p-2 md:p-4">
-                  <PTZControls camera={camera} onSendCommand={sendPTZCommand} />
-                </div>
+            {/* Hint text */}
+            {!ptz3dLoading && !drag && (
+              <div className="absolute bottom-1 left-0 right-0 text-center pointer-events-none">
+                <span className="text-white text-[9px] bg-black/50 px-1.5 py-0.5 rounded">
+                  Zoom uchun tanlang
+                </span>
               </div>
             )}
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
