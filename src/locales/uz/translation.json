@@ -434,7 +434,9 @@
     "screenshot_error": "Screenshot юклашда хатолик",
     "camera_view": "Камера кўриниши",
     "camera_control": "Камера бошқариш",
-    "camera_info": "Камера маълумотлари"
+    "camera_info": "Камера маълумотлари",
+    "cards_view": "Карточкалар",
+    "live_view": "Live"
   },
   "partners": {
     "title": "Ҳамкорлар",

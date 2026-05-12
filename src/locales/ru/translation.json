@@ -434,7 +434,9 @@
     "screenshot_error": "Ошибка загрузки скриншота",
     "camera_view": "Вид камеры",
     "camera_control": "Управление камерой",
-    "camera_info": "Информация о камере"
+    "camera_info": "Информация о камере",
+    "cards_view": "Карточки",
+    "live_view": "Прямой эфир"
   },
   "partners": {
     "title": "Партнеры",

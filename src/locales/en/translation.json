@@ -441,7 +441,9 @@
     "screenshot_error": "Screenshot loading error",
     "camera_view": "Camera View",
     "camera_control": "Camera Control",
-    "camera_info": "Camera Information"
+    "camera_info": "Camera Information",
+    "cards_view": "Cards",
+    "live_view": "Live"
   },
   "partners": {
     "title": "Partners",
