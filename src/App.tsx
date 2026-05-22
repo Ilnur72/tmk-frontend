@@ -28,7 +28,7 @@ import Energy from "./pages/Energy";
 import Dashboard from "./pages/Dashboard";
 import ESG from "./pages/ESG";
 
-// Energy Systems - mustaqil tizimlar
+// Energy Systems - mustaqil tizimlarrr
 import MeterOperators from "./pages/MeterOperators";
 import EnergyManagement from "./pages/EnergyManagement";
 
