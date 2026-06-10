@@ -27,6 +27,7 @@ import Partners from "./pages/Partners/Partners";
 import Energy from "./pages/Energy";
 import Dashboard from "./pages/Dashboard";
 import ESG from "./pages/ESG";
+import IntegrationMonitor from "./pages/IntegrationMonitor/IntegrationMonitor";
 
 // Energy Systems - mustaqil tizimlar
 import MeterOperators from "./pages/MeterOperators";
@@ -116,6 +117,7 @@ const AppRoutes: React.FC = () => {
       {/* <Route path="/techniques" element={<Techniques />} /> */}
       <Route path="/transport" element={<Techniques />} />
       <Route path="/cameras" element={<Camera />} />
+      <Route path="/integration-monitor" element={<IntegrationMonitor />} />
       <Route path="/production" element={<Production />} />
       <Route path="/sales" element={<Sales />} />
       <Route path="/finance" element={<Finance />} />

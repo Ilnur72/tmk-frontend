@@ -244,6 +244,7 @@ export default function VideoModal({ isOpen, onClose, camera }: VideoModalProps)
               playsInline
               muted
               className="w-full h-full object-cover"
+              controls
             />
             {streamError && (
               <div className="absolute inset-0 flex flex-col items-center justify-center text-white gap-2">

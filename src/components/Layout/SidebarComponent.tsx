@@ -15,7 +15,7 @@ import {
   X,
   MapPin,
   Car,
-  
+  Activity,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../contexts/AuthContext";
@@ -64,6 +64,7 @@ const allMenuItems: MenuItem[] = [
     roles: ["admin", "editor"], // Only admin and editor can see settings
   },
   { href: "/cameras", icon: Camera, title: "sidebar.cameras" },
+  { href: "/integration-monitor", icon: Activity, title: "sidebar.integration_monitor" },
 ];
 
 const Sidebar = () => {
