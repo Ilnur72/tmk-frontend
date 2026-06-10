@@ -84,7 +84,7 @@ const RoleBasedRoute: React.FC<{
   return <>{children}</>;
 };
 
-// Main routes component
+// Main routes componentt
 const AppRoutes: React.FC = () => {
   const { role } = useAuth();
 
