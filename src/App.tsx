@@ -29,7 +29,7 @@ import Dashboard from "./pages/Dashboard";
 import ESG from "./pages/ESG";
 import IntegrationMonitor from "./pages/IntegrationMonitor/IntegrationMonitor";
 
-// Energy Systems - mustaqil tizimlar
+// Energy Systems - mustaqil tizimlarrr
 import MeterOperators from "./pages/MeterOperators";
 import EnergyManagement from "./pages/EnergyManagement";
 
@@ -85,7 +85,7 @@ const RoleBasedRoute: React.FC<{
   return <>{children}</>;
 };
 
-// Main routes component
+// Main routes componentt
 const AppRoutes: React.FC = () => {
   const { role } = useAuth();
 

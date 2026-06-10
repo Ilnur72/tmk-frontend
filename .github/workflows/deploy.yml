@@ -27,6 +27,6 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_SSH_PORT }}
           source: "build/"
-          target: "/home/sanjar/tmk-frontend"
+          target: "/var/www/tmk-frontend"
           rm: true             # ❗ eski fayllarni o'chirish
           overwrite: true      # ❗ yangi fayllarni yozish
