@@ -490,13 +490,6 @@ const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
   return (
     <>
-      {/* MapLibre GL JS Script */}
-      <script src="https://unpkg.com/maplibre-gl@4.0.0/dist/maplibre-gl.js"></script>
-      <link
-        href="https://unpkg.com/maplibre-gl@4.0.0/dist/maplibre-gl.css"
-        rel="stylesheet"
-      />
-
       <div className="modal show bg-black/60 transition-[visibility,opacity] w-screen h-screen fixed left-0 top-0 visible opacity-100 z-50 pt-7">
         <div className="w-[70%] max-sm:w-[100%] mx-auto bg-white relative rounded-md shadow-md transition-[margin-top,transform] duration-[0.4s,0.3s] mt-2 max-h-[90vh] overflow-y-auto">
           <div className="p-2 text-center">

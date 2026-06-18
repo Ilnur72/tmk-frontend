@@ -1,4 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
+import maplibregl from "maplibre-gl";
+import "maplibre-gl/dist/maplibre-gl.css";
 
 interface MapComponentProps {
   containerId: string;
@@ -19,21 +21,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
   const markerRef = useRef<any>(null);
 
   useEffect(() => {
-    // Check if maplibregl is available
-    if (typeof window !== "undefined" && (window as any).maplibregl) {
-      initializeMap();
-    } else {
-      // Load MapLibre GL JS if not available
-      const script = document.createElement("script");
-      script.src = "https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js";
-      script.onload = initializeMap;
-      document.head.appendChild(script);
-
-      const link = document.createElement("link");
-      link.href = "https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css";
-      link.rel = "stylesheet";
-      document.head.appendChild(link);
-    }
+    initializeMap();
 
     return () => {
       if (mapRef.current) {
@@ -43,8 +31,6 @@ const MapComponent: React.FC<MapComponentProps> = ({
   }, []);
 
   const initializeMap = () => {
-    const maplibregl = (window as any).maplibregl;
-
     const map = new maplibregl.Map({
       container: containerId,
       style:
