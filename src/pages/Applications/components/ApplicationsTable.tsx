@@ -381,11 +381,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
                             <hr className="my-1" />
                             <button
                               onClick={() => {
-                                if (
-                                  window.confirm(t("applications.confirm_delete"))
-                                ) {
-                                  onDelete(application.id);
-                                }
+                                onDelete(application.id);
                                 setOpenDropdown(null);
                               }}
                               className="flex items-center px-4 py-2 text-sm text-red-700 hover:bg-red-50 w-full text-left"
