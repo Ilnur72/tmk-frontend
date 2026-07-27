@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
+import { Eye, EyeOff } from "lucide-react";
 import "react-toastify/dist/ReactToastify.css";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const { t } = useTranslation();
@@ -74,7 +76,7 @@ const Login: React.FC = () => {
                 </div>
 
                 <h2 className="intro-x text-center text-2xl font-bold xl:text-left xl:text-3xl">
-                  Тизимга кириш
+                  Тизимга кириш1
                 </h2>
 
                 <form onSubmit={handleSubmit}>
@@ -88,15 +90,30 @@ const Login: React.FC = () => {
                       onChange={(e) => setEmail(e.target.value)}
                       className="transition duration-200 ease-in-out w-full text-sm border-slate-400 shadow-sm rounded-md placeholder:text-slate-400/90 focus:ring-4 focus:ring-primary focus:ring-opacity-20 focus:border-primary dark:bg-darkmode-800 dark:border-slate-200 px-4 py-3"
                     />
-                    <input
-                      name="password"
-                      type="password"
-                      required
-                      placeholder="Пароль"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="transition duration-200 ease-in-out w-full text-sm border-slate-200 shadow-sm rounded-md placeholder:text-slate-400/90 focus:ring-4 focus:ring-primary focus:ring-opacity-20 focus:border-primary dark:bg-darkmode-800 dark:border-slate-200 px-4 py-3 mt-4"
-                    />
+                    <div className="relative mt-4">
+                      <input
+                        name="password"
+                        type={showPassword ? "text" : "password"}
+                        required
+                        placeholder="Пароль"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="transition duration-200 ease-in-out w-full text-sm border-slate-200 shadow-sm rounded-md placeholder:text-slate-400/90 focus:ring-4 focus:ring-primary focus:ring-opacity-20 focus:border-primary dark:bg-darkmode-800 dark:border-slate-200 pl-4 pr-11 py-3"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((v) => !v)}
+                        aria-label={showPassword ? "Parolni yashirish" : "Parolni ko'rsatish"}
+                        tabIndex={-1}
+                        className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-primary transition-colors"
+                      >
+                        {showPassword ? (
+                          <EyeOff className="w-5 h-5" />
+                        ) : (
+                          <Eye className="w-5 h-5" />
+                        )}
+                      </button>
+                    </div>
                   </div>
 
                   <div className="intro-x mt-5 text-center xl:mt-8 xl:text-left">
