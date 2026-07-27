@@ -76,7 +76,7 @@ const Login: React.FC = () => {
                 </div>
 
                 <h2 className="intro-x text-center text-2xl font-bold xl:text-left xl:text-3xl">
-                  Тизимга кириш1
+                  Тизимга кириш
                 </h2>
 
                 <form onSubmit={handleSubmit}>
