@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../contexts/AuthContext";
+import { isPathAllowed, scopeOf } from "../../config/roleScope";
 
 interface MenuItem {
   href: string;
@@ -75,6 +76,16 @@ const Sidebar = () => {
   const location = useLocation();
   // Filter menu items based on user role
   const menuItems = useMemo(() => {
+    // Qamrovi cheklangan rol (masalan `factory_manager`) — FAQAT o'z
+    // ro'yxatidagini ko'radi. Bu shart birinchi turishi muhim: quyidagi eski
+    // mantiq `roles` ko'rsatilmagan elementni hammaga ochadi, ya'ni ertaga
+    // menyuga qo'shilgan yangi sahifa cheklangan rolga ham ko'rinib ketardi.
+    // Batafsil: `src/config/roleScope.ts`.
+    const scope = scopeOf(role);
+    if (scope !== null) {
+      return allMenuItems.filter((item) => isPathAllowed(role, item.href));
+    }
+
     return allMenuItems.filter((item) => {
       // If item has role restrictions, check if user's role is allowed
       if (item.roles) {
