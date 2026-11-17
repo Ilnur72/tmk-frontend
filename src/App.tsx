@@ -1,45 +1,57 @@
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import "./i18n";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
+  useLocation,
 } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Layout from "./components/Layout/Layout";
 import Login from "./pages/Auth/Login";
-import FactoryMap from "./pages/Factory/FactoryMap";
-import Employee from "./pages/Employee/Employee";
-import Techniques from "./pages/Techniques/Techniques";
-import Setting from "./pages/Setting/Setting";
-import Camera from "./pages/Camera/Camera";
-import Production from "./pages/Production/Production";
-import Sales from "./pages/Sales/Sales";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import Factory from "./pages/Factory/Factory";
-import BranchesPage from "./pages/Employee/components/BranchData";
-import InternshipPage from "./pages/Employee/components/InternshipPage";
-import LanguagePage from "./pages/Employee/components/LanguagePage";
-import TodayAttendancePage from "./pages/Employee/components/TodayAttendancePage";
-import Finance from "./pages/Finance/Finance";
-import Partners from "./pages/Partners/Partners";
-import Energy from "./pages/Energy";
-import Dashboard from "./pages/Dashboard";
-import ESG from "./pages/ESG";
-import IntegrationMonitor from "./pages/IntegrationMonitor/IntegrationMonitor";
-
-// Energy Systems - mustaqil tizimlarrr
-import MeterOperators from "./pages/MeterOperators";
-import EnergyManagement from "./pages/EnergyManagement";
-
-// Modules imports - alohida module
-import ModuleAuth from "./pages/modules/Auth";
-import ModuleDashboard from "./pages/modules/Dashboard";
-import ModuleListingForm from "./pages/modules/ListingForm";
-import ModulePartnerProfile from "./pages/modules/PartnerProfile";
+import { homeFor, isPathAllowed } from "./config/roleScope";
 import { useModulesAuth } from "./pages/modules/hooks/useModulesAuth";
-import Transport from "./pages/Transport/Transport";
+
+// ─── Lazy-loaded pages (route-based code splitting) ─────────────────────────
+// Har bir sahifa alohida chunk'da — faqat kerak bo'lganda (auth'dan keyin) yuklanadi.
+// Login qilmagan foydalanuvchi bu kodni umuman olmaydi.
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Factory = lazy(() => import("./pages/Factory/Factory"));
+const FactoryMap = lazy(() => import("./pages/Factory/FactoryMap"));
+const Employee = lazy(() => import("./pages/Employee/Employee"));
+const Techniques = lazy(() => import("./pages/Techniques/Techniques"));
+const Setting = lazy(() => import("./pages/Setting/Setting"));
+const Camera = lazy(() => import("./pages/Camera/Camera"));
+const Production = lazy(() => import("./pages/Production/Production"));
+const Sales = lazy(() => import("./pages/Sales/Sales"));
+const Finance = lazy(() => import("./pages/Finance/Finance"));
+const Partners = lazy(() => import("./pages/Partners/Partners"));
+const Energy = lazy(() => import("./pages/Energy"));
+const ESG = lazy(() => import("./pages/ESG"));
+const IntegrationMonitor = lazy(() => import("./pages/IntegrationMonitor/IntegrationMonitor"));
+const BranchesPage = lazy(() => import("./pages/Employee/components/BranchData"));
+const InternshipPage = lazy(() => import("./pages/Employee/components/InternshipPage"));
+const LanguagePage = lazy(() => import("./pages/Employee/components/LanguagePage"));
+const TodayAttendancePage = lazy(() => import("./pages/Employee/components/TodayAttendancePage"));
+
+// Energy Systems - mustaqil tizimlar
+const MeterOperators = lazy(() => import("./pages/MeterOperators"));
+const EnergyManagement = lazy(() => import("./pages/EnergyManagement"));
+
+// Modules - alohida module
+const ModuleAuth = lazy(() => import("./pages/modules/Auth"));
+const ModuleDashboard = lazy(() => import("./pages/modules/Dashboard"));
+const ModuleListingForm = lazy(() => import("./pages/modules/ListingForm"));
+const ModulePartnerProfile = lazy(() => import("./pages/modules/PartnerProfile"));
+
+// ─── Suspense fallback (chunk yuklanayotganda ko'rsatiladigan loader) ────────
+const PageLoader: React.FC = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+  </div>
+);
 
 const LoginRoute: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -85,10 +97,36 @@ const RoleBasedRoute: React.FC<{
   return <>{children}</>;
 };
 
-// Main routes componentt
-const AppRoutes: React.FC = () => {
+/**
+ * Qamrov qorovuli — qamrovi cheklangan rol (masalan `factory_manager`) o'z
+ * ro'yxatidan tashqaridagi manzilga kira olmaydi.
+ *
+ * ⚠️ Menyudan yashirish YETARLI EMAS: `ProtectedRoute` faqat login
+ * qilinganini tekshiradi, rolni emas — ya'ni foydalanuvchi manzilni qo'lda
+ * yozib kiraverardi.
+ *
+ * Nega bitta joyda, har bir `Route` da emas: bu komponent butun `AppRoutes`
+ * ni o'raydi, demak ertaga qo'shilgan YANGI route ham avtomatik yopiq
+ * qoladi. Har bir route'ni alohida o'rash esa bittasini unutish bilan
+ * tugardi.
+ *
+ * Cheklanmagan rol uchun `homeFor` `null` qaytaradi va qorovul umuman
+ * aralashmaydi — mavjud xulq o'zgarmaydi.
+ */
+const ScopeGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { role } = useAuth();
+  const location = useLocation();
 
+  const home = homeFor(role);
+  if (home !== null && !isPathAllowed(role, location.pathname)) {
+    return <Navigate to={home} replace />;
+  }
+
+  return <>{children}</>;
+};
+
+// Main routes component
+const AppRoutes: React.FC = () => {
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
@@ -146,24 +184,26 @@ const PartnersModuleRoutes: React.FC = () => {
   }
 
   return (
-    <Routes>
-      <Route path="/auth" element={<ModuleAuth />} />
+    <Suspense fallback={<PageLoader />}>
+      <Routes>
+        <Route path="/auth" element={<ModuleAuth />} />
 
-      {/* Protected routes - faqat authenticated user'lar uchun */}
-      {isAuthenticated ? (
-        <>
-          <Route path="/dashboard" element={<ModuleDashboard />} />
-          <Route path="/applications" element={<ModuleListingForm />} />
-          <Route path="/profile" element={<ModulePartnerProfile />} />
-          <Route
-            path="/"
-            element={<Navigate to="/partner-portal/dashboard" />}
-          />
-        </>
-      ) : (
-        <Route path="*" element={<Navigate to="/partner-portal/auth" />} />
-      )}
-    </Routes>
+        {/* Protected routes - faqat authenticated user'lar uchun */}
+        {isAuthenticated ? (
+          <>
+            <Route path="/dashboard" element={<ModuleDashboard />} />
+            <Route path="/applications" element={<ModuleListingForm />} />
+            <Route path="/profile" element={<ModulePartnerProfile />} />
+            <Route
+              path="/"
+              element={<Navigate to="/partner-portal/dashboard" />}
+            />
+          </>
+        ) : (
+          <Route path="*" element={<Navigate to="/partner-portal/auth" />} />
+        )}
+      </Routes>
+    </Suspense>
   );
 };
 
@@ -193,8 +233,22 @@ const App: React.FC = () => {
             />
 
             {/* Energy Systems - alohida mustaqil tizimlar */}
-            <Route path="/meter-operators" element={<MeterOperators />} />
-            <Route path="/energy-management" element={<EnergyManagement />} />
+            <Route
+              path="/meter-operators"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <MeterOperators />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/energy-management"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <EnergyManagement />
+                </Suspense>
+              }
+            />
 
             {/* Asosiy tizim - himoyalangan routes */}
             <Route
@@ -202,7 +256,12 @@ const App: React.FC = () => {
               element={
                 <ProtectedRoute>
                   <Layout>
-                    <AppRoutes />
+                    {/* Suspense Layout ichida — sahifa yuklanayotganda sidebar ko'rinib turadi */}
+                    <Suspense fallback={<PageLoader />}>
+                      <ScopeGuard>
+                        <AppRoutes />
+                      </ScopeGuard>
+                    </Suspense>
                   </Layout>
                 </ProtectedRoute>
               }
