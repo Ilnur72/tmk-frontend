@@ -11,7 +11,13 @@ import { API_URL } from "../config/const";
 interface User {
   id: string;
   name: string;
-  role: "admin" | "viewer" | "user";
+  /**
+   * Backenddagi `employee.role` — oddiy matn, qat'iy ro'yxat emas.
+   * Avval bu yerda `"admin" | "viewer" | "user"` deb yozilgandi, lekin
+   * backendda `editor` va `factory_manager` kabi rollar ham bor
+   * (`UserRole` enum'i), ya'ni tip haqiqatdan orqada qolgandi.
+   */
+  role: string;
   email?: string;
 }
 
@@ -81,6 +87,47 @@ const parseJwtToken = (token: string): any => {
   }
 };
 
+/**
+ * Dekodlangan tokendan foydalanuvchi ma'lumotini ajratadi.
+ *
+ * Backend tokenni `{ user: { id, role } }` ko'rinishida imzolaydi
+ * (`backend/src/modules/auth/auth.service.ts:35`) — maydonlar `decoded.user`
+ * ICHIDA turadi, `decoded` ning o'zida emas.
+ *
+ * ⚠️ Bu — yagona manba, ataylab. Avval bu mantiq ikki joyda alohida
+ * yozilgandi va ular bir-biridan farq qilardi:
+ *
+ *   - `initializeAuth`  →  `decoded.user.role`   ✅ to'g'ri
+ *   - `login`           →  `decoded.role`        ❌ mavjud emas
+ *
+ * Ikkinchisi `undefined` qaytarib `|| "user"` ga tushardi, ya'ni login
+ * qilgan HAR KIM `user` roliga ega bo'lib qolardi. Natijada `ROLE_SCOPE`
+ * dagi cheklov qo'llanmay, cheklangan foydalanuvchi login'dan keyin butun
+ * menyuni ko'rardi; refresh'dan keyin esa `initializeAuth` ishlab, rol
+ * to'g'rilanardi. Shuning uchun ikkala yo'l endi shu funksiyadan o'tadi.
+ *
+ * `decoded.user ?? decoded` — eski formatdagi tokenlar uchun zaxira yo'l.
+ */
+const extractUser = (
+  decoded: any,
+  fallbackEmail = ""
+): { userData: User; role: string } | null => {
+  if (!decoded) return null;
+
+  const source = decoded.user ?? decoded;
+  const role: string = source.role || "user";
+
+  return {
+    role,
+    userData: {
+      id: source.sub || source.user_id || source.id || "",
+      name: source.name || source.username || "User",
+      role,
+      email: source.email || fallbackEmail,
+    },
+  };
+};
+
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -95,20 +142,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const storedToken = localStorage.getItem("token");
 
         if (storedToken) {
-          const decoded = parseJwtToken(storedToken);
-          if (decoded) {
-            const { user } = decoded;
-            // Extract user data from token
-            const userData = {
-              id: user.sub || user.user_id || user.id || "",
-              name: user.name || user.username || "User",
-              role: user.role || "user",
-              email: user.email || "",
-            };
-
-            setUser(userData);
+          const extracted = extractUser(parseJwtToken(storedToken));
+          if (extracted) {
+            setUser(extracted.userData);
             setToken(storedToken);
-            setRole(user.role || "user");
+            setRole(extracted.role);
             setIsAuthenticated(true);
 
             // Set axios authorization header
@@ -161,19 +199,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       if (data.data && data.data.token) {
         const receivedToken = data.data.token;
-        const decoded = parseJwtToken(receivedToken);
+        const extracted = extractUser(parseJwtToken(receivedToken), email);
 
-        if (decoded) {
-          const userData = {
-            id: decoded.sub || decoded.user_id || decoded.id || "",
-            name: decoded.name || decoded.username || "User",
-            role: decoded.role || "user",
-            email: decoded.email || email,
-          };
-
-          setUser(userData);
+        if (extracted) {
+          setUser(extracted.userData);
           setToken(receivedToken);
-          setRole(decoded.role || "user");
+          setRole(extracted.role);
           setIsAuthenticated(true);
 
           localStorage.setItem("token", receivedToken);
