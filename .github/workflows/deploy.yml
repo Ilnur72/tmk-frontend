@@ -1,4 +1,11 @@
-name: Deploy React to Server
+name: Build check
+
+# Deploy hozircha qo'lda bajariladi: serverda git pull + npm run build.
+# Sabab: GitHub runner'lari serverning SSH portiga ulana olmaydi —
+# provayder bulut IP diapazonlarini filtrlaydi (serverda firewall yo'q,
+# ufw o'chiq, iptables bo'sh). Shu bois scp qadami olib tashlandi.
+#
+# Bu workflow faqat kod build bo'lishini tekshiradi.
 
 on:
   push:
@@ -6,7 +13,7 @@ on:
       - main
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,54 +25,3 @@ jobs:
 
       - name: Build
         run: npm run build
-
-      # ⚠️ VAQTINCHALIK — deploy tuzalgach bu qadam o'chiriladi.
-      # Secret qiymatlari chop etilmaydi, faqat ular haqidagi xossalar.
-      - name: Diagnose SSH reachability
-        continue-on-error: true
-        run: |
-          HOST="${{ secrets.SERVER_HOST }}"
-          PORT="${{ secrets.SERVER_SSH_PORT }}"
-          SUSER="${{ secrets.SERVER_USER }}"
-          KEY="${{ secrets.SERVER_SSH_KEY }}"
-
-          echo "=== secret xossalari ==="
-          echo "host uzunligi: ${#HOST}  (kutilgan 13 — 45.9.231.133)"
-          echo "port uzunligi: ${#PORT}  (kutilgan 4 — 2005)"
-          echo "user uzunligi: ${#SUSER} (kutilgan 4 — root)"
-          echo "key  uzunligi: ${#KEY}   (kutilgan ~400+)"
-
-          case "$PORT" in
-            ''|*[!0-9]*) echo "port: RAQAM EMAS — bo'sh joy yoki ortiqcha belgi bor" ;;
-            *)           echo "port: toza raqam — yaxshi" ;;
-          esac
-
-          case "$KEY" in
-            "-----BEGIN"*) echo "key: PEM sarlavhasi bor — yaxshi" ;;
-            '')            echo "key: BO'SH" ;;
-            *)             echo "key: PEM sarlavhasi YO'Q" ;;
-          esac
-
-          echo
-          echo "=== runner tashqi IP ==="
-          curl -s --max-time 10 https://api.ipify.org || echo "(olinmadi)"
-          echo
-
-          echo "=== TCP test ==="
-          if nc -vz -w 20 "$HOST" "$PORT"; then
-            echo "TCP OK — port ochiq, demak firewall bloklamayapti"
-          else
-            echo "TCP FAIL — runner portga ulana olmadi"
-          fi
-
-      - name: Upload build to server
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          port: ${{ secrets.SERVER_SSH_PORT }}
-          source: "build/"
-          target: "/var/www/tmk-frontend"
-          rm: true             # ❗ eski fayllarni o'chirish
-          overwrite: true      # ❗ yangi fayllarni yozish
